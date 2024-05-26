@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useGlobals } from "@/hooks/Globals";
 import {
   SafeAreaView,
@@ -13,6 +13,7 @@ import { usePlayback } from "@/hooks/usePlayback";
 import { useTracks } from "@/hooks/useTracks";
 import { usePlayLists } from "@/hooks/usePlayList";
 import { SimplifiedPlayList } from "@/interfaces/playlists";
+import { router } from "expo-router";
 
 export default function Home() {
   const {
