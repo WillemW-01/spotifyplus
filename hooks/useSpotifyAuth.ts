@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { makeRedirectUri, useAuthRequest } from "expo-auth-session";
+import { useGlobals } from "./Globals";
 
 const uri = makeRedirectUri();
 console.log(uri);
@@ -7,10 +8,10 @@ console.log(uri);
 const CLIENT_ID = process.env.EXPO_PUBLIC_CLIENT_ID ?? "";
 const CLIENT_SECRET = process.env.EXPO_PUBLIC_CLIENT_SECRET ?? "";
 
-const config = {
+const authConfig = {
   clientId: CLIENT_ID,
   clientSecret: CLIENT_SECRET,
-  redirectUri: uri, // e.g., 'yourapp://callback'
+  redirectUri: uri,
   usePKCE: false,
   scopes: [
     "user-read-private",
@@ -21,15 +22,17 @@ const config = {
   ],
 };
 
-// Endpoint
 const discovery = {
   authorizationEndpoint: "https://accounts.spotify.com/authorize",
   tokenEndpoint: "https://accounts.spotify.com/api/token",
 };
 
 export default function useSpotifyAuth() {
-  const [request, response, promptAsync] = useAuthRequest(config, discovery);
-  const [token, setToken] = useState("");
+  const [request, response, promptAsync] = useAuthRequest(
+    authConfig,
+    discovery
+  );
+  const { setToken } = useGlobals();
 
   async function getToken(code: string) {
     console.log(`Getting access token with auth code: ${code.slice(0, 20)}...`);
@@ -47,18 +50,14 @@ export default function useSpotifyAuth() {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: `grant_type=authorization_code&code=${code}&redirect_uri=${encodeURIComponent(
-          uri
-        )}&client_id=c5ef878ae61046f0a713956f9dbd9377&client_secret=10e897807c2c44989f6794ca1af7df5b`,
+        body: requestBody,
       }
     );
 
     const tokenData = await tokenResponse.json();
-
-    console.log(tokenData);
     const accessToken = tokenData.access_token;
 
-    console.log(accessToken);
+    console.log(`Token: ${accessToken.slice(0, 20)}...`);
     setToken(accessToken);
   }
 
@@ -72,6 +71,5 @@ export default function useSpotifyAuth() {
   return {
     request,
     promptAsync,
-    token,
   };
 }

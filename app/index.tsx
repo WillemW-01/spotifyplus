@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { View, Button, Alert, Text } from "react-native";
+import React, { useEffect } from "react";
+import { View, Button } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -7,15 +7,13 @@ import useSpotifyAuth from "@/hooks/useSpotifyAuth";
 import { useGlobals } from "@/hooks/Globals";
 
 export default function App() {
-  const { request, promptAsync, token } = useSpotifyAuth();
-  const { setToken } = useGlobals();
+  const { request, promptAsync } = useSpotifyAuth();
+  const { token } = useGlobals();
 
   useEffect(() => {
     if (token) {
       console.log(`Token was updated: ${token.slice(0, 20)}...`);
-      setToken(token);
-      router.navigate("/home");
-      console.log("Running this");
+      router.navigate("/home"); // TODO: why doesn't this work?
     }
   }, [token]);
 

@@ -6,7 +6,7 @@ import { usePlayback } from "@/hooks/usePlayback";
 
 export default function Home() {
   const { isPlaying, curr, getPlayBackState, playTracks } = usePlayback();
-  const { token, authorized } = useGlobals();
+  const { authorized } = useGlobals();
 
   const playSong = () => {
     playTracks([
@@ -18,7 +18,7 @@ export default function Home() {
   return (
     <SafeAreaView>
       <View>
-        <Text>Home : {token}</Text>
+        <Text>Home</Text>
         <Button
           title="Start playback"
           onPress={playSong}
