@@ -1,0 +1,46 @@
+{
+  "collaborative": false,
+  "description": "",
+  "external_urls": {
+    "spotify": "https://open.spotify.com/playlist/0GNuJ4I6ubl37VKa4UFLDN"
+  },
+  "href": "https://api.spotify.com/v1/playlists/0GNuJ4I6ubl37VKa4UFLDN",
+  "id": "0GNuJ4I6ubl37VKa4UFLDN",
+  "images": [
+    {
+      "url": "https://mosaic.scdn.co/640/ab67616d00001e027f9717823f72229bc7fbef40ab67616d00001e02964b5b1f3eaef0143ef9d017ab67616d00001e02b247dbb45e5e23da2ea3da91ab67616d00001e02cefa9ff31f38a09caf2db670",
+      "height": 640,
+      "width": 640
+    },
+    {
+      "url": "https://mosaic.scdn.co/300/ab67616d00001e027f9717823f72229bc7fbef40ab67616d00001e02964b5b1f3eaef0143ef9d017ab67616d00001e02b247dbb45e5e23da2ea3da91ab67616d00001e02cefa9ff31f38a09caf2db670",
+      "height": 300,
+      "width": 300
+    },
+    {
+      "url": "https://mosaic.scdn.co/60/ab67616d00001e027f9717823f72229bc7fbef40ab67616d00001e02964b5b1f3eaef0143ef9d017ab67616d00001e02b247dbb45e5e23da2ea3da91ab67616d00001e02cefa9ff31f38a09caf2db670",
+      "height": 60,
+      "width": 60
+    }
+  ],
+  "name": "wshp ecc",
+  "owner": {
+    "external_urls": {
+      "spotify": "https://open.spotify.com/user/jenny_mie"
+    },
+    "href": "https://api.spotify.com/v1/users/jenny_mie",
+    "id": "jenny_mie",
+    "type": "user",
+    "uri": "spotify:user:jenny_mie",
+    "display_name": "jenny_mie"
+  },
+  "public": true,
+  "snapshot_id": "AAAAM51Uzm3paZVzoiz8SOBbfR1Uxcmu",
+  "tracks": {
+    "href": "https://api.spotify.com/v1/playlists/0GNuJ4I6ubl37VKa4UFLDN/tracks",
+    "total": 45
+  },
+  "type": "playlist",
+  "uri": "spotify:playlist:0GNuJ4I6ubl37VKa4UFLDN",
+  "primary_color": null
+}

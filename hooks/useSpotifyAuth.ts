@@ -20,6 +20,8 @@ const authConfig = {
     "user-read-playback-state",
     "playlist-modify-public",
     "user-read-recently-played",
+    "playlist-read-private",
+    "playlist-read-collaborative",
   ],
 };
 

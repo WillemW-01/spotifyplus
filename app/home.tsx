@@ -1,9 +1,18 @@
 import { useState } from "react";
 import { useGlobals } from "@/hooks/Globals";
-import { SafeAreaView, Text, View, Button, Alert } from "react-native";
+import {
+  SafeAreaView,
+  Text,
+  View,
+  Button,
+  Alert,
+  TouchableOpacity,
+} from "react-native";
 
 import { usePlayback } from "@/hooks/usePlayback";
 import { useTracks } from "@/hooks/useTracks";
+import { usePlayLists } from "@/hooks/usePlayList";
+import { SimplifiedPlayList } from "@/interfaces/playlists";
 
 export default function Home() {
   const {
@@ -18,8 +27,10 @@ export default function Home() {
   } = usePlayback();
   const { authorized } = useGlobals();
   const { getRecent, getTracksNames } = useTracks();
+  const { listPlayLists, getPlayListItemsIds } = usePlayLists();
 
   const [recent, setRecent] = useState<string[]>([]);
+  const [playLists, setPlayLists] = useState<SimplifiedPlayList[]>([]);
 
   const playSong = () => {
     playTracks([
@@ -34,6 +45,26 @@ export default function Home() {
     console.log(names);
     setRecent(names);
   };
+
+  const getPlayLists = async () => {
+    const res = await listPlayLists();
+    console.log("Got response: ", res);
+    setPlayLists(res);
+  };
+
+  interface PlayListProps {
+    playList: SimplifiedPlayList;
+  }
+
+  function PlayListButton({ playList }: PlayListProps) {
+    return (
+      <TouchableOpacity onPress={() => getPlayListItemsIds(playList.id)}>
+        <Text>
+          {playList.name} | {playList.id}
+        </Text>
+      </TouchableOpacity>
+    );
+  }
 
   return (
     <SafeAreaView>
@@ -63,6 +94,11 @@ export default function Home() {
           onPress={toggleShuffle}
           disabled={!authorized}
         />
+        <Button
+          title="List playlists"
+          onPress={getPlayLists}
+          disabled={!authorized}
+        />
 
         <Text>Should shuffle: {String(shouldShuffle)}</Text>
 
@@ -79,6 +115,11 @@ export default function Home() {
             <View key={idx}>
               <Text>{JSON.stringify(item)}</Text>
             </View>
+          ))}
+
+        {playLists &&
+          playLists.map((item, idx) => (
+            <PlayListButton playList={item} key={idx} />
           ))}
       </View>
     </SafeAreaView>
