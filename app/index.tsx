@@ -13,7 +13,7 @@ export default function App() {
   useEffect(() => {
     if (token) {
       console.log(`Token was updated: ${token.slice(0, 20)}...`);
-      router.navigate("/home"); // TODO: why doesn't this work?
+      router.navigate("/home"); // TODO: why doesn't this work when router.replace?
     }
   }, [token]);
 

@@ -22,7 +22,12 @@ export function useRequestBuilder() {
     return response;
   };
 
-  const buildPost = async () => {};
+  const buildPost = async (url: string) => {
+    return await fetch(url, {
+      method: "POST",
+      headers: headers.get,
+    });
+  };
 
   const buildPut = async (url: string, body: unknown): Promise<Response> => {
     const response = await fetch(url, {

@@ -23,9 +23,31 @@ export function usePlayback() {
     title: "",
     artist: "",
   });
+  const [phoneId, setPhoneId] = useState("");
 
   const { token, authorized } = useGlobals();
-  const { buildPut, buildGet } = useRequestBuilder();
+  const { buildPut, buildPost, buildGet } = useRequestBuilder();
+
+  const getDevices = async (): Promise<Device[] | undefined> => {
+    const response = await buildGet(
+      "https://api.spotify.com/v1/me/player/devices"
+    );
+
+    if (response.ok) {
+      console.log("sent okay!");
+      const data = await response.json();
+      return data.devices;
+    } else {
+      console.log("Not sent okay!");
+      console.log(response.status);
+    }
+  };
+
+  const getPhoneId = async (): Promise<string | null> => {
+    const devices = (await getDevices()) ?? [];
+    const smartPhones = devices.filter((d) => d.type === "Smartphone");
+    return smartPhones.length > 0 ? smartPhones[0].id : null;
+  };
 
   const getPlayBackState = async () => {
     if (!authorized) {
@@ -59,7 +81,7 @@ export function usePlayback() {
 
   const playTracks = async (uris: string[]) => {
     try {
-      const phone = await getPhoneId();
+      const phone = phoneId ?? (await getPhoneId());
       console.log(`Phone ID: `, phone);
 
       const url = `https://api.spotify.com/v1/me/player/play${
@@ -85,31 +107,20 @@ export function usePlayback() {
     return await playTracks([uri]);
   };
 
-  const getDevices = async (): Promise<Device[] | undefined> => {
-    const response = await buildGet(
-      "https://api.spotify.com/v1/me/player/devices"
-    );
-
-    if (response.ok) {
-      console.log("sent okay!");
-      const data = await response.json();
-      return data.devices;
-    } else {
-      console.log("Not sent okay!");
-      console.log(response.status);
+  const skipTrack = async () => {
+    const phone = phoneId ?? (await getPhoneId());
+    const url = `https://api.spotify.com/v1/me/player/next?device_id=${phone}`;
+    const response = await buildPost(url);
+    if (!response.ok) {
+      console.log("Didn't skip properly! ", response.status);
     }
-  };
-
-  const getPhoneId = async (): Promise<string | null> => {
-    const devices = (await getDevices()) ?? [];
-    const smartPhones = devices.filter((d) => d.type === "Smartphone");
-    return smartPhones.length > 0 ? smartPhones[0].id : null;
   };
 
   return {
     getPlayBackState,
     playTrack,
     playTracks,
+    skipTrack,
     isPlaying,
     curr,
   };
