@@ -6,7 +6,16 @@ import { usePlayback } from "@/hooks/usePlayback";
 import { useTracks } from "@/hooks/useTracks";
 
 export default function Home() {
-  const { isPlaying, curr, getPlayBackState, playTracks } = usePlayback();
+  const {
+    isPlaying,
+    curr,
+    getPlayBackState,
+    playTracks,
+    skip,
+    back,
+    toggleShuffle,
+    shouldShuffle,
+  } = usePlayback();
   const { authorized } = useGlobals();
   const { getRecent, getTracksNames } = useTracks();
 
@@ -46,6 +55,16 @@ export default function Home() {
           onPress={fetchRecent}
           disabled={!authorized}
         />
+
+        <Button title="Skip" onPress={skip} disabled={!authorized} />
+        <Button title="Back" onPress={back} disabled={!authorized} />
+        <Button
+          title="Toggle Shuffle"
+          onPress={toggleShuffle}
+          disabled={!authorized}
+        />
+
+        <Text>Should shuffle: {String(shouldShuffle)}</Text>
 
         <Text>Is playing? {isPlaying}</Text>
         {isPlaying && (

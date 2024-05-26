@@ -24,6 +24,7 @@ export function usePlayback() {
     artist: "",
   });
   const [phoneId, setPhoneId] = useState("");
+  const [shouldShuffle, setShouldShuffle] = useState(false);
 
   const { token, authorized } = useGlobals();
   const { buildPut, buildPost, buildGet } = useRequestBuilder();
@@ -44,9 +45,18 @@ export function usePlayback() {
   };
 
   const getPhoneId = async (): Promise<string | null> => {
+    if (phoneId) {
+      return phoneId;
+    }
+
     const devices = (await getDevices()) ?? [];
     const smartPhones = devices.filter((d) => d.type === "Smartphone");
-    return smartPhones.length > 0 ? smartPhones[0].id : null;
+    if (smartPhones.length > 0) {
+      setPhoneId(smartPhones[0].id);
+      return smartPhones[0].id;
+    } else {
+      return null;
+    }
   };
 
   const getPlayBackState = async () => {
@@ -107,20 +117,55 @@ export function usePlayback() {
     return await playTracks([uri]);
   };
 
-  const skipTrack = async () => {
-    const phone = phoneId ?? (await getPhoneId());
-    const url = `https://api.spotify.com/v1/me/player/next?device_id=${phone}`;
+  const skipOrBack = async (isSkip: boolean) => {
+    const phone = await getPhoneId();
+    const url = `https://api.spotify.com/v1/me/player/${
+      isSkip ? "next" : "previous"
+    }?device_id=${phone}`;
     const response = await buildPost(url);
     if (!response.ok) {
+      if (!isSkip && response.status == 403) {
+        Alert.alert("There aren't any songs further back");
+        return response.status;
+      }
+
       console.log("Didn't skip properly! ", response.status);
+      console.log(response);
     }
+    return response.status;
+  };
+
+  const skip = async () => {
+    return await skipOrBack(true);
+  };
+
+  const back = async () => {
+    return await skipOrBack(false);
+  };
+
+  const toggleShuffle = async () => {
+    console.log(`Toggling shuffle from ${shouldShuffle} to ${!shouldShuffle}`);
+    const url = `https://api.spotify.com/v1/me/player/shuffle?state=${!shouldShuffle}`;
+    console.log(url);
+    const response = await buildPut(url, {});
+
+    if (!response.ok) {
+      console.log("Didn't toggle shuffle okay!");
+      console.log(response.status);
+      return;
+    }
+
+    setShouldShuffle((prev) => !prev);
   };
 
   return {
     getPlayBackState,
     playTrack,
     playTracks,
-    skipTrack,
+    skip,
+    back,
+    toggleShuffle,
+    shouldShuffle,
     isPlaying,
     curr,
   };
