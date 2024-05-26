@@ -1,0 +1,93 @@
+// prettier-ignore
+{
+  "href": "https://api.spotify.com/v1/me/player/recently-played?limit=1",
+  "limit": 1,
+  "next": "https://api.spotify.com/v1/me/player/recently-played?before=1716758021743&limit=1",
+  "cursors": {
+    "after": "1716758021743",
+    "before": "1716758021743"
+  },
+  "items": [
+    {
+      "track": {
+        "album": {
+          "album_type": "single",
+          "total_tracks": 1,
+          "available_markets": ["AR", "AU", "AT", "BE", "BO", "BR", "BG", "CA", "CL", "CO", "CR", "CY", "CZ", "DK", "DO", "DE", "EC", "EE", "SV", "FI", "FR", "GR", "GT", "HN", "HK", "HU", "IS", "IE", "IT", "LV", "LT", "LU", "MY", "MT", "MX", "NL", "NZ", "NI", "NO", "PA", "PY", "PE", "PH", "PL", "PT", "SG", "SK", "ES", "SE", "CH", "TW", "TR", "UY", "US", "GB", "AD", "LI", "MC", "ID", "JP", "TH", "VN", "RO", "IL", "ZA", "SA", "AE", "BH", "QA", "OM", "KW", "EG", "MA", "DZ", "TN", "LB", "JO", "PS", "IN", "KZ", "MD", "UA", "AL", "BA", "HR", "ME", "MK", "SI", "KR", "BD", "PK", "LK", "GH", "KE", "NG", "TZ", "UG", "AG", "AM", "BS", "BB", "BZ", "BT", "BW", "BF", "CV", "CW", "DM", "FJ", "GM", "GE", "GD", "GW", "GY", "HT", "JM", "KI", "LS", "LR", "MW", "MV", "ML", "MH", "FM", "NA", "NR", "NE", "PW", "PG", "PR", "WS", "SM", "ST", "SN", "SC", "SL", "SB", "KN", "LC", "VC", "SR", "TL", "TO", "TT", "TV", "VU", "AZ", "BN", "KH", "CM", "TD", "KM", "GQ", "SZ", "GA", "GN", "KG", "LA", "MO", "MR", "MN", "NP", "RW", "TG", "UZ", "BJ", "MG", "MU", "MZ", "AO", "CI", "DJ", "ZM", "CG", "TJ", "VE", "ET"],
+          "external_urls": {
+            "spotify": "https://open.spotify.com/album/5rUNwSyeTMkkDoTfEvEJOf"
+          },
+          "href": "https://api.spotify.com/v1/albums/5rUNwSyeTMkkDoTfEvEJOf",
+          "id": "5rUNwSyeTMkkDoTfEvEJOf",
+          "images": [
+            {
+              "url": "https://i.scdn.co/image/ab67616d0000b273dbbe24e14f7fc71991abe00d",
+              "height": 640,
+              "width": 640
+            },
+            {
+              "url": "https://i.scdn.co/image/ab67616d00001e02dbbe24e14f7fc71991abe00d",
+              "height": 300,
+              "width": 300
+            },
+            {
+              "url": "https://i.scdn.co/image/ab67616d00004851dbbe24e14f7fc71991abe00d",
+              "height": 64,
+              "width": 64
+            }
+          ],
+          "name": "Growth",
+          "release_date": "2020-08-14",
+          "release_date_precision": "day",
+          "type": "album",
+          "uri": "spotify:album:5rUNwSyeTMkkDoTfEvEJOf",
+          "artists": [
+            {
+              "external_urls": {
+                "spotify": "https://open.spotify.com/artist/1UIyeerJfax0N2SdtnIGV7"
+              },
+              "href": "https://api.spotify.com/v1/artists/1UIyeerJfax0N2SdtnIGV7",
+              "id": "1UIyeerJfax0N2SdtnIGV7",
+              "name": "The Native Sibling",
+              "type": "artist",
+              "uri": "spotify:artist:1UIyeerJfax0N2SdtnIGV7"
+            }
+          ]
+        },
+        "artists": [
+          {
+            "external_urls": {
+              "spotify": "https://open.spotify.com/artist/1UIyeerJfax0N2SdtnIGV7"
+            },
+            "href": "https://api.spotify.com/v1/artists/1UIyeerJfax0N2SdtnIGV7",
+            "id": "1UIyeerJfax0N2SdtnIGV7",
+            "name": "The Native Sibling",
+            "type": "artist",
+            "uri": "spotify:artist:1UIyeerJfax0N2SdtnIGV7"
+          }
+        ],
+        "available_markets": ["AR", "AU", "AT", "BE", "BO", "BR", "BG", "CA", "CL", "CO", "CR", "CY", "CZ", "DK", "DO", "DE", "EC", "EE", "SV", "FI", "FR", "GR", "GT", "HN", "HK", "HU", "IS", "IE", "IT", "LV", "LT", "LU", "MY", "MT", "MX", "NL", "NZ", "NI", "NO", "PA", "PY", "PE", "PH", "PL", "PT", "SG", "SK", "ES", "SE", "CH", "TW", "TR", "UY", "US", "GB", "AD", "LI", "MC", "ID", "JP", "TH", "VN", "RO", "IL", "ZA", "SA", "AE", "BH", "QA", "OM", "KW", "EG", "MA", "DZ", "TN", "LB", "JO", "PS", "IN", "KZ", "MD", "UA", "AL", "BA", "HR", "ME", "MK", "SI", "KR", "BD", "PK", "LK", "GH", "KE", "NG", "TZ", "UG", "AG", "AM", "BS", "BB", "BZ", "BT", "BW", "BF", "CV", "CW", "DM", "FJ", "GM", "GE", "GD", "GW", "GY", "HT", "JM", "KI", "LS", "LR", "MW", "MV", "ML", "MH", "FM", "NA", "NR", "NE", "PW", "PG", "PR", "WS", "SM", "ST", "SN", "SC", "SL", "SB", "KN", "LC", "VC", "SR", "TL", "TO", "TT", "TV", "VU", "AZ", "BN", "KH", "CM", "TD", "KM", "GQ", "SZ", "GA", "GN", "KG", "LA", "MO", "MR", "MN", "NP", "RW", "TG", "UZ", "BJ", "MG", "MU", "MZ", "AO", "CI", "DJ", "ZM", "CG", "TJ", "VE", "ET"],
+        "disc_number": 1,
+        "duration_ms": 188840,
+        "explicit": false,
+        "external_ids": {
+          "isrc": "TCAFA2013600"
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/0TVFCP4LM2CTn4uOhdQP4k"
+        },
+        "href": "https://api.spotify.com/v1/tracks/0TVFCP4LM2CTn4uOhdQP4k",
+        "id": "0TVFCP4LM2CTn4uOhdQP4k",
+        "name": "Growth",
+        "popularity": 14,
+        "preview_url": "https://p.scdn.co/mp3-preview/9a8121cc9731a0f3d14e697a22f8885a037b3c60?cid=cfe923b2d660439caf2b557b21f31221",
+        "track_number": 1,
+        "type": "track",
+        "uri": "spotify:track:0TVFCP4LM2CTn4uOhdQP4k",
+        "is_local": false
+      },
+      "played_at": "2024-05-26T21:13:41.743Z",
+      "context": null
+    }
+  ]
+}
