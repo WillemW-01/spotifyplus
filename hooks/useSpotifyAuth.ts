@@ -68,11 +68,11 @@ export default function useSpotifyAuth() {
 
     const tokenData: AccessResponse = await tokenResponse.json();
     const accessToken = tokenData.access_token;
-    const refreshToken = tokenData.refresh_token;
+    const newRefreshToken = tokenData.refresh_token;
 
     console.log(`Access token: ${accessToken.slice(0, 20)}...`);
-    console.log(`Refresh token: ${refreshToken.slice(0, 20)}...`);
-    setToken(accessToken, refreshToken);
+    console.log(`Refresh token: ${newRefreshToken.slice(0, 20)}...`);
+    setToken(accessToken, newRefreshToken);
   };
 
   const refreshAccessToken = async (token: string) => {
@@ -111,20 +111,11 @@ export default function useSpotifyAuth() {
   };
 
   const handleRefreshCheck = async () => {
-    if (token) {
+    if (token && refreshToken) {
       const needNew = await shouldRefresh();
       console.log("Checking if token needs to be refreshed: ", needNew);
-      console.log(
-        `checking if refresh exists: ${
-          refreshToken && String(refreshToken.slice(0, 15))
-        }`
-      );
-      if (needNew && refreshToken) {
+      if (needNew) {
         refreshAccessToken(refreshToken);
-      } else if (needNew && !refreshToken) {
-        console.error(
-          "Can't get a new token because the refresh doesn't exist..."
-        );
       }
     }
   };
@@ -138,7 +129,7 @@ export default function useSpotifyAuth() {
 
   useEffect(() => {
     handleRefreshCheck();
-  }, [token]);
+  }, [token, refreshToken]);
 
   return {
     request,

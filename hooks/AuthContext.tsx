@@ -67,11 +67,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const shouldRefresh = async (): Promise<boolean> => {
     const now = new Date().getTime();
     const then = Number(await AsyncStorage.getItem(keys.TIMESTAMP));
-    console.log(now);
-    console.log(then);
-    console.log((now - then) / 1000);
+    const diff = now - then;
+    const threshold = 3600 / 60;
+    console.log(
+      `Now: ${now}, then: ${then}, diff: ${(diff / 60000).toFixed(
+        1
+      )} mins, threshold: ${threshold}`
+    );
 
-    return (now - then) / 1000 > 3600;
+    // returns if the dif is more than 60 minutes / 3600 seconds
+    return diff / 1000 > 3600;
   };
 
   useEffect(() => {
