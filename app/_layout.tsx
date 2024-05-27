@@ -24,9 +24,6 @@ export default function RootLayout() {
             <Stack.Screen name="+not-found" />
           </Stack>
         </SafeAreaView>
-        {/* <SafeAreaView
-          style={{ flex: 0, backgroundColor: Colors[theme]["brand"] }}
-        /> */}
       </GlobalProvider>
     </AuthProvider>
   );
