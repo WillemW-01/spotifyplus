@@ -6,6 +6,7 @@ import { useRequestBuilder } from "@/hooks/useRequestBuilder";
 
 import { PlaybackStateResponse } from "@/interfaces/player.me";
 import { useAuth } from "./AuthContext";
+import { PlayHistoryObject, RecentlyPlayed } from "@/interfaces/tracks";
 
 interface Device {
   id: string;
@@ -90,6 +91,21 @@ export function usePlayback() {
     }
   };
 
+  const getRecent = async (): Promise<PlayHistoryObject[]> => {
+    const url = `https://api.spotify.com/v1/me/player/recently-played?limit=30`;
+    const response = await buildGet(url);
+
+    if (!response.ok) {
+      console.log("Didn't fetch recent okay! ", response.status);
+    }
+
+    const data: RecentlyPlayed = await response.json();
+
+    console.log(data.items);
+
+    return data.items;
+  };
+
   const playTracks = async (uris: string[]) => {
     try {
       const phone = phoneId ?? (await getPhoneId());
@@ -115,7 +131,7 @@ export function usePlayback() {
   };
 
   const playTrack = async (uri: string) => {
-    return await playTracks([uri]);
+    return await playTracks([`spotify:track:${uri}`]);
   };
 
   const skipOrBack = async (isSkip: boolean) => {
@@ -161,6 +177,7 @@ export function usePlayback() {
 
   return {
     getPlayBackState,
+    getRecent,
     playTrack,
     playTracks,
     skip,
