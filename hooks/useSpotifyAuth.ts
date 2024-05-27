@@ -113,7 +113,7 @@ export default function useSpotifyAuth() {
   const handleRefreshCheck = async () => {
     if (token && refreshToken) {
       const needNew = await shouldRefresh();
-      console.log("Checking if token needs to be refreshed: ", needNew);
+      console.log("Need to refresh token: ", needNew);
       if (needNew) {
         refreshAccessToken(refreshToken);
       }

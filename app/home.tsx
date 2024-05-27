@@ -14,6 +14,7 @@ import { useTracks } from "@/hooks/useTracks";
 import { usePlayLists } from "@/hooks/usePlayList";
 import { SimplifiedPlayList } from "@/interfaces/playlists";
 import { useAuth } from "@/hooks/AuthContext";
+import { router } from "expo-router";
 
 export default function Home() {
   const {
@@ -69,10 +70,15 @@ export default function Home() {
     );
   }
 
+  const toTabs = () => {
+    router.navigate("/(tabs)/");
+  };
+
   return (
     <SafeAreaView>
       <View>
         <Text>Home</Text>
+        <Button title="To Tabs" onPress={toTabs} />
         <Button
           title="Start playback"
           onPress={playSong}

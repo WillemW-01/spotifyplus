@@ -17,6 +17,8 @@ const keys = {
   TIMESTAMP: "timeStamp",
 };
 
+const THRESHOLD = 3600 / 60; // threshold time of 60 minutes ~ 1 hour
+
 const AuthContext = createContext<AuthContextData | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -68,15 +70,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const now = new Date().getTime();
     const then = Number(await AsyncStorage.getItem(keys.TIMESTAMP));
     const diff = now - then;
-    const threshold = 3600 / 60;
+
+    console.log(`Now: ${now}, Then: ${then}`);
     console.log(
-      `Now: ${now}, then: ${then}, diff: ${(diff / 60000).toFixed(
-        1
-      )} mins, threshold: ${threshold}`
+      `\tDiff: ${(diff / 60000).toFixed(1)} mins, Threshold: ${THRESHOLD}mins`
     );
 
     // returns if the dif is more than 60 minutes / 3600 seconds
-    return diff / 1000 > 3600;
+    return diff / 60000 > THRESHOLD;
   };
 
   useEffect(() => {
