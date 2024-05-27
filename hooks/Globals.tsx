@@ -9,9 +9,9 @@ import React, {
 } from "react";
 
 interface GlobalsContextType {
-  token: string;
-  setToken: Dispatch<SetStateAction<string>>;
-  authorized: boolean;
+  // token: string;
+  // setToken: Dispatch<SetStateAction<string>>;
+  // authorized: boolean;
 }
 
 // Create the context with a default value
@@ -22,20 +22,7 @@ interface GlobalProviderProps {
 }
 
 export const GlobalProvider: FC<GlobalProviderProps> = ({ children }) => {
-  const [token, setToken] = useState("");
-  const authorized = token != "";
-
-  return (
-    <Globals.Provider
-      value={{
-        token,
-        setToken,
-        authorized,
-      }}
-    >
-      {children}
-    </Globals.Provider>
-  );
+  return <Globals.Provider value={{}}>{children}</Globals.Provider>;
 };
 
 export const useGlobals = () => {

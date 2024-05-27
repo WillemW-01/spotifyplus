@@ -1,12 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { makeRedirectUri, useAuthRequest } from "expo-auth-session";
 import { useGlobals } from "./Globals";
+import { useAuth } from "./AuthContext";
 
 const uri = makeRedirectUri();
 console.log(uri);
 
 const CLIENT_ID = process.env.EXPO_PUBLIC_CLIENT_ID ?? "";
 const CLIENT_SECRET = process.env.EXPO_PUBLIC_CLIENT_SECRET ?? "";
+
+interface AccessResponse {
+  access_token: string;
+  token_type: string;
+  scope: string;
+  expires_in: number;
+  refresh_token: string;
+}
 
 const authConfig = {
   clientId: CLIENT_ID,
@@ -35,9 +44,9 @@ export default function useSpotifyAuth() {
     authConfig,
     discovery
   );
-  const { setToken } = useGlobals();
+  const { token, refreshToken, setToken, shouldRefresh } = useAuth();
 
-  async function getToken(code: string) {
+  const getToken = async (code: string) => {
     console.log(`Getting access token with auth code: ${code.slice(0, 20)}...`);
 
     let requestBody = `grant_type=authorization_code`;
@@ -57,19 +66,75 @@ export default function useSpotifyAuth() {
       }
     );
 
-    const tokenData = await tokenResponse.json();
+    const tokenData: AccessResponse = await tokenResponse.json();
     const accessToken = tokenData.access_token;
+    const refreshToken = tokenData.refresh_token;
 
-    console.log(`Token: ${accessToken.slice(0, 20)}...`);
-    setToken(accessToken);
-  }
+    console.log(`Access token: ${accessToken.slice(0, 20)}...`);
+    console.log(`Refresh token: ${refreshToken.slice(0, 20)}...`);
+    setToken(accessToken, refreshToken);
+  };
 
-  React.useEffect(() => {
+  const refreshAccessToken = async (token: string) => {
+    try {
+      console.log(
+        `Getting new access token with refresh token: ${token.slice(0, 20)}...`
+      );
+
+      let requestBody = `grant_type=refresh_token`;
+      requestBody += `&refresh_token=${token}`;
+      requestBody += `&client_id=${CLIENT_ID}`;
+      requestBody += `&client_secret=${CLIENT_SECRET}`;
+      console.log(requestBody);
+
+      const tokenResponse = await fetch(
+        "https://accounts.spotify.com/api/token",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: requestBody,
+        }
+      );
+
+      const tokenData: AccessResponse = await tokenResponse.json();
+      console.log(tokenData);
+
+      const accessToken = tokenData.access_token;
+
+      console.log(`Access token: ${accessToken.slice(0, 20)}...`);
+      setToken(accessToken);
+    } catch (error) {
+      console.log("Error when getting new token: ", error);
+    }
+  };
+
+  useEffect(() => {
     if (response?.type === "success") {
       const { code } = response.params;
       getToken(code);
     }
   }, [response]);
+
+  useEffect(() => {
+    if (token) {
+      const needNew = shouldRefresh();
+      console.log("Checking if token needs to be refreshed: ", needNew);
+      console.log(
+        `checking if refresh exists: ${
+          refreshToken && String(refreshToken.slice(0, 15))
+        }`
+      );
+      if (needNew && refreshToken) {
+        refreshAccessToken(refreshToken);
+      } else if (needNew && !refreshToken) {
+        console.error(
+          "Can't get a new token because the refresh doesn't exist..."
+        );
+      }
+    }
+  }, [token]);
 
   return {
     request,

@@ -1,7 +1,8 @@
+import { useAuth } from "./AuthContext";
 import { useGlobals } from "./Globals";
 
 export function useRequestBuilder() {
-  const { token } = useGlobals();
+  const { token } = useAuth();
 
   const headers = {
     get: {

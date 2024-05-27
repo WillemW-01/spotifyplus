@@ -1,4 +1,5 @@
 import { Colors } from "@/constants/Colors";
+import { AuthProvider } from "@/hooks/AuthContext";
 import { GlobalProvider } from "@/hooks/Globals";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -12,13 +13,15 @@ export default function RootLayout() {
     <SafeAreaView
       style={{ flex: 1, backgroundColor: Colors[theme]["background"] }}
     >
-      <StatusBar style="auto" />
-      <GlobalProvider>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="index" />
-          <Stack.Screen name="home" />
-        </Stack>
-      </GlobalProvider>
+      <StatusBar style="dark" />
+      <AuthProvider>
+        <GlobalProvider>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="home" />
+          </Stack>
+        </GlobalProvider>
+      </AuthProvider>
     </SafeAreaView>
   );
 }

@@ -13,7 +13,7 @@ import { usePlayback } from "@/hooks/usePlayback";
 import { useTracks } from "@/hooks/useTracks";
 import { usePlayLists } from "@/hooks/usePlayList";
 import { SimplifiedPlayList } from "@/interfaces/playlists";
-import { router } from "expo-router";
+import { useAuth } from "@/hooks/AuthContext";
 
 export default function Home() {
   const {
@@ -26,12 +26,14 @@ export default function Home() {
     toggleShuffle,
     shouldShuffle,
   } = usePlayback();
-  const { authorized } = useGlobals();
+  const { token } = useAuth();
   const { getRecent, getTracksNames } = useTracks();
   const { listPlayLists, getPlayListItemsIds } = usePlayLists();
 
   const [recent, setRecent] = useState<string[]>([]);
   const [playLists, setPlayLists] = useState<SimplifiedPlayList[]>([]);
+
+  const authorized = Boolean(token);
 
   const playSong = () => {
     playTracks([

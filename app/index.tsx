@@ -13,19 +13,29 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 
 import useSpotifyAuth from "@/hooks/useSpotifyAuth";
-import { useGlobals } from "@/hooks/Globals";
 import { Colors } from "@/constants/Colors";
+import { useAuth } from "@/hooks/AuthContext";
 
 export default function App() {
   const { request, promptAsync } = useSpotifyAuth();
-  const { token } = useGlobals();
+  const { token } = useAuth();
 
   const theme = useColorScheme() ?? "light";
 
+  const handleLogin = () => {
+    if (!token) {
+      promptAsync();
+    } else {
+      router.navigate("/home");
+    }
+  };
+
   useEffect(() => {
     if (token) {
-      console.log(`Token was updated: ${token.slice(0, 20)}...`);
-      router.navigate("/home"); // TODO: why doesn't this work when router.replace?
+      console.log(`Token is loaded: ${token.slice(0, 20)}...`);
+      // router.navigate("/home"); // TODO: why doesn't this work when router.replace?
+    } else {
+      console.log("Token not ready. Need to request");
     }
   }, [token]);
 
@@ -43,9 +53,7 @@ export default function App() {
       <TouchableOpacity
         style={styles.button}
         disabled={!request}
-        onPress={() => {
-          promptAsync();
-        }}
+        onPress={handleLogin}
       >
         <Text style={{ color: "#0d1030", fontSize: 25 }}>Login</Text>
       </TouchableOpacity>

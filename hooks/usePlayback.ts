@@ -5,6 +5,7 @@ import { useGlobals } from "@/hooks/Globals";
 import { useRequestBuilder } from "@/hooks/useRequestBuilder";
 
 import { PlaybackStateResponse } from "@/interfaces/player.me";
+import { useAuth } from "./AuthContext";
 
 interface Device {
   id: string;
@@ -26,7 +27,7 @@ export function usePlayback() {
   const [phoneId, setPhoneId] = useState("");
   const [shouldShuffle, setShouldShuffle] = useState(false);
 
-  const { token, authorized } = useGlobals();
+  const { token, authorized } = useAuth();
   const { buildPut, buildPost, buildGet } = useRequestBuilder();
 
   const getDevices = async (): Promise<Device[] | undefined> => {
