@@ -8,7 +8,7 @@ interface AuthContextData {
   authorized: boolean;
   setToken: (newAccessToken: string, newRefreshToken?: string) => void;
   clearToken: () => void;
-  shouldRefresh: () => boolean;
+  shouldRefresh: () => Promise<boolean>;
 }
 
 const keys = {
@@ -64,9 +64,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const shouldRefresh = (): boolean => {
+  const shouldRefresh = async (): Promise<boolean> => {
     const now = new Date().getTime();
-    const then = Number(timeStamp);
+    const then = Number(await AsyncStorage.getItem(keys.TIMESTAMP));
+    console.log(now);
+    console.log(then);
+    console.log((now - then) / 1000);
 
     return (now - then) / 1000 > 3600;
   };

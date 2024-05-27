@@ -110,16 +110,9 @@ export default function useSpotifyAuth() {
     }
   };
 
-  useEffect(() => {
-    if (response?.type === "success") {
-      const { code } = response.params;
-      getToken(code);
-    }
-  }, [response]);
-
-  useEffect(() => {
+  const handleRefreshCheck = async () => {
     if (token) {
-      const needNew = shouldRefresh();
+      const needNew = await shouldRefresh();
       console.log("Checking if token needs to be refreshed: ", needNew);
       console.log(
         `checking if refresh exists: ${
@@ -134,6 +127,17 @@ export default function useSpotifyAuth() {
         );
       }
     }
+  };
+
+  useEffect(() => {
+    if (response?.type === "success") {
+      const { code } = response.params;
+      getToken(code);
+    }
+  }, [response]);
+
+  useEffect(() => {
+    handleRefreshCheck();
   }, [token]);
 
   return {
