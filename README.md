@@ -1,50 +1,55 @@
-# Welcome to your Expo app 👋
+# Spotify+
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Spotify+ is a mobile application that uses the Spotify API to do some cool
+things with a user's music library. See more information below.
 
-## Get started
+## Installation
 
-1. Install dependencies
+These instructions will get you a copy of the project up and running on your
+local machine for development and testing purposes.
 
-   ```bash
-   npm install
-   ```
+1. To run this project, you'll need to have `Node.js` and `npm` installed on
+   your machine. You can download Node.js and npm from the official website:
+   https://nodejs.org
 
-2. Start the app
-
-   ```bash
-    npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+2. Clone the repository
 
 ```bash
-npm run reset-project
+$ git clone git@github.com:WillemW-01/spotifyplus.git
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+3. Install dependencies
 
-## Learn more
+```bash
+$ cd spotify-plus
+$ npm install
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+4. Start the development server (use one of the two).
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+$ npx expo start
+$ npx expo start --tunnel
+```
 
-## Join the community
+5. If using Expo Go, open Expo Go and select the running dev server. You are
+   ready to use the application.
 
-Join our community of developers creating universal apps.
+## Background
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+The Spotify API can return interesting information about every song in their
+catalogue. Examples of this include how acoustic a song sounds, how much energy
+it has, the key it is predicted to be in, how much spoken word is in it, etc.
+
+The idea behind this app is to harness this information in some interesting
+ways:
+
+1. You will be able to play songs of a certain mood from _your own music_. There
+   are playlists available from Spotify for different moods, but it's not all
+   your music.
+1. You will be able to see your songs in a graph (network) view, where tracks
+   will be connected to each other based on certain metrics (e.g. artist, genre,
+   etc).
+
+These are the first two features I plan to implement in this project. It will
+not play Spotify directly, but rather control Spotify playback on the device.
