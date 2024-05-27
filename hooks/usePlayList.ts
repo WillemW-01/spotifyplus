@@ -30,7 +30,7 @@ export function usePlayLists() {
     return names;
   };
 
-  const getPlayListItemsIds = async (playListId: string) => {
+  const getPlayListItems = async (playListId: string) => {
     try {
       console.log("Fetching ids");
       const url = `https://api.spotify.com/v1/playlists/${playListId}/tracks`;
@@ -38,13 +38,11 @@ export function usePlayLists() {
       const response = await buildGet(url);
 
       if (!response.ok) {
-        return console.log("Didn't fetch playlist ids okay! ", response.status);
+        console.log("Didn't fetch playlist ids okay! ", response.status);
+        return null;
       }
 
       const data: PlayListItems = await response.json();
-      data.items.forEach((item) => {
-        console.log(item.track.name);
-      });
 
       return data.items;
     } catch (error) {
@@ -52,8 +50,21 @@ export function usePlayLists() {
     }
   };
 
+  const getPlayListItemsIds = async (
+    playListId: string
+  ): Promise<string[] | null> => {
+    const items = await getPlayListItems(playListId);
+    if (items) {
+      const filteredItems = items.map((item) => item.track.id);
+      return filteredItems;
+    } else {
+      return null;
+    }
+  };
+
   return {
     listPlayLists,
+    getPlayListItems,
     getPlayListItemsIds,
   };
 }

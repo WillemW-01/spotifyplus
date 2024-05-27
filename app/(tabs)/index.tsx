@@ -5,11 +5,13 @@ import { ScrollView, Text, useColorScheme } from "react-native";
 import Card from "@/components/Card";
 import BrandGradient from "@/components/BrandGradient";
 import { Colors } from "@/constants/Colors";
+import { useAuth } from "@/hooks/AuthContext";
 
 export default function Home() {
   const [recents, setRecents] = useState<PlayHistoryObject[]>([]);
 
   const theme = useColorScheme() ?? "light";
+  const { authorized } = useAuth();
   const { getRecent, playTrack } = usePlayback();
 
   const fetchRecents = async () => {
@@ -22,8 +24,10 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetchRecents();
-  }, []);
+    if (authorized) {
+      fetchRecents();
+    }
+  }, [authorized]);
 
   return (
     <BrandGradient style={{ flex: 1, alignItems: "center", gap: 30 }}>

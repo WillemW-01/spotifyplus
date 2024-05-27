@@ -28,11 +28,12 @@ export default function Home() {
     shouldShuffle,
   } = usePlayback();
   const { token } = useAuth();
-  const { getRecent, getTracksNames } = useTracks();
+  const { getRecent, getTracksNames, getTrackInfo } = useTracks();
   const { listPlayLists, getPlayListItemsIds } = usePlayLists();
 
   const [recent, setRecent] = useState<string[]>([]);
   const [playLists, setPlayLists] = useState<SimplifiedPlayList[]>([]);
+  const [ids, setIds] = useState<string[] | null>([]);
 
   const authorized = Boolean(token);
 
@@ -56,13 +57,25 @@ export default function Home() {
     setPlayLists(res);
   };
 
+  const getSongIds = async (playListId: string) => {
+    const ids = await getPlayListItemsIds(playListId);
+    console.log(ids);
+    setIds(ids);
+  };
+
+  const getInfoAllTracks = async (trackIds: string[]) => {
+    for (const track in trackIds) {
+      const info = await getTrackInfo(trackIds[track]);
+    }
+  };
+
   interface PlayListProps {
     playList: SimplifiedPlayList;
   }
 
   function PlayListButton({ playList }: PlayListProps) {
     return (
-      <TouchableOpacity onPress={() => getPlayListItemsIds(playList.id)}>
+      <TouchableOpacity onPress={() => getSongIds(playList.id)}>
         <Text>
           {playList.name} | {playList.id}
         </Text>
@@ -106,6 +119,13 @@ export default function Home() {
         <Button
           title="List playlists"
           onPress={getPlayLists}
+          disabled={!authorized}
+        />
+        <Button
+          title="List playlists"
+          onPress={() => {
+            ids && getInfoAllTracks(ids);
+          }}
           disabled={!authorized}
         />
 

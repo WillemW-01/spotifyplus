@@ -30,8 +30,22 @@ export function useTracks() {
     return names;
   };
 
+  const getTrackInfo = async (trackId: string) => {
+    const url = `https://api.spotify.com/v1/audio-features/${trackId}`;
+    const response = await buildGet(url);
+
+    if (!response.ok) {
+      console.log("Didn't fetch features okay! ", response.status);
+    }
+
+    const data = await response.json();
+    console.log(JSON.stringify(data));
+    return data;
+  };
+
   return {
     getRecent,
     getTracksNames,
+    getTrackInfo,
   };
 }
