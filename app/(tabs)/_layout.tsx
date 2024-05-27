@@ -40,7 +40,7 @@ export default function RootTabLayout() {
             title: "Explore",
             tabBarIcon: ({ focused, color, size }) => (
               <TabBarIcon
-                name={focused ? "globe" : "globe-outline"}
+                name={focused ? "compass" : "compass-outline"}
                 color={color}
                 size={30}
               />
@@ -67,6 +67,19 @@ export default function RootTabLayout() {
             tabBarIcon: ({ focused, color, size }) => (
               <TabBarIcon
                 name={focused ? "color-palette" : "color-palette-outline"}
+                color={color}
+                size={30}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="settings"
+          options={{
+            title: "Settings",
+            tabBarIcon: ({ focused, color, size }) => (
+              <TabBarIcon
+                name={focused ? "cog" : "cog-outline"}
                 color={color}
                 size={30}
               />
