@@ -15,6 +15,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import useSpotifyAuth from "@/hooks/useSpotifyAuth";
 import { Colors } from "@/constants/Colors";
 import { useAuth } from "@/hooks/AuthContext";
+import BrandGradient from "@/components/BrandGradient";
 
 export default function App() {
   const { request, promptAsync } = useSpotifyAuth();
@@ -33,20 +34,14 @@ export default function App() {
   useEffect(() => {
     if (token) {
       console.log(`Token is loaded: ${token.slice(0, 20)}...`);
-      // router.navigate("/home"); // TODO: why doesn't this work when router.replace?
+      router.navigate("/(tabs)"); // TODO: why doesn't this work when router.replace?
     } else {
       console.log("Token not ready. Need to request");
     }
   }, [token]);
 
   return (
-    <LinearGradient
-      colors={["#0d1030", "#2c1e48", "#e9495f"]}
-      style={{
-        flex: 1,
-        alignItems: "center",
-      }}
-    >
+    <BrandGradient style={{ alignItems: "center" }}>
       <Text style={{ fontSize: 35, color: "white", top: "25%" }}>
         Welcome to Spotify+
       </Text>
@@ -57,7 +52,7 @@ export default function App() {
       >
         <Text style={{ color: "#0d1030", fontSize: 25 }}>Login</Text>
       </TouchableOpacity>
-    </LinearGradient>
+    </BrandGradient>
   );
 }
 

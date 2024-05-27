@@ -47,6 +47,32 @@ export default function RootTabLayout() {
             ),
           }}
         />
+        <Tabs.Screen
+          name="graph"
+          options={{
+            title: "Graph",
+            tabBarIcon: ({ focused, color, size }) => (
+              <TabBarIcon
+                name={focused ? "git-network" : "git-network-outline"}
+                color={color}
+                size={30}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="mood"
+          options={{
+            title: "Mood",
+            tabBarIcon: ({ focused, color, size }) => (
+              <TabBarIcon
+                name={focused ? "color-palette" : "color-palette-outline"}
+                color={color}
+                size={30}
+              />
+            ),
+          }}
+        />
       </Tabs>
     </BrandGradient>
   );
