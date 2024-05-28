@@ -10,7 +10,7 @@ import { useAuth } from "@/hooks/AuthContext";
 export default function Home() {
   const [recents, setRecents] = useState<PlayHistoryObject[]>([]);
 
-  const theme = useColorScheme() ?? "light";
+  const theme = useColorScheme() ?? "dark";
   const { authorized } = useAuth();
   const { getRecent, playTrack } = usePlayback();
 
