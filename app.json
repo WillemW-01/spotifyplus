@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/images/logo-light.png",
     "scheme": "spotifyplus",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "dark",
     "splash": {
       "image": "./assets/images/splash-colored.png",
       "resizeMode": "cover",

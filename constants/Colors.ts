@@ -8,7 +8,7 @@ export const Colors = {
     lightDark: "#F4A1AC",
     lightMedium: "#F2DBDE",
     light: "#F0E5E7",
-    text: "#F0E5E7",
+    text: "#0d1030",
   },
   dark: {
     background: "#0d1030",
@@ -19,6 +19,6 @@ export const Colors = {
     lightDark: "#F4A1AC",
     lightMedium: "#F2DBDE",
     light: "#F0E5E7",
-    text: "#0d1030",
+    text: "#F0E5E7",
   },
 };
