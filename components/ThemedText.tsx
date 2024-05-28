@@ -26,8 +26,8 @@ export default function ThemedText({
 
   const styles: Styles = {
     default: { fontSize: 15 },
-    title: { fontSize: 35 },
-    subtitle: { fontSize: 25 },
+    title: { fontSize: 35, textAlign: "center" },
+    subtitle: { fontSize: 30, textAlign: "center" },
     body: { fontSize: 15 },
     bodySmaller: { fontSize: 12 },
     cardTitle: { fontSize: 15 },
