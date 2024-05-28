@@ -4,13 +4,14 @@ import { Colors } from "@/constants/Colors";
 import { Tabs } from "expo-router";
 import React from "react";
 import { useColorScheme } from "react-native";
-import { StatusBar } from "expo-status-bar";
+import { StatusBar } from "react-native";
 
 export default function RootTabLayout() {
   const theme = useColorScheme() ?? "dark";
 
   return (
     <BrandGradient>
+      <StatusBar barStyle="light-content" />
       <Tabs
         screenOptions={{
           headerShown: false,
