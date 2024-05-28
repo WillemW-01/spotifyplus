@@ -17,7 +17,7 @@ const keys = {
   TIMESTAMP: "timeStamp",
 };
 
-const THRESHOLD = 3600 / 60; // threshold time of 60 minutes ~ 1 hour
+const THRESHOLD = 600 / 60; // threshold time of 60 minutes ~ 1 hour
 
 const AuthContext = createContext<AuthContextData | undefined>(undefined);
 
@@ -46,7 +46,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const clearToken = async () => {
     await AsyncStorage.removeItem(keys.ACCESS_TOKEN);
+    await AsyncStorage.removeItem(keys.REFRESH_TOKEN);
+    await AsyncStorage.removeItem(keys.TIMESTAMP);
     setTokenState(null);
+    setRefreshToken(null);
+    setTimeStamp(null);
   };
 
   const loadToken = async () => {
