@@ -17,19 +17,3 @@ export interface TopItemsResponse {
   total: number;
   items: TopArtist[] | Track[];
 }
-
-export interface PackedArtist {
-  title: string;
-  subtitle: string;
-  id: string;
-  popularity: number;
-  imageUri: string;
-}
-
-export interface PackedTrack {
-  name: string;
-  artist: string;
-  id: string;
-  popularity: number;
-  imageUri: string;
-}

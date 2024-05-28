@@ -1,9 +1,4 @@
-import {
-  PackedArtist,
-  TopArtist,
-  TopItemsResponse,
-  TopTrack,
-} from "@/interfaces/topItems";
+import { TopArtist, TopItemsResponse, TopTrack } from "@/interfaces/topItems";
 import { useRequestBuilder } from "./useRequestBuilder";
 
 export function useUser() {
@@ -49,7 +44,7 @@ export function useUser() {
     timeRange?: "short_term" | "medium_term" | "long_term",
     limit?: number,
     offset?: number
-  ): Promise<PackedArtist[] | null> => {
+  ): Promise<TopArtist[] | null> => {
     const artists = (await getTopItems({
       itemType: "artists",
       timeRange,
@@ -57,17 +52,7 @@ export function useUser() {
       offset,
     })) as TopArtist[];
 
-    if (!artists) return null;
-
-    return artists.map((artist) => {
-      return {
-        title: artist.name,
-        subtitle: String(artist.popularity),
-        id: artist.id,
-        popularity: artist.popularity,
-        imageUri: artist.images[0].url,
-      };
-    });
+    return artists;
   };
 
   const getTopTracks = async (
@@ -82,17 +67,7 @@ export function useUser() {
       offset,
     })) as TopTrack[];
 
-    if (!tracks) return null;
-
-    return tracks.map((track) => {
-      return {
-        title: track.name,
-        subtitle: track.artists[0].name,
-        id: track.id,
-        popularity: track.popularity,
-        imageUri: track.album.images[0].url,
-      };
-    });
+    return tracks;
   };
 
   return {

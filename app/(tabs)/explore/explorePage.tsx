@@ -17,7 +17,8 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/AuthContext";
 import { usePlayLists } from "@/hooks/usePlayList";
 import { useUser } from "@/hooks/useUser";
-import { PackedArtist, PackedTrack } from "@/interfaces/topItems";
+import { Artist } from "@/interfaces/tracks";
+import { TopArtist, TopTrack } from "@/interfaces/topItems";
 
 const CARD_WIDTH = 90;
 
@@ -92,26 +93,32 @@ interface PackedPlayList {
   imageUri: string;
   width: number;
 }
+export interface PackedArtist {
+  title: string;
+  subtitle: string;
+  id: string;
+  popularity: number;
+  imageUri: string;
+}
+
+export interface PackedTrack {
+  title: string;
+  subtitle: string;
+  id: string;
+  popularity: number;
+  imageUri: string;
+  width: number;
+}
 
 export default function Explore() {
   const [refreshing, setRefreshing] = useState(false);
   const [playLists, setPlaylists] = useState<PackedPlayList[]>([]);
   const [artists, setArtists] = useState<PackedArtist[]>([]);
+  const [tracks, setTracks] = useState<PackedTrack[]>([]);
 
   const { authorized } = useAuth();
   const { listPlayLists } = usePlayLists();
   const { getTopArtists, getTopTracks } = useUser();
-
-  const fetchArtists = async () => {
-    const items = await getTopArtists();
-    if (items) {
-      setArtists(
-        items.map((item) => {
-          return { ...item, width: CARD_WIDTH };
-        })
-      );
-    }
-  };
 
   const packPlayListItem = (playListItem: SimplifiedPlayList) => {
     return {
@@ -122,15 +129,58 @@ export default function Explore() {
     };
   };
 
-  const packPlayLists = (playLists: SimplifiedPlayList[]) => {
-    return playLists.map(packPlayListItem);
+  const packPlayLists = (playLists: SimplifiedPlayList[]) =>
+    playLists.map(packPlayListItem);
+
+  const packArtistItem = (artistItem: TopArtist) => {
+    return {
+      title: artistItem.name,
+      subtitle: String(artistItem.popularity),
+      id: artistItem.id,
+      popularity: artistItem.popularity,
+      imageUri: artistItem.images[0].url,
+      width: CARD_WIDTH,
+    };
   };
+
+  const packArtists = (artists: TopArtist[]) => artists.map(packArtistItem);
+
+  const packTrackItem = (trackItem: TopTrack) => {
+    return {
+      title: trackItem.name,
+      subtitle: trackItem.artists[0].name,
+      id: trackItem.id,
+      popularity: trackItem.popularity,
+      imageUri: trackItem.album.images[0].url,
+      width: CARD_WIDTH,
+    };
+  };
+
+  const packTracks = (tracks: TopTrack[]) => tracks.map(packTrackItem);
 
   const fetchPlayLists = async () => {
     const items = await listPlayLists(10);
-    console.log("Playlists came back: ", items[0]);
+    console.log("Playlists came back");
     const formattedPlayLists = packPlayLists(items);
     setPlaylists(formattedPlayLists);
+  };
+
+  const fetchArtists = async () => {
+    const items = await getTopArtists();
+    if (items) {
+      console.log("Artsts came back");
+      const formattedArtists = packArtists(items);
+      setArtists(formattedArtists);
+    }
+  };
+
+  const fetchTracks = async () => {
+    const items = await getTopTracks();
+    if (items) {
+      console.log("Tracks came back");
+      const formattedTracks = packTracks(items);
+      setTracks(formattedTracks);
+    }
   };
 
   const refresh = async () => {
@@ -138,6 +188,7 @@ export default function Explore() {
       setRefreshing(true);
       await fetchPlayLists();
       await fetchArtists();
+      await fetchTracks();
       setRefreshing(false);
     }
   };
@@ -175,10 +226,7 @@ export default function Explore() {
             name="genres"
             cards={[cardProps, cardProps, cardProps, cardProps, cardProps]}
           />
-          <Section
-            name="tracks"
-            cards={[cardProps, cardProps, cardProps, cardProps, cardProps]}
-          />
+          <Section name="tracks" cards={tracks} />
         </ScrollView>
       )}
     </GradientView>
