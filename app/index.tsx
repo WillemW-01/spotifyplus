@@ -21,7 +21,7 @@ export default function App() {
   const { request, promptAsync } = useSpotifyAuth();
   const { token } = useAuth();
 
-  const theme = useColorScheme() ?? "light";
+  const theme = useColorScheme() ?? "dark";
 
   const handleLogin = () => {
     if (!token) {
