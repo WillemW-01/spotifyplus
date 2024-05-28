@@ -17,7 +17,6 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/AuthContext";
 import { usePlayLists } from "@/hooks/usePlayList";
 import { useUser } from "@/hooks/useUser";
-import { Artist } from "@/interfaces/tracks";
 import { TopArtist, TopTrack } from "@/interfaces/topItems";
 
 const CARD_WIDTH = 90;
@@ -34,7 +33,16 @@ interface SectionButtonProps {
   onPress?: () => void;
 }
 
+const capitalize = (str: string) => {
+  return str.slice(0, 1).toUpperCase() + str.slice(1);
+};
+
 function SectionButton({ iconColor, title, onPress }: SectionButtonProps) {
+  const needToChange = ["artists", "genres", "tracks"].includes(title);
+  const newTitle = needToChange
+    ? `Top ${capitalize(title)}`
+    : capitalize(title);
+
   return (
     <TouchableOpacity
       style={{
@@ -46,10 +54,7 @@ function SectionButton({ iconColor, title, onPress }: SectionButtonProps) {
       activeOpacity={0.5}
       onPress={onPress}
     >
-      <ThemedText
-        text={title.slice(0, 1).toUpperCase() + title.slice(1)}
-        type="subtitle"
-      />
+      <ThemedText text={newTitle} type="subtitle" />
       <Ionicons name="caret-forward-outline" size={25} color={iconColor} />
     </TouchableOpacity>
   );
@@ -99,6 +104,7 @@ export interface PackedArtist {
   id: string;
   popularity: number;
   imageUri: string;
+  genres: string[];
 }
 
 export interface PackedTrack {
@@ -110,11 +116,17 @@ export interface PackedTrack {
   width: number;
 }
 
+export interface Genre {
+  title: string;
+  subtitle: string;
+}
+
 export default function Explore() {
   const [refreshing, setRefreshing] = useState(false);
   const [playLists, setPlaylists] = useState<PackedPlayList[]>([]);
   const [artists, setArtists] = useState<PackedArtist[]>([]);
   const [tracks, setTracks] = useState<PackedTrack[]>([]);
+  const [genres, setGenres] = useState<Genre[]>([]);
 
   const { authorized } = useAuth();
   const { listPlayLists } = usePlayLists();
@@ -138,6 +150,7 @@ export default function Explore() {
       subtitle: String(artistItem.popularity),
       id: artistItem.id,
       popularity: artistItem.popularity,
+      genres: artistItem.genres,
       imageUri: artistItem.images[0].url,
       width: CARD_WIDTH,
     };
@@ -183,6 +196,28 @@ export default function Explore() {
     }
   };
 
+  const calculateGenres = () => {
+    if (artists.length > 0) {
+      const counts: { [key: string]: number } = {};
+      artists.forEach((artist) => {
+        artist.genres.forEach((genre) => {
+          counts[genre] = (counts[genre] || 0) + 1;
+        });
+      });
+
+      const genreCountsArray = Object.entries(counts);
+      genreCountsArray.sort(([, valueA], [, valueB]) => valueB - valueA);
+      const sortedGenres = genreCountsArray.map((item) => {
+        return {
+          title: item[0],
+          subtitle: String(item[1]),
+          width: CARD_WIDTH,
+        };
+      }) as Genre[];
+      setGenres(sortedGenres);
+    }
+  };
+
   const refresh = async () => {
     if (authorized) {
       setRefreshing(true);
@@ -198,6 +233,12 @@ export default function Explore() {
       refresh();
     }
   }, []);
+
+  useEffect(() => {
+    if (artists.length > 0) {
+      calculateGenres();
+    }
+  }, [artists]);
 
   return (
     <GradientView style={{ alignItems: "center", gap: 30 }}>
@@ -222,10 +263,7 @@ export default function Explore() {
         >
           <Section name="playlists" cards={playLists} />
           <Section name="artists" cards={artists} />
-          <Section
-            name="genres"
-            cards={[cardProps, cardProps, cardProps, cardProps, cardProps]}
-          />
+          <Section name="genres" cards={genres} />
           <Section name="tracks" cards={tracks} />
         </ScrollView>
       )}

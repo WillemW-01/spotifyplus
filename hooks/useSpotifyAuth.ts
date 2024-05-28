@@ -142,5 +142,6 @@ export default function useSpotifyAuth() {
   return {
     request,
     promptAsync,
+    refreshAccessToken,
   };
 }

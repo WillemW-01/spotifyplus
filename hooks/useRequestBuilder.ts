@@ -1,5 +1,6 @@
 import { useAuth } from "./AuthContext";
 import { useGlobals } from "./Globals";
+import useSpotifyAuth from "./useSpotifyAuth";
 
 interface Error {
   error: {
@@ -9,20 +10,26 @@ interface Error {
 }
 
 export function useRequestBuilder() {
-  const { token } = useAuth();
+  const { token, shouldRefresh } = useAuth();
+  const { refreshAccessToken } = useSpotifyAuth();
 
   const catchError = async (response: Response, url: string) => {
     if (!response.ok) {
       console.log("Response came back with error code ", response.status);
-      catchScopeError(response, url);
+      const error: Error = await response.json();
+      console.log(error);
+      catchScopeError(response, error, url);
     }
   };
 
-  const catchScopeError = async (response: Response, url: string) => {
+  const catchScopeError = async (
+    response: Response,
+    error: Error,
+    url: string
+  ) => {
     if (response.status === 403) {
       console.log(response);
-      const error: Error = await response.json();
-      console.log(error);
+
       if (error.error.message.includes("scope")) {
         console.error("Not authorized scope for url: ", url);
       }
@@ -30,44 +37,78 @@ export function useRequestBuilder() {
   };
 
   const headers = {
-    get: {
+    GET: {
       Authorization: `Bearer ${token}`,
     },
-    put: {
+    PUT: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    POST: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
   };
 
-  const buildGet = async (url: string): Promise<Response> => {
-    const response = await fetch(url, {
-      method: "GET",
-      headers: headers.get,
-    });
+  const checkForRefresh = async () => {
+    if (token && (await shouldRefresh())) {
+      await refreshAccessToken(token);
+    }
+  };
 
+  const build = async (
+    method: "GET" | "POST" | "PUT",
+    url: string,
+    body?: unknown
+  ) => {
+    await checkForRefresh();
+    const response = await fetch(url, {
+      method: method,
+      headers: headers[method],
+      body: body ? JSON.stringify(body) : undefined,
+    });
     await catchError(response, url);
     return response;
+  };
+
+  const buildGet = async (url: string): Promise<Response> => {
+    return await build("GET", url);
+    // await checkForRefresh();
+
+    // const response = await fetch(url, {
+    //   method: "GET",
+    //   headers: headers.get,
+    // });
+
+    // await catchError(response, url);
+    // return response;
   };
 
   const buildPost = async (url: string) => {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: headers.get,
-    });
+    return await build("POST", url);
+    // await checkForRefresh();
 
-    await catchError(response, url);
-    return response;
+    // const response = await fetch(url, {
+    //   method: "POST",
+    //   headers: headers.get,
+    // });
+
+    // await catchError(response, url);
+    // return response;
   };
 
   const buildPut = async (url: string, body: unknown): Promise<Response> => {
-    const response = await fetch(url, {
-      method: "PUT",
-      headers: headers.put,
-      body: JSON.stringify(body),
-    });
+    return await build("PUT", url, body);
+    // await checkForRefresh();
 
-    await catchError(response, url);
-    return response;
+    // const response = await fetch(url, {
+    //   method: "PUT",
+    //   headers: headers.put,
+    //   body: JSON.stringify(body),
+    // });
+
+    // await catchError(response, url);
+    // return response;
   };
 
   return {

@@ -9,6 +9,7 @@ import {
   useColorScheme,
 } from "react-native";
 import ThemedText from "./ThemedText";
+import RandomGradient from "./RandomGradient";
 
 export interface CardProps {
   title?: string;
@@ -47,7 +48,7 @@ export default function Card({
           }}
         />
       ) : (
-        <View
+        <RandomGradient
           style={{
             backgroundColor: Colors[theme]["grey"],
             width: calcWidth,

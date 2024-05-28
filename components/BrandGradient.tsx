@@ -8,7 +8,7 @@ const mid = Colors["light"]["backgroundAlt"];
 const brand = Colors["light"]["brand"];
 
 interface BrandGradientProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   style?: StyleProp<ViewStyle>;
 }
 
