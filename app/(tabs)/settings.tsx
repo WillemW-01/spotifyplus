@@ -1,10 +1,10 @@
-import { Text, View } from "react-native";
 import BrandGradient from "@/components/BrandGradient";
+import ThemedText from "@/components/ThemedText";
 
 export default function Settings() {
   return (
     <BrandGradient>
-      <Text>Settings</Text>
+      <ThemedText type="title" text="Settings" />
     </BrandGradient>
   );
 }

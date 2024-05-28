@@ -1,9 +1,10 @@
-import { Text, View } from "react-native";
+import BrandGradient from "@/components/BrandGradient";
+import ThemedText from "@/components/ThemedText";
 
 export default function Graph() {
   return (
-    <View style={{ backgroundColor: "white" }}>
-      <Text>Graph</Text>
-    </View>
+    <BrandGradient>
+      <ThemedText type="title" text="Graph" />
+    </BrandGradient>
   );
 }
