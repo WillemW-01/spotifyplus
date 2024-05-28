@@ -8,6 +8,7 @@ import {
   StyleSheet,
   useColorScheme,
 } from "react-native";
+import ThemedText from "./ThemedText";
 
 export interface CardProps {
   title?: string;
@@ -15,7 +16,6 @@ export interface CardProps {
   imageUri?: string;
   onPress?: () => void;
   width?: number;
-  height?: number;
 }
 
 export default function Card({
@@ -23,14 +23,17 @@ export default function Card({
   subtitle = "Subtitle",
   imageUri,
   onPress,
-  width = 100,
-  height = 100,
+  width,
 }: CardProps) {
   const theme = useColorScheme() ?? "dark";
+  const calcWidth = width ? width : 50;
 
   return (
     <TouchableOpacity
-      style={[styles.container, { maxWidth: width, height: height + 40 }]}
+      style={[
+        styles.container,
+        { maxWidth: calcWidth, height: calcWidth + 40 },
+      ]}
       onPress={onPress}
       activeOpacity={0.5}
     >
@@ -38,8 +41,8 @@ export default function Card({
         <Image
           source={{ uri: imageUri }}
           style={{
-            width: width,
-            height: height,
+            width: calcWidth,
+            height: calcWidth,
             borderRadius: 12,
           }}
         />
@@ -47,26 +50,15 @@ export default function Card({
         <View
           style={{
             backgroundColor: Colors[theme]["grey"],
-            width: width,
-            height: height,
+            width: calcWidth,
+            height: calcWidth,
             borderRadius: 12,
           }}
         />
       )}
       <View style={{ flexDirection: "column", alignItems: "center" }}>
-        <Text
-          style={{
-            fontSize: 15,
-            height: 18,
-            flexWrap: "nowrap",
-            color: "white",
-          }}
-        >
-          {title}
-        </Text>
-        <Text style={{ fontSize: 11, height: 14, color: "white" }}>
-          {subtitle}
-        </Text>
+        <ThemedText type="cardTitle" text={title} />
+        <ThemedText type="cardSubtitle" text={subtitle} />
       </View>
     </TouchableOpacity>
   );
@@ -77,7 +69,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 7,
-    shadowColor: "#fff",
+    shadowColor: "#222",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 5,

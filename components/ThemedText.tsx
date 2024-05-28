@@ -1,6 +1,5 @@
 import { useColorScheme, Text, StyleProp, TextStyle } from "react-native";
 import { Colors } from "@/constants/Colors";
-
 interface Styles {
   default: StyleProp<TextStyle>; // not going to type all these unnecessarily
   title: StyleProp<TextStyle>;
@@ -26,24 +25,41 @@ export default function ThemedText({
 
   const styles: Styles = {
     default: { fontSize: 15 },
-    title: { fontSize: 35, textAlign: "center" },
-    subtitle: { fontSize: 30, textAlign: "center" },
+    title: { fontSize: 30, textAlign: "center" },
+    subtitle: { fontSize: 25, textAlign: "center" },
     body: { fontSize: 15 },
     bodySmaller: { fontSize: 12 },
-    cardTitle: { fontSize: 15 },
-    cardSubtitle: { fontSize: 15 },
+    cardTitle: { fontSize: 15, maxHeight: 18 },
+    cardSubtitle: { fontSize: 13, maxHeight: 16 },
   };
 
   function getColor(type: keyof Styles): string {
+    console.log("Getting color of type: ", type);
     switch (type) {
       case "cardSubtitle":
+        console.log("Returning grey");
         return Colors[theme]["grey"];
       default:
         return Colors[theme]["text"];
     }
   }
 
+  function getFont(type: keyof Styles): string {
+    switch (type) {
+      default:
+        return "Inter";
+    }
+  }
+
   return (
-    <Text style={[styles[type], { color: getColor(type) }, style]}>{text}</Text>
+    <Text
+      style={[
+        styles[type],
+        { color: getColor(type), fontFamily: getFont(type) },
+        style,
+      ]}
+    >
+      {text}
+    </Text>
   );
 }

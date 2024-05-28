@@ -1,5 +1,10 @@
 import ThemedText from "@/components/ThemedText";
-import { View, TouchableOpacity, useColorScheme } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  useColorScheme,
+  ScrollView,
+} from "react-native";
 import GradientView from "@/components/GradientView";
 import { CardProps } from "@/components/Card";
 import { Ionicons } from "@expo/vector-icons";
@@ -77,13 +82,16 @@ export default function Explore() {
   return (
     <GradientView style={{ alignItems: "center", gap: 30 }}>
       <ThemedText text="Explore Your Library" type="title" />
-      <View
+      <ScrollView
         style={{
+          flex: 1,
+        }}
+        contentContainerStyle={{
+          paddingBottom: 10,
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "flex-start",
-          flex: 1,
-          gap: 25,
+          gap: 15,
         }}
       >
         <Section
@@ -98,7 +106,11 @@ export default function Explore() {
           name="genres"
           cards={[cardProps, cardProps, cardProps, cardProps, cardProps]}
         />
-      </View>
+        <Section
+          name="genres"
+          cards={[cardProps, cardProps, cardProps, cardProps, cardProps]}
+        />
+      </ScrollView>
     </GradientView>
   );
 }
