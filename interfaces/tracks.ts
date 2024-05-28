@@ -52,6 +52,7 @@ export interface Artist {
   name: string;
   type: string;
   uri: string;
+  images: Image[];
 }
 
 export interface Track {
