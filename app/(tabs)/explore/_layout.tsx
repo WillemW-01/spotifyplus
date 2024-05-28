@@ -10,6 +10,7 @@ export default function ExploreStackLayout() {
       <Stack.Screen name="playlists" />
       <Stack.Screen name="artists" />
       <Stack.Screen name="genres" />
+      <Stack.Screen name="tracks" />
     </Stack>
   );
 }

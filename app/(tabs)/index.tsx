@@ -11,7 +11,7 @@ export default function Home() {
   const [recents, setRecents] = useState<PlayHistoryObject[]>([]);
 
   const theme = useColorScheme() ?? "dark";
-  const { authorized } = useAuth();
+  const { token, authorized } = useAuth();
   const { getRecent, playTrack } = usePlayback();
 
   const fetchRecents = async () => {
@@ -24,7 +24,7 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (authorized) {
+    if (authorized && token) {
       fetchRecents();
     }
   }, [authorized]);
@@ -59,7 +59,6 @@ export default function Home() {
                   startPlaying(item.track.id);
                 }}
                 width={90}
-                height={90}
               />
             );
           })}

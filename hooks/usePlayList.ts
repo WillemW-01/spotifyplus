@@ -8,8 +8,9 @@ import {
 export function usePlayLists() {
   const { buildGet } = useRequestBuilder();
 
-  const listPlayLists = async () => {
-    const url = "https://api.spotify.com/v1/me/playlists";
+  const listPlayLists = async (limit?: number) => {
+    let url = `https://api.spotify.com/v1/me/playlists`;
+    url += limit ? `?limit=${limit}` : "";
     const response = await buildGet(url);
 
     if (!response.ok) {
@@ -19,7 +20,7 @@ export function usePlayLists() {
     const data: PlayListResponse = await response.json();
     const playlists = data.items;
 
-    playlists.forEach((playList) => console.log(playList));
+    // playlists.forEach((playList) => console.log(playList));
 
     return playlists;
   };
