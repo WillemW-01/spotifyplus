@@ -23,14 +23,15 @@ const authConfig = {
   redirectUri: uri,
   usePKCE: false,
   scopes: [
-    "user-read-private",
-    "user-read-email",
-    "user-modify-playback-state",
-    "user-read-playback-state",
     "playlist-modify-public",
-    "user-read-recently-played",
-    "playlist-read-private",
     "playlist-read-collaborative",
+    "playlist-read-private",
+    "user-modify-playback-state",
+    "user-read-email",
+    "user-read-playback-state",
+    "user-read-private",
+    "user-read-recently-played",
+    "user-top-read",
   ],
 };
 
@@ -67,6 +68,8 @@ export default function useSpotifyAuth() {
     );
 
     const tokenData: AccessResponse = await tokenResponse.json();
+    console.log(tokenData);
+
     const accessToken = tokenData.access_token;
     const newRefreshToken = tokenData.refresh_token;
 
@@ -97,6 +100,11 @@ export default function useSpotifyAuth() {
           body: requestBody,
         }
       );
+
+      if (!tokenResponse.ok) {
+        console.log("Couldn't get new access token! ", tokenResponse.status);
+        return;
+      }
 
       const tokenData: AccessResponse = await tokenResponse.json();
       console.log(tokenData);
