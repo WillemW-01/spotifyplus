@@ -28,7 +28,12 @@ export default function App() {
       promptAsync();
     } else {
       router.navigate("/home");
+      // promptAsync();
     }
+  };
+
+  const goToDebug = () => {
+    router.navigate("/home");
   };
 
   useEffect(() => {
@@ -52,6 +57,10 @@ export default function App() {
       >
         <Text style={{ color: "#0d1030", fontSize: 25 }}>Login</Text>
       </TouchableOpacity>
+      <TouchableOpacity
+        style={{ position: "absolute", bottom: 0, height: 100, width: "100%" }}
+        onPress={goToDebug}
+      />
     </BrandGradient>
   );
 }

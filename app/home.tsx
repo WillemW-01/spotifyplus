@@ -27,7 +27,7 @@ export default function Home() {
     toggleShuffle,
     shouldShuffle,
   } = usePlayback();
-  const { token } = useAuth();
+  const { token, clearToken } = useAuth();
   const { getRecent, getTracksNames, getTrackInfo } = useTracks();
   const { listPlayLists, getPlayListItemsIds } = usePlayLists();
 
@@ -67,6 +67,11 @@ export default function Home() {
     for (const track in trackIds) {
       const info = await getTrackInfo(trackIds[track]);
     }
+  };
+
+  const clearTokens = async () => {
+    console.log("Clearing tokens!");
+    clearToken();
   };
 
   interface PlayListProps {
@@ -122,12 +127,13 @@ export default function Home() {
           disabled={!authorized}
         />
         <Button
-          title="List playlists"
+          title="Get song features"
           onPress={() => {
             ids && getInfoAllTracks(ids);
           }}
           disabled={!authorized}
         />
+        <Button title="Clear tokens" onPress={clearTokens} />
 
         <Text>Should shuffle: {String(shouldShuffle)}</Text>
 
