@@ -34,10 +34,8 @@ export default function ThemedText({
   };
 
   function getColor(type: keyof Styles): string {
-    console.log("Getting color of type: ", type);
     switch (type) {
       case "cardSubtitle":
-        console.log("Returning grey");
         return Colors[theme]["grey"];
       default:
         return Colors[theme]["text"];

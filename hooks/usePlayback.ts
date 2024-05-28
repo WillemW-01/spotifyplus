@@ -100,9 +100,6 @@ export function usePlayback() {
     }
 
     const data: RecentlyPlayed = await response.json();
-
-    console.log(data.items);
-
     return data.items;
   };
 
