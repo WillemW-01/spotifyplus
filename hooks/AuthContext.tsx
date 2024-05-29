@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  useState,
-  useEffect,
-  useContext,
-  useRef,
-} from "react";
+import React, { createContext, useState, useEffect, useContext, useRef } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import {
@@ -13,6 +7,7 @@ import {
   makeRedirectUri,
   useAuthRequest,
 } from "expo-auth-session";
+import { useLogger } from "./useLogger";
 
 // Define the shape of our context
 interface AuthContextData {
@@ -36,7 +31,7 @@ const keys = {
 const THRESHOLD = 600 / 60; // threshold time of 60 minutes ~ 1 hour
 
 const uri = makeRedirectUri();
-console.log(uri);
+console.log("[AuthContext] Redirect URI: ", uri);
 
 const CLIENT_ID = process.env.EXPO_PUBLIC_CLIENT_ID ?? "";
 const CLIENT_SECRET = process.env.EXPO_PUBLIC_CLIENT_SECRET ?? "";
@@ -81,33 +76,29 @@ const tokenRequestOptions = {
 
 const AuthContext = createContext<AuthContextData | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [token, setTokenState] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [timeStamp, setTimeStamp] = useState<string | null>(null);
   const [authorized, setAuthorized] = useState(false);
   const isRefreshing = useRef(false);
 
-  const [request, response, promptAsync] = useAuthRequest(
-    authConfig,
-    discovery
-  );
+  const [request, response, promptAsync] = useAuthRequest(authConfig, discovery);
+  const { addLog } = useLogger();
 
   const setToken = async (newAccessToken: string, newRefreshToken?: string) => {
-    console.log("Setting new tokens!");
+    addLog("Setting new tokens", "setToken");
     const currentTime = String(new Date().getTime());
     await AsyncStorage.setItem(keys.TIMESTAMP, currentTime);
     setTimeStamp(currentTime);
 
     await AsyncStorage.setItem(keys.ACCESS_TOKEN, newAccessToken);
-    console.log("Set new access token: ", newAccessToken.slice(0, 20));
+    addLog(`Set new access token: ${newAccessToken.slice(0, 20)}`, "setToken", 1);
     setTokenState(newAccessToken);
 
     if (newRefreshToken) {
       await AsyncStorage.setItem(keys.REFRESH_TOKEN, newRefreshToken);
-      console.log("Set new refresh token: ", newAccessToken.slice(0, 20));
+      addLog(`Set new refresh token: ${newAccessToken.slice(0, 20)}`, "setToken", 1);
       setRefreshToken(newRefreshToken);
     }
   };
@@ -127,19 +118,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const storedTimestamp = await AsyncStorage.getItem(keys.TIMESTAMP);
 
     if (storedToken && storedRefreshToken && storedTimestamp) {
-      console.log("Successfully loaded tokens and timestamp:");
-      console.log(`\tToken    : ${storedToken.slice(0, 15)}`);
-      console.log(`\tRefresh  : ${storedRefreshToken.slice(0, 15)}`);
-      console.log(`\tTimestamp: ${storedTimestamp}`);
+      addLog("Successfully loaded tokens and timestamp", "loadToken");
+      addLog(`Token    : ${storedToken.slice(0, 15)}`, "loadToken", 1);
+      addLog(`Refresh  : ${storedRefreshToken.slice(0, 15)}`, "loadToken", 1);
+      addLog(`Timestamp: ${storedTimestamp}`, "loadToken", 1);
 
       if (await shouldRefresh(Number(storedTimestamp))) {
-        console.log("Token needs to be refreshed. Only setting refresh token");
+        addLog("Token needs to be refreshed. Only setting refresh token", "loadToken", 1);
         // setRefreshToken(storedRefreshToken);
         await refreshAccessToken(storedRefreshToken);
         setAuthorized(true);
       } else {
-        console.log(
-          "Token doesn't need to be refreshed Setting tokens to stored state"
+        addLog(
+          "Token doesn't need to be refreshed Setting tokens to stored state",
+          "loadToken",
+          1
         );
         setTokenState(storedToken);
         setRefreshToken(storedRefreshToken);
@@ -147,7 +140,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setAuthorized(true);
       }
     } else {
-      console.log("Nothing to load from async storage");
+      addLog("Nothing to load from async storage", "loadToken");
     }
   };
 
@@ -158,10 +151,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       : Number(await AsyncStorage.getItem(keys.TIMESTAMP));
     const diff = now - then;
 
-    console.log(
+    addLog(
       `Checking token validity: diff: ${(diff / 60000).toFixed(
         1
-      )} mins, threshold: ${THRESHOLD}mins`
+      )} mins, threshold: ${THRESHOLD}mins`,
+      "shouldRefresh"
     );
 
     // returns if the dif is more than 60 minutes / 3600 seconds
@@ -175,7 +169,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     });
 
     if (!response.ok) {
-      console.log("Auth request was not successful.");
+      addLog("Auth request was not successful.", "getAuthRequest", 0, "warning");
       const error = await response.json();
       console.log(error);
     }
@@ -184,7 +178,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const getToken = async (code: string) => {
-    console.log(`Getting access token with auth code: ${code.slice(0, 20)}...`);
+    addLog(`Getting access token with auth code: ${code.slice(0, 20)}...`, "getToken");
 
     let requestBody = `grant_type=authorization_code`;
     requestBody += `&code=${code}`;
@@ -198,8 +192,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const accessToken = tokenData.access_token;
     const newRefreshToken = tokenData.refresh_token;
 
-    console.log(`Access token: ${accessToken.slice(0, 20)}...`);
-    console.log(`Refresh token: ${newRefreshToken.slice(0, 20)}...`);
+    addLog(`Access token: ${accessToken.slice(0, 20)}...`, "getToken", 1);
+    addLog(`Refresh token: ${newRefreshToken.slice(0, 20)}...`, "getToken", 1);
     setToken(accessToken, newRefreshToken);
   };
 
@@ -212,8 +206,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       isRefreshing.current = true;
 
-      console.log(
-        `Getting new access token with refresh token: ${token.slice(0, 20)}...`
+      addLog(
+        `Refreshing access token with refresh token: ${token.slice(0, 20)}...`,
+        "refreshAccessToken"
       );
 
       let requestBody = `grant_type=refresh_token`;
@@ -227,10 +222,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       const accessToken = tokenData.access_token;
 
-      console.log(`Access token: ${accessToken.slice(0, 20)}...`);
+      addLog(`Access token: ${accessToken.slice(0, 20)}...`, "refreshAccessToken", 1);
       await setToken(accessToken);
     } catch (error: unknown) {
-      console.log("Error when getting new token: ", error);
+      addLog("Error when getting new token: ", "refreshAccessToken", 0, "warning");
     }
   };
 

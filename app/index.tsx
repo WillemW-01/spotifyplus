@@ -4,15 +4,18 @@ import { router } from "expo-router";
 
 import { useAuth } from "@/hooks/AuthContext";
 import BrandGradient from "@/components/BrandGradient";
+import { useLogger } from "@/hooks/useLogger";
 
 export default function App() {
   const { request, promptAsync, authorized } = useAuth();
+  const { addLog } = useLogger();
 
   const handleLogin = () => {
+    addLog("Login button pressed", "index");
     if (!authorized) {
       promptAsync();
     } else {
-      router.navigate("/home");
+      router.navigate("/(tabs)/");
     }
   };
 
@@ -22,10 +25,10 @@ export default function App() {
 
   useEffect(() => {
     if (authorized) {
-      console.log("Navigating to home");
-      router.navigate("/(tabs)/"); // TODO: why doesn't this work when router.replace?
+      addLog("Navigating to home", "index");
+      router.navigate("/(tabs)/");
     } else {
-      console.log("Token not ready. Need to request");
+      addLog("Token not ready. Need to request", "index");
     }
   }, [authorized]);
 
@@ -34,11 +37,7 @@ export default function App() {
       <Text style={{ fontSize: 35, color: "white", top: "25%" }}>
         Welcome to Spotify+
       </Text>
-      <TouchableOpacity
-        style={styles.button}
-        disabled={!request}
-        onPress={handleLogin}
-      >
+      <TouchableOpacity style={styles.button} disabled={!request} onPress={handleLogin}>
         <Text style={{ color: "#0d1030", fontSize: 25 }}>Login</Text>
       </TouchableOpacity>
       <TouchableOpacity
