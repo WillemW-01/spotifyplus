@@ -20,11 +20,7 @@ import { useUser } from "@/hooks/useUser";
 import { TopArtist, TopTrack } from "@/interfaces/topItems";
 import { usePlayback } from "@/hooks/usePlayback";
 
-import {
-  AllGenres,
-  GenreObject,
-  allGenres as soundsOfSpotify,
-} from "@/constants/soundsOfSpotify";
+import { allGenres as soundsOfSpotify } from "@/constants/soundsOfSpotify";
 
 const CARD_WIDTH = 90;
 interface SectionButtonProps {

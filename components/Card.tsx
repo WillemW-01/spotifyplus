@@ -1,13 +1,6 @@
 import { Colors } from "@/constants/Colors";
-import { Ionicons } from "@expo/vector-icons";
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-  useColorScheme,
-} from "react-native";
+import { View, TouchableOpacity, Image, StyleSheet, useColorScheme } from "react-native";
+import React from "react";
 import ThemedText from "./ThemedText";
 import RandomGradient from "./RandomGradient";
 
@@ -31,10 +24,7 @@ export default function Card({
 
   return (
     <TouchableOpacity
-      style={[
-        styles.container,
-        { maxWidth: calcWidth, height: calcWidth + 40 },
-      ]}
+      style={[styles.container, { maxWidth: calcWidth, height: calcWidth + 40 }]}
       onPress={onPress}
       activeOpacity={0.5}
     >
