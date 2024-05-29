@@ -1,5 +1,7 @@
 import { useColorScheme, Text, StyleProp, TextStyle } from "react-native";
 import { Colors } from "@/constants/Colors";
+import React from "react";
+
 interface Styles {
   default: StyleProp<TextStyle>; // not going to type all these unnecessarily
   title: StyleProp<TextStyle>;
@@ -16,11 +18,7 @@ interface ThemedTextProps {
   style?: StyleProp<TextStyle>;
 }
 
-export default function ThemedText({
-  text,
-  type = "default",
-  style,
-}: ThemedTextProps) {
+export default function ThemedText({ text, type = "default", style }: ThemedTextProps) {
   const theme = useColorScheme() ?? "dark";
 
   const styles: Styles = {
@@ -51,11 +49,7 @@ export default function ThemedText({
 
   return (
     <Text
-      style={[
-        styles[type],
-        { color: getColor(type), fontFamily: getFont(type) },
-        style,
-      ]}
+      style={[styles[type], { color: getColor(type), fontFamily: getFont(type) }, style]}
     >
       {text}
     </Text>
