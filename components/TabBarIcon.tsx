@@ -3,6 +3,8 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { type IconProps } from "@expo/vector-icons/build/createIconSet";
 import React, { type ComponentProps } from "react";
 
+export type IoniconType = ComponentProps<typeof Ionicons>["name"];
+
 export function TabBarIcon({
   style,
   ...rest

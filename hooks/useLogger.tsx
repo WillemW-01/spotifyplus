@@ -18,7 +18,7 @@ export function useLogger() {
   ) => {
     try {
       const timeDiff = String(new Date().getTime() - startTime);
-      let printText = SHOW_TIME ? `[${timeDiff.padStart(9, " ")}ms] ` : " ";
+      let printText = SHOW_TIME ? `[${timeDiff.padStart(9, " ")}ms] ` : "";
       printText += `[${label.slice(0, 15).padEnd(15, " ")}]`;
       printText += "  ".repeat(level + 1);
       printText += msg;

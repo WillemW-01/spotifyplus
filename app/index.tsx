@@ -20,7 +20,7 @@ export default function App() {
   };
 
   const goToDebug = () => {
-    router.navigate("/home");
+    router.navigate("/debug");
   };
 
   useEffect(() => {

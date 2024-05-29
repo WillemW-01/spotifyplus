@@ -1,10 +1,33 @@
 import BrandGradient from "@/components/BrandGradient";
-import { TabBarIcon } from "@/components/TabBarIcon";
+import { TabBarIcon, IoniconType } from "@/components/TabBarIcon";
 import { Colors } from "@/constants/Colors";
 import { Tabs } from "expo-router";
 import React from "react";
 import { useColorScheme } from "react-native";
 import { StatusBar } from "react-native";
+
+const createTabScreen = (
+  name: string,
+  title: string,
+  iconNames: [IoniconType, IoniconType]
+) => {
+  return (
+    <Tabs.Screen
+      key={name}
+      name={name}
+      options={{
+        title: title,
+        tabBarIcon: ({ focused, color }) => (
+          <TabBarIcon
+            name={focused ? iconNames[0] : iconNames[1]}
+            color={color}
+            size={30}
+          />
+        ),
+      }}
+    />
+  );
+};
 
 export default function RootTabLayout() {
   const theme = useColorScheme() ?? "dark";
@@ -23,71 +46,11 @@ export default function RootTabLayout() {
           },
         }}
       >
-        <Tabs.Screen
-          name="index"
-          options={{
-            title: "Home",
-            tabBarIcon: ({ focused, color }) => (
-              <TabBarIcon
-                name={focused ? "home" : "home-outline"}
-                color={color}
-                size={30}
-              />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="explore"
-          options={{
-            title: "Explore",
-            tabBarIcon: ({ focused, color }) => (
-              <TabBarIcon
-                name={focused ? "compass" : "compass-outline"}
-                color={color}
-                size={30}
-              />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="graph"
-          options={{
-            title: "Graph",
-            tabBarIcon: ({ focused, color }) => (
-              <TabBarIcon
-                name={focused ? "git-network" : "git-network-outline"}
-                color={color}
-                size={30}
-              />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="mood"
-          options={{
-            title: "Mood",
-            tabBarIcon: ({ focused, color }) => (
-              <TabBarIcon
-                name={focused ? "color-palette" : "color-palette-outline"}
-                color={color}
-                size={30}
-              />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="settings"
-          options={{
-            title: "Settings",
-            tabBarIcon: ({ focused, color }) => (
-              <TabBarIcon
-                name={focused ? "cog" : "cog-outline"}
-                color={color}
-                size={30}
-              />
-            ),
-          }}
-        />
+        {createTabScreen("index", "Home", ["home", "home-outline"])}
+        {createTabScreen("explore", "Explore", ["compass", "compass-outline"])}
+        {createTabScreen("graph", "Graph", ["git-network", "git-network-outline"])}
+        {createTabScreen("mood", "Mood", ["color-palette", "color-palette-outline"])}
+        {createTabScreen("settings", "Settings", ["cog", "cog-outline"])}
       </Tabs>
     </BrandGradient>
   );
