@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Alert } from "react-native";
 
-import { useGlobals } from "@/hooks/Globals";
 import { useRequestBuilder } from "@/hooks/useRequestBuilder";
 
 import { PlaybackStateResponse } from "@/interfaces/player";
@@ -32,9 +31,7 @@ export function usePlayback() {
   const { buildPut, buildPost, buildGet } = useRequestBuilder();
 
   const getDevices = async (): Promise<Device[] | undefined> => {
-    const response = await buildGet(
-      "https://api.spotify.com/v1/me/player/devices"
-    );
+    const response = await buildGet("https://api.spotify.com/v1/me/player/devices");
 
     if (response.ok) {
       console.log("sent okay!");

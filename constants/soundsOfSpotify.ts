@@ -1,4 +1,14 @@
-{
+export interface GenreObject {
+  href: string;
+  total: number;
+}
+
+export interface AllGenres {
+  [key: string]: GenreObject;
+}
+
+
+export const allGenres: AllGenres = {
       "everything" : {"href": "https://api.spotify.com/v1/playlists/69fEt9DN5r4JQATi52sRtq/tracks","total": 6425 },
       "2-step" : {"href": "https://api.spotify.com/v1/playlists/3YOSwaEFJsA3fbYH8lArkR/tracks","total": 101 },
       "21st century classical" : {"href": "https://api.spotify.com/v1/playlists/2HUpNZLoYHe0Sa9dglqQOg/tracks","total": 449 },

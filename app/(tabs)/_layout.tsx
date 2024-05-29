@@ -27,7 +27,7 @@ export default function RootTabLayout() {
           name="index"
           options={{
             title: "Home",
-            tabBarIcon: ({ focused, color, size }) => (
+            tabBarIcon: ({ focused, color }) => (
               <TabBarIcon
                 name={focused ? "home" : "home-outline"}
                 color={color}
@@ -40,7 +40,7 @@ export default function RootTabLayout() {
           name="explore"
           options={{
             title: "Explore",
-            tabBarIcon: ({ focused, color, size }) => (
+            tabBarIcon: ({ focused, color }) => (
               <TabBarIcon
                 name={focused ? "compass" : "compass-outline"}
                 color={color}
@@ -53,7 +53,7 @@ export default function RootTabLayout() {
           name="graph"
           options={{
             title: "Graph",
-            tabBarIcon: ({ focused, color, size }) => (
+            tabBarIcon: ({ focused, color }) => (
               <TabBarIcon
                 name={focused ? "git-network" : "git-network-outline"}
                 color={color}
@@ -66,7 +66,7 @@ export default function RootTabLayout() {
           name="mood"
           options={{
             title: "Mood",
-            tabBarIcon: ({ focused, color, size }) => (
+            tabBarIcon: ({ focused, color }) => (
               <TabBarIcon
                 name={focused ? "color-palette" : "color-palette-outline"}
                 color={color}
@@ -79,7 +79,7 @@ export default function RootTabLayout() {
           name="settings"
           options={{
             title: "Settings",
-            tabBarIcon: ({ focused, color, size }) => (
+            tabBarIcon: ({ focused, color }) => (
               <TabBarIcon
                 name={focused ? "cog" : "cog-outline"}
                 color={color}

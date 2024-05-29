@@ -1,5 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleProp, ViewStyle } from "react-native";
 
 interface Props {
@@ -63,7 +63,5 @@ export default function RandomGradient({ style }: Props) {
     setEnd(tempEnd);
   }, []);
 
-  return (
-    <LinearGradient colors={colors} start={start} end={end} style={style} />
-  );
+  return <LinearGradient colors={colors} start={start} end={end} style={style} />;
 }

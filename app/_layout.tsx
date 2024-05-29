@@ -1,15 +1,17 @@
 import { Colors } from "@/constants/Colors";
 import { AuthProvider } from "@/hooks/AuthContext";
 import { GlobalProvider } from "@/hooks/Globals";
+import { useLogger } from "@/hooks/useLogger";
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { StatusBar } from "react-native";
 import { useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function RootLayout() {
   const theme = useColorScheme() ?? "dark";
+  const { addLog } = useLogger();
 
   const [loaded] = useFonts({
     Inter: require("../assets/fonts/Inter-Regular.ttf"),
@@ -18,6 +20,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (loaded) {
+      addLog("Loaded fonts", "RootLayout");
       SplashScreen.hideAsync();
     }
   }, [loaded]);

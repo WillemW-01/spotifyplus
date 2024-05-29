@@ -8,7 +8,7 @@ import { SimplifiedPlayList } from "@/interfaces/playlists";
 import { useAuth } from "@/hooks/AuthContext";
 import { router } from "expo-router";
 
-export default function Home() {
+export default function Debug() {
   const {
     isPlaying,
     curr,

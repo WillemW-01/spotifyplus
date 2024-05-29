@@ -1,6 +1,6 @@
 import { usePlayback } from "@/hooks/usePlayback";
 import { PlayHistoryObject } from "@/interfaces/tracks";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollView, Text, useColorScheme } from "react-native";
 import Card from "@/components/Card";
 import BrandGradient from "@/components/BrandGradient";
@@ -10,24 +10,20 @@ import { useAuth } from "@/hooks/AuthContext";
 export default function Home() {
   const [recents, setRecents] = useState<PlayHistoryObject[]>([]);
 
-  const theme = useColorScheme() ?? "dark";
   const { authorized } = useAuth();
   const { getRecent, playTrack } = usePlayback();
+  const theme = useColorScheme() ?? "dark";
 
   const fetchRecents = async () => {
     const response = await getRecent();
     setRecents(response);
   };
 
-  const startPlaying = async (trackUri: string) => {
-    await playTrack(trackUri);
-  };
-
   useEffect(() => {
     if (authorized) {
       fetchRecents();
     }
-  }, [authorized]);
+  }, []);
 
   return (
     <BrandGradient style={{ flex: 1, alignItems: "center", gap: 30 }}>
@@ -56,7 +52,7 @@ export default function Home() {
                 subtitle={item.track.artists[0].name}
                 imageUri={item.track.album.images[0].url}
                 onPress={() => {
-                  startPlaying(item.track.id);
+                  playTrack(item.track.id);
                 }}
                 width={90}
               />

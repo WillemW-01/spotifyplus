@@ -13,24 +13,20 @@ import { Colors } from "@/constants/Colors";
 import CardScroll from "@/components/CardScroll";
 import { router } from "expo-router";
 import { SimplifiedPlayList } from "@/interfaces/playlists";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/AuthContext";
 import { usePlayLists } from "@/hooks/usePlayList";
 import { useUser } from "@/hooks/useUser";
 import { TopArtist, TopTrack } from "@/interfaces/topItems";
-import { useRecommendations } from "@/hooks/useRecommendations";
 import { usePlayback } from "@/hooks/usePlayback";
 
-const soundsOfSpotify = require("@/constants/playlists.json");
+import {
+  AllGenres,
+  GenreObject,
+  allGenres as soundsOfSpotify,
+} from "@/constants/soundsOfSpotify";
 
 const CARD_WIDTH = 90;
-
-const cardProps = {
-  height: CARD_WIDTH,
-  width: CARD_WIDTH,
-  // imageUri: "https://i.scdn.co/image/ab67616d0000b273c990dac05b4de8c7af5ff17d",
-};
-
 interface SectionButtonProps {
   iconColor: string;
   title: string;
@@ -43,9 +39,7 @@ const capitalize = (str: string) => {
 
 function SectionButton({ iconColor, title, onPress }: SectionButtonProps) {
   const needToChange = ["artists", "genres", "tracks"].includes(title);
-  const newTitle = needToChange
-    ? `Top ${capitalize(title)}`
-    : capitalize(title);
+  const newTitle = needToChange ? `Top ${capitalize(title)}` : capitalize(title);
 
   return (
     <TouchableOpacity
@@ -79,11 +73,7 @@ function Section({ name, cards }: SectionProps) {
 
   return (
     <View style={{ flexShrink: 0, flexGrow: 0, gap: 20 }}>
-      <SectionButton
-        iconColor={iconColor}
-        title={name}
-        onPress={() => to(name)}
-      />
+      <SectionButton iconColor={iconColor} title={name} onPress={() => to(name)} />
       <CardScroll cards={cards} />
     </View>
   );
@@ -133,18 +123,20 @@ export default function Explore() {
   const [genres, setGenres] = useState<Genre[]>([]);
 
   const { authorized } = useAuth();
-  const { listPlayLists, getPlayListItemsIds } = usePlayLists();
+  const { listPlayLists } = usePlayLists();
   const { getTopArtists, getTopTracks } = useUser();
   const { playPlayList, playArtist, playTrack } = usePlayback();
 
   const fetchRecommendationsGenre = async (genre: string) => {
     try {
-      const url = soundsOfSpotify[genre].href;
-      console.log(soundsOfSpotify[genre]);
-      const regex = /(?<=playlists\/)[^\/]+/;
-      const match = url.match(regex)[0];
-      console.log(match);
-      match && playPlayList(match);
+      const obj = soundsOfSpotify[genre];
+      if (obj && obj.href) {
+        console.log(obj);
+        const regex = /(?<=playlists\/)[^/]+/;
+        const match = obj.href.match(regex)[0];
+        console.log(match);
+        match && playPlayList(match);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -228,16 +220,14 @@ export default function Explore() {
 
       const genreCountsArray = Object.entries(counts);
       genreCountsArray.sort(([, valueA], [, valueB]) => valueB - valueA);
-      const sortedGenres = genreCountsArray.map(
-        (item: [key: string, value: number]) => {
-          return {
-            title: item[0],
-            subtitle: `${soundsOfSpotify[item[0]].total} | ${item[1]}`,
-            width: CARD_WIDTH,
-            onPress: () => fetchRecommendationsGenre(item[0]),
-          };
-        }
-      ) as Genre[];
+      const sortedGenres = genreCountsArray.map((item: [key: string, value: number]) => {
+        return {
+          title: item[0],
+          subtitle: `${soundsOfSpotify[item[0]].total} | ${item[1]}`,
+          width: CARD_WIDTH,
+          onPress: () => fetchRecommendationsGenre(item[0]),
+        };
+      }) as Genre[];
       setGenres(sortedGenres);
     }
   };
@@ -281,9 +271,7 @@ export default function Explore() {
             justifyContent: "flex-start",
             gap: 15,
           }}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={refresh} />
-          }
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
         >
           <Section name="playlists" cards={playLists} />
           <Section name="artists" cards={artists} />
