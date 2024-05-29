@@ -1,12 +1,13 @@
+import { router } from "expo-router";
 import React, { useState } from "react";
-import { SafeAreaView, Text, View, Button, TouchableOpacity } from "react-native";
+import { Button, SafeAreaView, Text, TouchableOpacity, View } from "react-native";
 
+import { SimplifiedPlayList } from "@/interfaces/playlists";
+
+import { useAuth } from "@/hooks/AuthContext";
+import { usePlayLists } from "@/hooks/usePlayList";
 import { usePlayback } from "@/hooks/usePlayback";
 import { useTracks } from "@/hooks/useTracks";
-import { usePlayLists } from "@/hooks/usePlayList";
-import { SimplifiedPlayList } from "@/interfaces/playlists";
-import { useAuth } from "@/hooks/AuthContext";
-import { router } from "expo-router";
 
 export default function Debug() {
   const {

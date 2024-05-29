@@ -1,9 +1,9 @@
-import React, { useEffect } from "react";
-import { TouchableOpacity, Text, StyleSheet, Dimensions } from "react-native";
 import { router } from "expo-router";
+import React, { useEffect } from "react";
+import { Dimensions, StyleSheet, Text, TouchableOpacity } from "react-native";
 
-import { useAuth } from "@/hooks/AuthContext";
 import BrandGradient from "@/components/BrandGradient";
+import { useAuth } from "@/hooks/AuthContext";
 import { useLogger } from "@/hooks/useLogger";
 
 export default function App() {

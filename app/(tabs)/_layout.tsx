@@ -1,10 +1,11 @@
-import BrandGradient from "@/components/BrandGradient";
-import { TabBarIcon, IoniconType } from "@/components/TabBarIcon";
-import { Colors } from "@/constants/Colors";
 import { Tabs } from "expo-router";
 import React from "react";
-import { useColorScheme } from "react-native";
-import { StatusBar } from "react-native";
+import { StatusBar, useColorScheme } from "react-native";
+
+import { Colors } from "@/constants/Colors";
+
+import BrandGradient from "@/components/BrandGradient";
+import { IoniconType, TabBarIcon } from "@/components/TabBarIcon";
 
 const createTabScreen = (
   name: string,

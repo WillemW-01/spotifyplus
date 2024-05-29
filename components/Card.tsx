@@ -1,8 +1,10 @@
-import { Colors } from "@/constants/Colors";
-import { View, TouchableOpacity, Image, StyleSheet, useColorScheme } from "react-native";
 import React from "react";
-import ThemedText from "./ThemedText";
+import { Image, StyleSheet, TouchableOpacity, View, useColorScheme } from "react-native";
+
+import { Colors } from "@/constants/Colors";
+
 import RandomGradient from "./RandomGradient";
+import ThemedText from "./ThemedText";
 
 export interface CardProps {
   title?: string;

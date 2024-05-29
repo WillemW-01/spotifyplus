@@ -1,5 +1,6 @@
-import { useRequestBuilder } from "@/hooks/useRequestBuilder";
 import { PlayListItems, PlayListResponse } from "@/interfaces/playlists";
+
+import { useRequestBuilder } from "./useRequestBuilder";
 
 export function usePlayLists() {
   const { buildGet } = useRequestBuilder();

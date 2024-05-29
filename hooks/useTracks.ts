@@ -1,6 +1,6 @@
-import { useRequestBuilder } from "@/hooks/useRequestBuilder";
-
 import { PlayHistoryObject, Track } from "@/interfaces/tracks";
+
+import { useRequestBuilder } from "./useRequestBuilder";
 
 export function useTracks() {
   const { buildGet } = useRequestBuilder();

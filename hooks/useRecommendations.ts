@@ -1,9 +1,10 @@
-import { Track } from "@/interfaces/tracks";
-import { useRequestBuilder } from "./useRequestBuilder";
 import {
   RecommendationResponse,
   RecommendationsProps,
 } from "@/interfaces/recommendations";
+import { Track } from "@/interfaces/tracks";
+
+import { useRequestBuilder } from "./useRequestBuilder";
 
 export function useRecommendations() {
   const { buildGet } = useRequestBuilder();

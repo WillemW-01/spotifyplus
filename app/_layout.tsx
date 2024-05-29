@@ -1,13 +1,14 @@
-import { Colors } from "@/constants/Colors";
-import { AuthProvider } from "@/hooks/AuthContext";
-import { GlobalProvider } from "@/hooks/Globals";
-import { useLogger } from "@/hooks/useLogger";
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import React, { useEffect } from "react";
-import { StatusBar } from "react-native";
-import { useColorScheme } from "react-native";
+import { StatusBar, useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+import { Colors } from "@/constants/Colors";
+
+import { AuthProvider } from "@/hooks/AuthContext";
+import { GlobalProvider } from "@/hooks/Globals";
+import { useLogger } from "@/hooks/useLogger";
 
 export default function RootLayout() {
   const theme = useColorScheme() ?? "dark";

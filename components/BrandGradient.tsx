@@ -1,7 +1,8 @@
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
-import { Colors } from "@/constants/Colors";
 import { StyleProp, ViewStyle } from "react-native";
+
+import { Colors } from "@/constants/Colors";
 
 const background = Colors["light"]["background"];
 const mid = Colors["light"]["backgroundAlt"];

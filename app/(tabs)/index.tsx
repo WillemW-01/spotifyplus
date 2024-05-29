@@ -1,11 +1,15 @@
-import { usePlayback } from "@/hooks/usePlayback";
-import { PlayHistoryObject } from "@/interfaces/tracks";
 import React, { useEffect, useState } from "react";
 import { ScrollView, Text, useColorScheme } from "react-native";
-import Card from "@/components/Card";
-import BrandGradient from "@/components/BrandGradient";
+
 import { Colors } from "@/constants/Colors";
+
+import { PlayHistoryObject } from "@/interfaces/tracks";
+
 import { useAuth } from "@/hooks/AuthContext";
+import { usePlayback } from "@/hooks/usePlayback";
+
+import BrandGradient from "@/components/BrandGradient";
+import Card from "@/components/Card";
 
 export default function Home() {
   const [recents, setRecents] = useState<PlayHistoryObject[]>([]);

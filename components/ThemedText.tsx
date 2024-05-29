@@ -1,6 +1,7 @@
-import { useColorScheme, Text, StyleProp, TextStyle } from "react-native";
-import { Colors } from "@/constants/Colors";
 import React from "react";
+import { StyleProp, Text, TextStyle, useColorScheme } from "react-native";
+
+import { Colors } from "@/constants/Colors";
 
 interface Styles {
   default: StyleProp<TextStyle>; // not going to type all these unnecessarily

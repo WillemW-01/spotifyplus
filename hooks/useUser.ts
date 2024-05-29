@@ -1,4 +1,5 @@
 import { TopArtist, TopItemsResponse, TopTrack } from "@/interfaces/topItems";
+
 import { useRequestBuilder } from "./useRequestBuilder";
 
 export function useUser() {

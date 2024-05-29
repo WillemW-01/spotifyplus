@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Alert } from "react-native";
 
-import { useRequestBuilder } from "@/hooks/useRequestBuilder";
-
 import { PlaybackStateResponse } from "@/interfaces/player";
-import { useAuth } from "./AuthContext";
 import { PlayHistoryObject, RecentlyPlayed } from "@/interfaces/tracks";
+
+import { useAuth } from "./AuthContext";
+import { useRequestBuilder } from "./useRequestBuilder";
 
 interface Device {
   id: string;

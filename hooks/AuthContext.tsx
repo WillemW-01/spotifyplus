@@ -1,12 +1,12 @@
-import React, { createContext, useState, useEffect, useContext, useRef } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
 import {
   AuthRequest,
   AuthSessionResult,
   makeRedirectUri,
   useAuthRequest,
 } from "expo-auth-session";
+import React, { createContext, useContext, useEffect, useRef, useState } from "react";
+
 import { useLogger } from "./useLogger";
 
 // Define the shape of our context

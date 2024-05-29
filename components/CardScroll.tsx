@@ -1,6 +1,7 @@
-import { ScrollView } from "react-native";
-import Card, { CardProps } from "./Card";
 import React from "react";
+import { ScrollView } from "react-native";
+
+import Card, { CardProps } from "./Card";
 
 interface CardScrollProps {
   cards: CardProps[];

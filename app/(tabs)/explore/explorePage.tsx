@@ -1,26 +1,29 @@
 import ThemedText from "@/components/ThemedText";
-import {
-  View,
-  TouchableOpacity,
-  useColorScheme,
-  ScrollView,
-  RefreshControl,
-} from "react-native";
-import GradientView from "@/components/GradientView";
-import { CardProps } from "@/components/Card";
 import { Ionicons } from "@expo/vector-icons";
-import { Colors } from "@/constants/Colors";
-import CardScroll from "@/components/CardScroll";
 import { router } from "expo-router";
-import { SimplifiedPlayList } from "@/interfaces/playlists";
 import React, { useEffect, useState } from "react";
-import { useAuth } from "@/hooks/AuthContext";
-import { usePlayLists } from "@/hooks/usePlayList";
-import { useUser } from "@/hooks/useUser";
-import { TopArtist, TopTrack } from "@/interfaces/topItems";
-import { usePlayback } from "@/hooks/usePlayback";
+import {
+  RefreshControl,
+  ScrollView,
+  TouchableOpacity,
+  View,
+  useColorScheme,
+} from "react-native";
 
 import { allGenres as soundsOfSpotify } from "@/constants/soundsOfSpotify";
+
+import { SimplifiedPlayList } from "@/interfaces/playlists";
+import { TopArtist, TopTrack } from "@/interfaces/topItems";
+
+import { useAuth } from "@/hooks/AuthContext";
+import { usePlayLists } from "@/hooks/usePlayList";
+import { usePlayback } from "@/hooks/usePlayback";
+import { useUser } from "@/hooks/useUser";
+
+import { CardProps } from "@/components/Card";
+import CardScroll from "@/components/CardScroll";
+import GradientView from "@/components/GradientView";
+import { Colors } from "@/constants/Colors";
 
 const CARD_WIDTH = 90;
 interface SectionButtonProps {
