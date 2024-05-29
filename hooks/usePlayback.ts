@@ -103,6 +103,28 @@ export function usePlayback() {
     return data.items;
   };
 
+  const playPlayList = async (playListId: string) => {
+    const phone = phoneId ?? (await getPhoneId());
+    console.log(`Phone ID: `, phone);
+
+    const url = `https://api.spotify.com/v1/me/player/play${
+      phone ? `?device_id=${phone}` : ""
+    }`;
+
+    const body = {
+      context_uri: `spotify:playlist:${playListId}`,
+    };
+    const response = await buildPut(url, body);
+  };
+
+  const playArtist = async (artistId: string) => {
+    const url = `https://api.spotify.com/v1/me/player/play`;
+    const body = {
+      context_uri: `spotify:artist:${artistId}`,
+    };
+    const response = await buildPut(url, body);
+  };
+
   const playTracks = async (uris: string[]) => {
     try {
       const phone = phoneId ?? (await getPhoneId());
@@ -112,7 +134,8 @@ export function usePlayback() {
         phone ? `?device_id=${phone}` : ""
       }`;
 
-      const requestBody = { uris: uris };
+      const formattedUris = uris.map((uri) => `spotify:track:${uri}`);
+      const requestBody = { uris: formattedUris };
 
       const response = await buildPut(url, requestBody);
 
@@ -128,7 +151,7 @@ export function usePlayback() {
   };
 
   const playTrack = async (uri: string) => {
-    return await playTracks([`spotify:track:${uri}`]);
+    return await playTracks([uri]);
   };
 
   const skipOrBack = async (isSkip: boolean) => {
@@ -183,5 +206,7 @@ export function usePlayback() {
     shouldShuffle,
     isPlaying,
     curr,
+    playPlayList,
+    playArtist,
   };
 }

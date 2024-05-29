@@ -18,6 +18,10 @@ import { useAuth } from "@/hooks/AuthContext";
 import { usePlayLists } from "@/hooks/usePlayList";
 import { useUser } from "@/hooks/useUser";
 import { TopArtist, TopTrack } from "@/interfaces/topItems";
+import { useRecommendations } from "@/hooks/useRecommendations";
+import { usePlayback } from "@/hooks/usePlayback";
+
+const soundsOfSpotify = require("@/constants/playlists.json");
 
 const CARD_WIDTH = 90;
 
@@ -129,8 +133,22 @@ export default function Explore() {
   const [genres, setGenres] = useState<Genre[]>([]);
 
   const { authorized } = useAuth();
-  const { listPlayLists } = usePlayLists();
+  const { listPlayLists, getPlayListItemsIds } = usePlayLists();
   const { getTopArtists, getTopTracks } = useUser();
+  const { playPlayList, playArtist, playTrack } = usePlayback();
+
+  const fetchRecommendationsGenre = async (genre: string) => {
+    try {
+      const url = soundsOfSpotify[genre].href;
+      console.log(soundsOfSpotify[genre]);
+      const regex = /(?<=playlists\/)[^\/]+/;
+      const match = url.match(regex)[0];
+      console.log(match);
+      match && playPlayList(match);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const packPlayListItem = (playListItem: SimplifiedPlayList) => {
     return {
@@ -138,6 +156,7 @@ export default function Explore() {
       subtitle: playListItem.owner.display_name,
       imageUri: playListItem.images[0].url,
       width: CARD_WIDTH,
+      onPress: () => playPlayList(playListItem.id),
     };
   };
 
@@ -153,6 +172,7 @@ export default function Explore() {
       genres: artistItem.genres,
       imageUri: artistItem.images[0].url,
       width: CARD_WIDTH,
+      onPress: () => playArtist(artistItem.id),
     };
   };
 
@@ -166,6 +186,7 @@ export default function Explore() {
       popularity: trackItem.popularity,
       imageUri: trackItem.album.images[0].url,
       width: CARD_WIDTH,
+      onPress: () => playTrack(trackItem.id),
     };
   };
 
@@ -207,13 +228,16 @@ export default function Explore() {
 
       const genreCountsArray = Object.entries(counts);
       genreCountsArray.sort(([, valueA], [, valueB]) => valueB - valueA);
-      const sortedGenres = genreCountsArray.map((item) => {
-        return {
-          title: item[0],
-          subtitle: String(item[1]),
-          width: CARD_WIDTH,
-        };
-      }) as Genre[];
+      const sortedGenres = genreCountsArray.map(
+        (item: [key: string, value: number]) => {
+          return {
+            title: item[0],
+            subtitle: `${soundsOfSpotify[item[0]].total} | ${item[1]}`,
+            width: CARD_WIDTH,
+            onPress: () => fetchRecommendationsGenre(item[0]),
+          };
+        }
+      ) as Genre[];
       setGenres(sortedGenres);
     }
   };

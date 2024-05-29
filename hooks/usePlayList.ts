@@ -4,9 +4,10 @@ import {
   PlayListResponse,
   SimplifiedPlayList,
 } from "@/interfaces/playlists";
+import { usePlayback } from "./usePlayback";
 
 export function usePlayLists() {
-  const { buildGet } = useRequestBuilder();
+  const { buildGet, buildPut } = useRequestBuilder();
 
   const listPlayLists = async (limit?: number) => {
     let url = `https://api.spotify.com/v1/me/playlists`;
