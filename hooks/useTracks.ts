@@ -16,12 +16,14 @@ export function useTracks() {
     return data;
   };
 
-  const isPlayHistoryObject = (obj: any): obj is PlayHistoryObject => {
+  const isPlayHistoryObject = (
+    obj: PlayHistoryObject | Track
+  ): obj is PlayHistoryObject => {
     return (obj as PlayHistoryObject).track !== undefined;
   };
 
   const getTracksNames = (tracks: Track[] | PlayHistoryObject[]) => {
-    let names: string[] = [];
+    const names: string[] = [];
 
     tracks.forEach((track) => {
       const tempTrack = isPlayHistoryObject(track) ? track.track : track;

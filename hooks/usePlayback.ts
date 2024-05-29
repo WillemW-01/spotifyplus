@@ -112,6 +112,7 @@ export function usePlayback() {
       context_uri: `spotify:playlist:${playListId}`,
     };
     const response = await buildPut(url, body);
+    return response;
   };
 
   const playArtist = async (artistId: string) => {
@@ -120,6 +121,7 @@ export function usePlayback() {
       context_uri: `spotify:artist:${artistId}`,
     };
     const response = await buildPut(url, body);
+    return response;
   };
 
   const playTracks = async (uris: string[]) => {

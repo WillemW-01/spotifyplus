@@ -13,11 +13,13 @@ import { useLogger } from "./useLogger";
 interface AuthContextData {
   token: string | null;
   refreshToken: string | null;
+  // eslint-disable-next-line no-unused-vars
   setToken: (newAccessToken: string, newRefreshToken?: string) => void;
   clearToken: () => void;
   shouldRefresh: () => Promise<boolean>;
   request: AuthRequest | null;
   promptAsync: () => Promise<AuthSessionResult>;
+  // eslint-disable-next-line no-unused-vars
   refreshAccessToken: (token: string) => Promise<void>;
   authorized: boolean;
 }

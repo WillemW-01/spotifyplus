@@ -1,12 +1,4 @@
-import React, {
-  ReactNode,
-  createContext,
-  useState,
-  FC,
-  useContext,
-  Dispatch,
-  SetStateAction,
-} from "react";
+import React, { ReactNode, createContext, FC, useContext } from "react";
 
 interface GlobalsContextType {
   // token: string;

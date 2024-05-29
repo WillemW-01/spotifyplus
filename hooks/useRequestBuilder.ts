@@ -19,11 +19,7 @@ export function useRequestBuilder() {
     }
   };
 
-  const catchScopeError = async (
-    response: Response,
-    error: Error,
-    url: string
-  ) => {
+  const catchScopeError = async (response: Response, error: Error, url: string) => {
     if (response.status === 403) {
       console.log(response);
 
@@ -45,9 +41,6 @@ export function useRequestBuilder() {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
-    AUTH: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
   };
 
   const checkForRefresh = async () => {
@@ -56,11 +49,7 @@ export function useRequestBuilder() {
     }
   };
 
-  const build = async (
-    method: "GET" | "POST" | "PUT",
-    url: string,
-    body?: unknown
-  ) => {
+  const build = async (method: "GET" | "POST" | "PUT", url: string, body?: unknown) => {
     await checkForRefresh();
     const response = await fetch(url, {
       method: method,

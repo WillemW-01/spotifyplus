@@ -1,5 +1,4 @@
 import { Track } from "@/interfaces/tracks";
-import { useAuth } from "./AuthContext";
 import { useRequestBuilder } from "./useRequestBuilder";
 import {
   RecommendationResponse,
