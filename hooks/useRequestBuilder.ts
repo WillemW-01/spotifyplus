@@ -1,5 +1,4 @@
 import { useAuth } from "./AuthContext";
-import { useGlobals } from "./Globals";
 
 interface Error {
   error: {
@@ -58,14 +57,13 @@ export function useRequestBuilder() {
   };
 
   const build = async (
-    method: "GET" | "POST" | "PUT" | "AUTH",
+    method: "GET" | "POST" | "PUT",
     url: string,
     body?: unknown
   ) => {
     await checkForRefresh();
-    const newMethod = method === "AUTH" ? "POST" : method;
     const response = await fetch(url, {
-      method: newMethod,
+      method: method,
       headers: headers[method],
       body: body ? JSON.stringify(body) : undefined,
     });
@@ -83,10 +81,6 @@ export function useRequestBuilder() {
 
   const buildPut = async (url: string, body: unknown): Promise<Response> => {
     return await build("PUT", url, body);
-  };
-
-  const buildAuth = async (url: string, body: unknown): Promise<Response> => {
-    return await build("AUTH", url, body);
   };
 
   return {

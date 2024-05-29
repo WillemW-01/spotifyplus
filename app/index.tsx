@@ -1,25 +1,12 @@
 import React, { useEffect } from "react";
-import {
-  View,
-  Button,
-  useColorScheme,
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  Dimensions,
-} from "react-native";
+import { TouchableOpacity, Text, StyleSheet, Dimensions } from "react-native";
 import { router } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { LinearGradient } from "expo-linear-gradient";
 
-import { Colors } from "@/constants/Colors";
 import { useAuth } from "@/hooks/AuthContext";
 import BrandGradient from "@/components/BrandGradient";
 
 export default function App() {
   const { request, promptAsync, authorized } = useAuth();
-
-  const theme = useColorScheme() ?? "dark";
 
   const handleLogin = () => {
     if (!authorized) {

@@ -229,7 +229,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       console.log(`Access token: ${accessToken.slice(0, 20)}...`);
       await setToken(accessToken);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log("Error when getting new token: ", error);
     }
   };
