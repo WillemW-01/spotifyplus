@@ -15,6 +15,7 @@ import { usePlayLists } from "@/hooks/usePlayList";
 import { SimplifiedPlayList } from "@/interfaces/playlists";
 import { useAuth } from "@/hooks/AuthContext";
 import { router } from "expo-router";
+import useSpotifyAuth from "@/hooks/useSpotifyAuth";
 
 export default function Home() {
   const {
@@ -30,12 +31,11 @@ export default function Home() {
   const { token, clearToken } = useAuth();
   const { getRecent, getTracksNames, getTrackInfo } = useTracks();
   const { listPlayLists, getPlayListItemsIds } = usePlayLists();
+  const { authorized } = useSpotifyAuth();
 
   const [recent, setRecent] = useState<string[]>([]);
   const [playLists, setPlayLists] = useState<SimplifiedPlayList[]>([]);
   const [ids, setIds] = useState<string[] | null>([]);
-
-  const authorized = Boolean(token);
 
   const playSong = () => {
     playTracks([

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { makeRedirectUri, useAuthRequest } from "expo-auth-session";
 import { useGlobals } from "./Globals";
 import { useAuth } from "./AuthContext";
+import { checkIfConfigIsValid } from "react-native-reanimated/lib/typescript/reanimated2/animation/springUtils";
 
 const uri = makeRedirectUri();
 console.log(uri);
@@ -41,11 +42,17 @@ const discovery = {
 };
 
 export default function useSpotifyAuth() {
+  const [authorized, setAuthorized] = useState(false);
   const [request, response, promptAsync] = useAuthRequest(
     authConfig,
     discovery
   );
   const { token, refreshToken, setToken, shouldRefresh } = useAuth();
+
+  const isRefreshing = useRef(false);
+  const secondCall = useRef(false);
+  const debounceRef = useRef<unknown>(null);
+  const abortController = useRef<AbortController | null>(null);
 
   const getToken = async (code: string) => {
     console.log(`Getting access token with auth code: ${code.slice(0, 20)}...`);
@@ -80,6 +87,16 @@ export default function useSpotifyAuth() {
 
   const refreshAccessToken = async (token: string) => {
     try {
+      if (isRefreshing.current) {
+        console.log("Already getting new access token. Ignoring.");
+        return;
+      }
+
+      isRefreshing.current = true;
+
+      const controller = new AbortController();
+      abortController.current = controller;
+
       console.log(
         `Getting new access token with refresh token: ${token.slice(0, 20)}...`
       );
@@ -88,7 +105,7 @@ export default function useSpotifyAuth() {
       requestBody += `&refresh_token=${token}`;
       requestBody += `&client_id=${CLIENT_ID}`;
       requestBody += `&client_secret=${CLIENT_SECRET}`;
-      console.log(requestBody);
+      // console.log(requestBody);
 
       const tokenResponse = await fetch(
         "https://accounts.spotify.com/api/token",
@@ -98,6 +115,7 @@ export default function useSpotifyAuth() {
             "Content-Type": "application/x-www-form-urlencoded",
           },
           body: requestBody,
+          signal: controller.signal,
         }
       );
 
@@ -107,41 +125,46 @@ export default function useSpotifyAuth() {
       }
 
       const tokenData: AccessResponse = await tokenResponse.json();
-      console.log(tokenData);
 
       const accessToken = tokenData.access_token;
 
       console.log(`Access token: ${accessToken.slice(0, 20)}...`);
-      setToken(accessToken);
-    } catch (error) {
+      await setToken(accessToken);
+      setAuthorized(true);
+    } catch (error: any) {
       console.log("Error when getting new token: ", error);
     }
   };
 
-  const handleRefreshCheck = async () => {
+  const checkIfAuthorized = async () => {
     if (token && refreshToken) {
-      const needNew = await shouldRefresh();
-      console.log("Need to refresh token: ", needNew);
-      if (needNew) {
-        refreshAccessToken(refreshToken);
-      }
+      console.log("\tBoth tokens here. Authorizing.");
+      setAuthorized(true);
+    } else if (!token && refreshToken) {
+      console.log(
+        `\tOnly refresh token. Is refreshing? ${isRefreshing.current}`
+      );
+      await refreshAccessToken(refreshToken);
+    } else {
+      setAuthorized(false);
     }
   };
 
   useEffect(() => {
-    if (response?.type === "success") {
+    if (response?.type === "success" && !token) {
       const { code } = response.params;
       getToken(code);
     }
   }, [response]);
 
   useEffect(() => {
-    handleRefreshCheck();
+    checkIfAuthorized();
   }, [token, refreshToken]);
 
   return {
     request,
     promptAsync,
     refreshAccessToken,
+    authorized,
   };
 }

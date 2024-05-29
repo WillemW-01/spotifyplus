@@ -19,16 +19,15 @@ import BrandGradient from "@/components/BrandGradient";
 
 export default function App() {
   const { request, promptAsync } = useSpotifyAuth();
-  const { token } = useAuth();
+  const { authorized } = useSpotifyAuth();
 
   const theme = useColorScheme() ?? "dark";
 
   const handleLogin = () => {
-    if (!token) {
+    if (!authorized) {
       promptAsync();
     } else {
       router.navigate("/home");
-      // promptAsync();
     }
   };
 
@@ -37,13 +36,13 @@ export default function App() {
   };
 
   useEffect(() => {
-    if (token) {
-      console.log(`Token is loaded: ${token.slice(0, 20)}...`);
-      router.navigate("/home"); // TODO: why doesn't this work when router.replace?
+    if (authorized) {
+      console.log("Navigating to home");
+      router.navigate("/(tabs)/"); // TODO: why doesn't this work when router.replace?
     } else {
       console.log("Token not ready. Need to request");
     }
-  }, [token]);
+  }, [authorized]);
 
   return (
     <BrandGradient style={{ alignItems: "center" }}>

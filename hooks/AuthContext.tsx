@@ -1,11 +1,11 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import useSpotifyAuth from "./useSpotifyAuth";
 
 // Define the shape of our context
 interface AuthContextData {
   token: string | null;
   refreshToken: string | null;
-  authorized: boolean;
   setToken: (newAccessToken: string, newRefreshToken?: string) => void;
   clearToken: () => void;
   shouldRefresh: () => Promise<boolean>;
@@ -27,19 +27,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [token, setTokenState] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [timeStamp, setTimeStamp] = useState<string | null>(null);
-  const [authorized, setAuthorized] = useState(false);
+
+  // const { refreshAccessToken } = useSpotifyAuth();
 
   const setToken = async (newAccessToken: string, newRefreshToken?: string) => {
-    console.log("Getting new tokens!");
+    console.log("Setting new tokens!");
     const currentTime = String(new Date().getTime());
     await AsyncStorage.setItem(keys.TIMESTAMP, currentTime);
     setTimeStamp(currentTime);
 
     await AsyncStorage.setItem(keys.ACCESS_TOKEN, newAccessToken);
+    console.log("Set new access token: ", newAccessToken.slice(0, 20));
     setTokenState(newAccessToken);
 
     if (newRefreshToken) {
       await AsyncStorage.setItem(keys.REFRESH_TOKEN, newRefreshToken);
+      console.log("Set new refresh token: ", newAccessToken.slice(0, 20));
       setRefreshToken(newRefreshToken);
     }
   };
@@ -56,23 +59,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const loadToken = async () => {
     const storedToken = await AsyncStorage.getItem(keys.ACCESS_TOKEN);
     const storedRefreshToken = await AsyncStorage.getItem(keys.REFRESH_TOKEN);
-    const storedTimestamp = await AsyncStorage.getItem(keys.TIMESTAMP);
+    // const storedTimestamp = await AsyncStorage.getItem(keys.TIMESTAMP);
+    const now = new Date();
+    now.setTime(now.getMinutes() - 30);
+    const storedTimestamp = String(now.getTime());
 
     if (storedToken && storedRefreshToken && storedTimestamp) {
       console.log("Successfully loaded tokens and timestamp:");
       console.log(`\tToken    : ${storedToken.slice(0, 15)}`);
       console.log(`\tRefresh  : ${storedRefreshToken.slice(0, 15)}`);
       console.log(`\tTimestamp: ${storedTimestamp}`);
+
+      if (await shouldRefresh(Number(storedTimestamp))) {
+        console.log("Token needs to be refreshed. Only setting refresh token");
+        setRefreshToken(storedRefreshToken);
+
+        return;
+      } else {
+        console.log("Token doesn't need to be refreshed");
+      }
+
+      console.log("Setting tokens to stored state");
       setTokenState(storedToken);
       setRefreshToken(storedRefreshToken);
       setTimeStamp(timeStamp);
-      setAuthorized(true);
+    } else {
+      console.log("Nothing to load from async storage");
     }
   };
 
-  const shouldRefresh = async (): Promise<boolean> => {
+  const shouldRefresh = async (givenTime?: number): Promise<boolean> => {
     const now = new Date().getTime();
-    const then = Number(await AsyncStorage.getItem(keys.TIMESTAMP));
+    const then = givenTime
+      ? givenTime
+      : Number(await AsyncStorage.getItem(keys.TIMESTAMP));
     const diff = now - then;
 
     console.log(`Now: ${now}, Then: ${then}`);
@@ -94,7 +114,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       value={{
         token,
         refreshToken,
-        authorized,
         setToken,
         clearToken,
         shouldRefresh,
