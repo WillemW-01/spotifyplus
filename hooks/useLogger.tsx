@@ -1,11 +1,11 @@
-const logTypes = {
+const LOG_TYPES = {
   info: console.info,
   warning: console.warn,
   error: console.error,
   default: console.log,
 };
 
-const showTime = false;
+const SHOW_TIME = false;
 
 export function useLogger() {
   const startTime = new Date().getTime();
@@ -18,15 +18,13 @@ export function useLogger() {
   ) => {
     try {
       const timeDiff = String(new Date().getTime() - startTime);
-      const cutLabel = label.slice(0, 15);
-      let printText = "";
-      printText += showTime ? `[${timeDiff.padStart(9, " ")}ms]` : "";
-      printText += `[${cutLabel.padEnd(15, " ")}]`;
+      let printText = SHOW_TIME ? `[${timeDiff.padStart(9, " ")}ms] ` : " ";
+      printText += `[${label.slice(0, 15).padEnd(15, " ")}]`;
       printText += "  ".repeat(level + 1);
       printText += msg;
-      logTypes[type](printText);
+      LOG_TYPES[type](printText);
     } catch (error) {
-      console.log("Couldn't log: ", error);
+      LOG_TYPES["error"](`Couldn't log: ${JSON.stringify(error)}`);
     }
   };
 

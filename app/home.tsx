@@ -1,13 +1,5 @@
-import { useEffect, useState } from "react";
-import { useGlobals } from "@/hooks/Globals";
-import {
-  SafeAreaView,
-  Text,
-  View,
-  Button,
-  Alert,
-  TouchableOpacity,
-} from "react-native";
+import React, { useState } from "react";
+import { SafeAreaView, Text, View, Button, TouchableOpacity } from "react-native";
 
 import { usePlayback } from "@/hooks/usePlayback";
 import { useTracks } from "@/hooks/useTracks";
@@ -27,7 +19,7 @@ export default function Home() {
     toggleShuffle,
     shouldShuffle,
   } = usePlayback();
-  const { token, clearToken, authorized } = useAuth();
+  const { clearToken, authorized } = useAuth();
   const { getRecent, getTracksNames, getTrackInfo } = useTracks();
   const { listPlayLists, getPlayListItemsIds } = usePlayLists();
 
@@ -64,6 +56,7 @@ export default function Home() {
   const getInfoAllTracks = async (trackIds: string[]) => {
     for (const track in trackIds) {
       const info = await getTrackInfo(trackIds[track]);
+      return info;
     }
   };
 
@@ -95,11 +88,7 @@ export default function Home() {
       <View>
         <Text>Home</Text>
         <Button title="To Tabs" onPress={toTabs} />
-        <Button
-          title="Start playback"
-          onPress={playSong}
-          disabled={!authorized}
-        />
+        <Button title="Start playback" onPress={playSong} disabled={!authorized} />
         <Button
           title="Get playback state"
           onPress={getPlayBackState}
@@ -114,16 +103,8 @@ export default function Home() {
 
         <Button title="Skip" onPress={skip} disabled={!authorized} />
         <Button title="Back" onPress={back} disabled={!authorized} />
-        <Button
-          title="Toggle Shuffle"
-          onPress={toggleShuffle}
-          disabled={!authorized}
-        />
-        <Button
-          title="List playlists"
-          onPress={getPlayLists}
-          disabled={!authorized}
-        />
+        <Button title="Toggle Shuffle" onPress={toggleShuffle} disabled={!authorized} />
+        <Button title="List playlists" onPress={getPlayLists} disabled={!authorized} />
         <Button
           title="Get song features"
           onPress={() => {
@@ -151,9 +132,7 @@ export default function Home() {
           ))}
 
         {playLists &&
-          playLists.map((item, idx) => (
-            <PlayListButton playList={item} key={idx} />
-          ))}
+          playLists.map((item, idx) => <PlayListButton playList={item} key={idx} />)}
       </View>
     </SafeAreaView>
   );

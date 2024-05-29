@@ -8,7 +8,8 @@ things with a user's music library. See more information below.
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/t/willemw-01/spotifyplus)
 
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/willemw-01/spotifyplus)
-![Lines of code](https://img.shields.io/tokei/lines/github/willemw-01/spotifyplus)
+![Lines of code](https://tokei.rs/b1/github/willemw-01/spotifyplus)
+[![](https://tokei.rs/b1/github/XAMPPRocky/tokei?category=lines)](https://github.com/willemw-01/tokei).
 
 ## Installation
 
