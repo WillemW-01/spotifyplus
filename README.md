@@ -3,6 +3,13 @@
 Spotify+ is a mobile application that uses the Spotify API to do some cool
 things with a user's music library. See more information below.
 
+![GitHub Created At](https://img.shields.io/github/created-at/willemw-01/spotifyplus)
+![GitHub last commit](https://img.shields.io/github/last-commit/willemw-01/spotifyplus)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/t/willemw-01/spotifyplus)
+
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/willemw-01/spotifyplus)
+![Lines of code](https://img.shields.io/tokei/lines/github/willemw-01/spotifyplus)
+
 ## Installation
 
 These instructions will get you a copy of the project up and running on your
