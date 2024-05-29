@@ -12,14 +12,12 @@ import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 
-import useSpotifyAuth from "@/hooks/useSpotifyAuth";
 import { Colors } from "@/constants/Colors";
 import { useAuth } from "@/hooks/AuthContext";
 import BrandGradient from "@/components/BrandGradient";
 
 export default function App() {
-  const { request, promptAsync } = useSpotifyAuth();
-  const { authorized } = useSpotifyAuth();
+  const { request, promptAsync, authorized } = useAuth();
 
   const theme = useColorScheme() ?? "dark";
 

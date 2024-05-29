@@ -20,7 +20,6 @@ import { useUser } from "@/hooks/useUser";
 import { TopArtist, TopTrack } from "@/interfaces/topItems";
 import { useRecommendations } from "@/hooks/useRecommendations";
 import { usePlayback } from "@/hooks/usePlayback";
-import useSpotifyAuth from "@/hooks/useSpotifyAuth";
 
 const soundsOfSpotify = require("@/constants/playlists.json");
 
@@ -133,7 +132,7 @@ export default function Explore() {
   const [tracks, setTracks] = useState<PackedTrack[]>([]);
   const [genres, setGenres] = useState<Genre[]>([]);
 
-  const { authorized } = useSpotifyAuth();
+  const { authorized } = useAuth();
   const { listPlayLists, getPlayListItemsIds } = usePlayLists();
   const { getTopArtists, getTopTracks } = useUser();
   const { playPlayList, playArtist, playTrack } = usePlayback();

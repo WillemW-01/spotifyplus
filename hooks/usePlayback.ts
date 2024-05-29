@@ -7,7 +7,6 @@ import { useRequestBuilder } from "@/hooks/useRequestBuilder";
 import { PlaybackStateResponse } from "@/interfaces/player";
 import { useAuth } from "./AuthContext";
 import { PlayHistoryObject, RecentlyPlayed } from "@/interfaces/tracks";
-import useSpotifyAuth from "./useSpotifyAuth";
 
 interface Device {
   id: string;
@@ -29,7 +28,7 @@ export function usePlayback() {
   const [phoneId, setPhoneId] = useState("");
   const [shouldShuffle, setShouldShuffle] = useState(false);
 
-  const { authorized } = useSpotifyAuth();
+  const { authorized } = useAuth();
   const { buildPut, buildPost, buildGet } = useRequestBuilder();
 
   const getDevices = async (): Promise<Device[] | undefined> => {

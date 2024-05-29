@@ -6,13 +6,12 @@ import Card from "@/components/Card";
 import BrandGradient from "@/components/BrandGradient";
 import { Colors } from "@/constants/Colors";
 import { useAuth } from "@/hooks/AuthContext";
-import useSpotifyAuth from "@/hooks/useSpotifyAuth";
 
 export default function Home() {
   const [recents, setRecents] = useState<PlayHistoryObject[]>([]);
 
   const theme = useColorScheme() ?? "dark";
-  const { authorized } = useSpotifyAuth();
+  const { authorized } = useAuth();
   const { getRecent, playTrack } = usePlayback();
 
   const fetchRecents = async () => {

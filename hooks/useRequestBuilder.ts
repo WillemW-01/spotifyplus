@@ -1,6 +1,5 @@
 import { useAuth } from "./AuthContext";
 import { useGlobals } from "./Globals";
-import useSpotifyAuth from "./useSpotifyAuth";
 
 interface Error {
   error: {
@@ -10,8 +9,7 @@ interface Error {
 }
 
 export function useRequestBuilder() {
-  const { token, refreshToken, shouldRefresh } = useAuth();
-  const { refreshAccessToken } = useSpotifyAuth();
+  const { token, refreshToken, shouldRefresh, refreshAccessToken } = useAuth();
 
   const catchError = async (response: Response, url: string) => {
     if (!response.ok) {
@@ -48,6 +46,9 @@ export function useRequestBuilder() {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
+    AUTH: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
   };
 
   const checkForRefresh = async () => {
@@ -57,13 +58,14 @@ export function useRequestBuilder() {
   };
 
   const build = async (
-    method: "GET" | "POST" | "PUT",
+    method: "GET" | "POST" | "PUT" | "AUTH",
     url: string,
     body?: unknown
   ) => {
     await checkForRefresh();
+    const newMethod = method === "AUTH" ? "POST" : method;
     const response = await fetch(url, {
-      method: method,
+      method: newMethod,
       headers: headers[method],
       body: body ? JSON.stringify(body) : undefined,
     });
@@ -73,42 +75,18 @@ export function useRequestBuilder() {
 
   const buildGet = async (url: string): Promise<Response> => {
     return await build("GET", url);
-    // await checkForRefresh();
-
-    // const response = await fetch(url, {
-    //   method: "GET",
-    //   headers: headers.get,
-    // });
-
-    // await catchError(response, url);
-    // return response;
   };
 
   const buildPost = async (url: string) => {
     return await build("POST", url);
-    // await checkForRefresh();
-
-    // const response = await fetch(url, {
-    //   method: "POST",
-    //   headers: headers.get,
-    // });
-
-    // await catchError(response, url);
-    // return response;
   };
 
   const buildPut = async (url: string, body: unknown): Promise<Response> => {
     return await build("PUT", url, body);
-    // await checkForRefresh();
+  };
 
-    // const response = await fetch(url, {
-    //   method: "PUT",
-    //   headers: headers.put,
-    //   body: JSON.stringify(body),
-    // });
-
-    // await catchError(response, url);
-    // return response;
+  const buildAuth = async (url: string, body: unknown): Promise<Response> => {
+    return await build("AUTH", url, body);
   };
 
   return {

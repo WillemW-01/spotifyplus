@@ -1,6 +1,18 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import useSpotifyAuth from "./useSpotifyAuth";
+
+import {
+  AuthRequest,
+  AuthSessionResult,
+  makeRedirectUri,
+  useAuthRequest,
+} from "expo-auth-session";
 
 // Define the shape of our context
 interface AuthContextData {
@@ -9,6 +21,10 @@ interface AuthContextData {
   setToken: (newAccessToken: string, newRefreshToken?: string) => void;
   clearToken: () => void;
   shouldRefresh: () => Promise<boolean>;
+  request: AuthRequest | null;
+  promptAsync: () => Promise<AuthSessionResult>;
+  refreshAccessToken: (token: string) => Promise<void>;
+  authorized: boolean;
 }
 
 const keys = {
@@ -19,6 +35,50 @@ const keys = {
 
 const THRESHOLD = 600 / 60; // threshold time of 60 minutes ~ 1 hour
 
+const uri = makeRedirectUri();
+console.log(uri);
+
+const CLIENT_ID = process.env.EXPO_PUBLIC_CLIENT_ID ?? "";
+const CLIENT_SECRET = process.env.EXPO_PUBLIC_CLIENT_SECRET ?? "";
+
+interface AccessResponse {
+  access_token: string;
+  token_type: string;
+  scope: string;
+  expires_in: number;
+  refresh_token: string;
+}
+
+const authConfig = {
+  clientId: CLIENT_ID,
+  clientSecret: CLIENT_SECRET,
+  redirectUri: uri,
+  usePKCE: false,
+  scopes: [
+    "playlist-modify-public",
+    "playlist-read-collaborative",
+    "playlist-read-private",
+    "user-modify-playback-state",
+    "user-read-email",
+    "user-read-playback-state",
+    "user-read-private",
+    "user-read-recently-played",
+    "user-top-read",
+  ],
+};
+
+const discovery = {
+  authorizationEndpoint: "https://accounts.spotify.com/authorize",
+  tokenEndpoint: "https://accounts.spotify.com/api/token",
+};
+
+const tokenRequestOptions = {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/x-www-form-urlencoded",
+  },
+};
+
 const AuthContext = createContext<AuthContextData | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -27,8 +87,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [token, setTokenState] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [timeStamp, setTimeStamp] = useState<string | null>(null);
+  const [authorized, setAuthorized] = useState(false);
+  const isRefreshing = useRef(false);
 
-  // const { refreshAccessToken } = useSpotifyAuth();
+  const [request, response, promptAsync] = useAuthRequest(
+    authConfig,
+    discovery
+  );
 
   const setToken = async (newAccessToken: string, newRefreshToken?: string) => {
     console.log("Setting new tokens!");
@@ -59,10 +124,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const loadToken = async () => {
     const storedToken = await AsyncStorage.getItem(keys.ACCESS_TOKEN);
     const storedRefreshToken = await AsyncStorage.getItem(keys.REFRESH_TOKEN);
-    // const storedTimestamp = await AsyncStorage.getItem(keys.TIMESTAMP);
-    const now = new Date();
-    now.setTime(now.getMinutes() - 30);
-    const storedTimestamp = String(now.getTime());
+    const storedTimestamp = await AsyncStorage.getItem(keys.TIMESTAMP);
 
     if (storedToken && storedRefreshToken && storedTimestamp) {
       console.log("Successfully loaded tokens and timestamp:");
@@ -72,17 +134,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       if (await shouldRefresh(Number(storedTimestamp))) {
         console.log("Token needs to be refreshed. Only setting refresh token");
-        setRefreshToken(storedRefreshToken);
-
-        return;
+        // setRefreshToken(storedRefreshToken);
+        await refreshAccessToken(storedRefreshToken);
+        setAuthorized(true);
       } else {
-        console.log("Token doesn't need to be refreshed");
+        console.log(
+          "Token doesn't need to be refreshed Setting tokens to stored state"
+        );
+        setTokenState(storedToken);
+        setRefreshToken(storedRefreshToken);
+        setTimeStamp(timeStamp);
+        setAuthorized(true);
       }
-
-      console.log("Setting tokens to stored state");
-      setTokenState(storedToken);
-      setRefreshToken(storedRefreshToken);
-      setTimeStamp(timeStamp);
     } else {
       console.log("Nothing to load from async storage");
     }
@@ -95,14 +158,88 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       : Number(await AsyncStorage.getItem(keys.TIMESTAMP));
     const diff = now - then;
 
-    console.log(`Now: ${now}, Then: ${then}`);
     console.log(
-      `\tDiff: ${(diff / 60000).toFixed(1)} mins, Threshold: ${THRESHOLD}mins`
+      `Checking token validity: diff: ${(diff / 60000).toFixed(
+        1
+      )} mins, threshold: ${THRESHOLD}mins`
     );
 
     // returns if the dif is more than 60 minutes / 3600 seconds
     return diff / 60000 > THRESHOLD;
   };
+
+  const getAuthRequest = async (requestBody: string) => {
+    const response = await fetch("https://accounts.spotify.com/api/token", {
+      ...tokenRequestOptions,
+      body: requestBody,
+    });
+
+    if (!response.ok) {
+      console.log("Auth request was not successful.");
+      const error = await response.json();
+      console.log(error);
+    }
+
+    return response;
+  };
+
+  const getToken = async (code: string) => {
+    console.log(`Getting access token with auth code: ${code.slice(0, 20)}...`);
+
+    let requestBody = `grant_type=authorization_code`;
+    requestBody += `&code=${code}`;
+    requestBody += `&redirect_uri=${encodeURIComponent(uri)}`;
+    requestBody += `&client_id=${CLIENT_ID}`;
+    requestBody += `&client_secret=${CLIENT_SECRET}`;
+
+    const tokenResponse = await getAuthRequest(requestBody);
+    const tokenData: AccessResponse = await tokenResponse.json();
+
+    const accessToken = tokenData.access_token;
+    const newRefreshToken = tokenData.refresh_token;
+
+    console.log(`Access token: ${accessToken.slice(0, 20)}...`);
+    console.log(`Refresh token: ${newRefreshToken.slice(0, 20)}...`);
+    setToken(accessToken, newRefreshToken);
+  };
+
+  const refreshAccessToken = async (token: string) => {
+    try {
+      if (isRefreshing.current) {
+        console.log("Already getting new access token. Ignoring.");
+        return;
+      }
+
+      isRefreshing.current = true;
+
+      console.log(
+        `Getting new access token with refresh token: ${token.slice(0, 20)}...`
+      );
+
+      let requestBody = `grant_type=refresh_token`;
+      requestBody += `&refresh_token=${token}`;
+      requestBody += `&client_id=${CLIENT_ID}`;
+      requestBody += `&client_secret=${CLIENT_SECRET}`;
+      // console.log(requestBody);
+
+      const tokenResponse = await getAuthRequest(requestBody);
+      const tokenData: AccessResponse = await tokenResponse.json();
+
+      const accessToken = tokenData.access_token;
+
+      console.log(`Access token: ${accessToken.slice(0, 20)}...`);
+      await setToken(accessToken);
+    } catch (error: any) {
+      console.log("Error when getting new token: ", error);
+    }
+  };
+
+  useEffect(() => {
+    if (response?.type === "success" && !token) {
+      const { code } = response.params;
+      getToken(code);
+    }
+  }, [response]);
 
   useEffect(() => {
     // Load token from AsyncStorage when the app starts
@@ -117,6 +254,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setToken,
         clearToken,
         shouldRefresh,
+        request,
+        promptAsync,
+        refreshAccessToken,
+        authorized,
       }}
     >
       {children}
