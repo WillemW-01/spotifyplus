@@ -39,7 +39,7 @@ export default function App() {
   useEffect(() => {
     if (token) {
       console.log(`Token is loaded: ${token.slice(0, 20)}...`);
-      router.navigate("/(tabs)"); // TODO: why doesn't this work when router.replace?
+      router.navigate("/home"); // TODO: why doesn't this work when router.replace?
     } else {
       console.log("Token not ready. Need to request");
     }
