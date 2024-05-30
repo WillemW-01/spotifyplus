@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import BrandGradient from "@/components/BrandGradient";
 import ThemedText from "@/components/ThemedText";
 import { View, useColorScheme } from "react-native";
-import ScatterPlot, { PlotPoint } from "@/components/ScatterPlot";
+import { PlotPoint } from "@/components/ScatterPlotOld";
 import { Colors } from "@/constants/Colors";
 
 import allGenres from "@/constants/all-genres.json";
+import Network from "@/components/Network";
 
 const packData = () => {
   const dataArray = Object.entries(allGenres);
@@ -20,10 +21,6 @@ const packData = () => {
   });
 
   return data;
-};
-
-const circleClick = (href: string) => {
-  console.log("circle clicked with link ", href);
 };
 
 export default function Mood() {
@@ -44,7 +41,7 @@ export default function Mood() {
         style={{ backgroundColor: Colors[theme]["background"] }}
       />
       <View style={{ flex: 1, backgroundColor: "white", zIndex: -1 }}>
-        <ScatterPlot data={data} onPress={circleClick} />
+        <Network />
       </View>
     </BrandGradient>
   );
