@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, useColorScheme } from "react-native";
+import { View } from "react-native";
 
 import BrandGradient from "@/components/BrandGradient";
 import Network from "@/components/Network";
 import ThemedText from "@/components/ThemedText";
 
-import { Colors } from "@/constants/Colors";
+// import { Colors } from "@/constants/Colors";
 import allGenres from "@/constants/all-genres.json";
 
 export interface PlotPoint {
@@ -21,7 +21,7 @@ const packData = () => {
   const data: PlotPoint[] = dataArray.map((genre) => {
     return {
       name: genre[0],
-      size: genre[1].size === 0 ? 5 : genre[1].size * 200,
+      size: genre[1].size,
       y: genre[1].top.toString(),
       x: genre[1].left.toString(),
       href: "https://api.spotify.com/v1/playlists/69fEt9DN5r4JQATi52sRtq/tracks",
@@ -32,7 +32,7 @@ const packData = () => {
 };
 
 export default function Mood() {
-  const theme = useColorScheme() ?? "dark";
+  // const theme = useColorScheme() ?? "dark";
   const [data, setData] = useState<PlotPoint[]>([]);
 
   useEffect(() => {
@@ -46,10 +46,10 @@ export default function Mood() {
       <ThemedText
         type="title"
         text="Mood"
-        style={{ backgroundColor: Colors[theme]["background"] }}
+        // style={{ backgroundColor: Colors[theme]["background"] }}
       />
-      <View style={{ flex: 1, backgroundColor: "white", zIndex: -1 }}>
-        <Network nodeData={data.slice(0, 20)} edgeData={[]} />
+      <View style={{ flex: 1, zIndex: -1 }}>
+        <Network nodeData={data.slice(0, 500)} edgeData={[]} />
       </View>
     </BrandGradient>
   );

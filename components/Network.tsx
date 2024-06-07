@@ -17,14 +17,14 @@ import { GraphNodeItemOption } from "echarts/types/src/chart/graph/GraphSeries";
 import React, { useEffect, useRef, useState } from "react";
 import {
   LayoutChangeEvent,
-  StyleProp,
   Text,
   TouchableOpacity,
   View,
-  ViewStyle,
+  StyleSheet,
 } from "react-native";
 
 import { PlotPoint } from "@/app/(tabs)/mood";
+import ThemedText from "./ThemedText";
 
 type ECOption = echarts.ComposeOption<GraphSeriesOption>;
 
@@ -43,11 +43,6 @@ echarts.use([
   GraphChart,
 ]);
 
-const blockStyle: StyleProp<ViewStyle> = {
-  flex: 1,
-  backgroundColor: "lightblue",
-};
-
 interface Link {
   source: string;
   target: string;
@@ -61,6 +56,12 @@ interface NetworkProps {
   nodeData: PlotPoint[];
   edgeData: Link[];
 }
+
+const log10n = (n: number, x: number) => {
+  const result = Math.log10(x + 1.05) / Math.log10(n);
+  console.log(result);
+  return result;
+};
 
 export default function GraphForceDynamic({ nodeData, edgeData }: NetworkProps) {
   const svgRef = useRef(null);
@@ -86,29 +87,45 @@ export default function GraphForceDynamic({ nodeData, edgeData }: NetworkProps) 
           force: {
             repulsion: 100,
             edgeLength: 5,
+            gravity: 1,
           },
           edges: edges.current,
           scaleLimit: {
-            min: 0.9,
+            min: 1,
             // max: 2,
           },
           height: "auto",
           width: "auto",
+          label: {
+            show: true,
+            formatter: "{@name}",
+          },
+          labelLayout: {
+            hideOverlap: true,
+          },
+          roam: true,
         },
       ],
+      // dataZoom: [
+      //   {
+      //     type: "inside",
+      //     start: 0,
+      //     end: 100,
+      //     startValue: 0,
+      //     endValue: 100,
+      //   },
+      // ],
     };
   };
 
   const buildDataPoint = (point: PlotPoint): GraphNodeItemOption => {
     return {
+      name: point.name,
       fixed: true,
       x: Number(point.x),
       y: Number(point.y),
-      symbolSize: point.size,
+      symbolSize: log10n(50, point.size) * 200,
       id: point.name,
-      label: {
-        show: true,
-      },
     };
   };
 
@@ -116,7 +133,7 @@ export default function GraphForceDynamic({ nodeData, edgeData }: NetworkProps) 
     const randX = Math.random() * chartWidth;
     const randY = Math.random() * chartHeight;
 
-    addPoint({ x: randX, y: randY });
+    addPoint({ id: nodes.current.length.toString(), x: randX, y: randY });
   };
 
   const addPoint = (point: GraphNodeItemOption) => {
@@ -124,7 +141,15 @@ export default function GraphForceDynamic({ nodeData, edgeData }: NetworkProps) 
       // console.log(`Adding new node #${nodes.current.length} at ${point.x} ${point.y}`);
       // console.log(point);
       nodes.current.push({ ...point });
-      chart.setOption({ series: [{ roam: true, data: nodes.current }] });
+      chart.setOption({ series: [{ data: nodes.current }] });
+    }
+  };
+
+  const addPoints = (points: PlotPoint[]) => {
+    if (chart) {
+      const dataPoints = points.map((point) => buildDataPoint(point));
+      nodes.current.push(...dataPoints);
+      chart.setOption({ series: [{ data: nodes.current }] });
     }
   };
 
@@ -149,20 +174,26 @@ export default function GraphForceDynamic({ nodeData, edgeData }: NetworkProps) 
     }
   };
 
-  const resetPositions = () => {
-    if (chart) {
-      const newNodes = nodes.current.map((node) => {
-        console.log(`Moving node ${node.id} to ${chartWidth} ${chartHeight}`);
-        return {
-          ...node,
-          x: 0,
-          y: 0,
-        };
-      });
-      console.log(newNodes);
-      nodes.current = newNodes;
-      chart.setOption({ series: [{ roam: true, data: nodes.current }], zoom: 0.5 });
-    }
+  // const resetPositions = () => {
+  //   if (chart) {
+  //     const newNodes = nodes.current.map((node) => {
+  //       console.log(`Moving node ${node.id} to ${chartWidth} ${chartHeight}`);
+  //       return {
+  //         ...node,
+  //         x: 0,
+  //         y: 0,
+  //       };
+  //     });
+  //     console.log(newNodes);
+  //     nodes.current = newNodes;
+  //     chart.setOption({ series: [{ roam: true, data: nodes.current }], zoom: 0.5 });
+  //   }
+  // };
+
+  const refreshOptions = () => {
+    const newChart = chart;
+    newChart?.setOption(buildChartOption());
+    setChart(newChart);
   };
 
   const runChart = () => {
@@ -190,26 +221,31 @@ export default function GraphForceDynamic({ nodeData, edgeData }: NetworkProps) 
   useEffect(() => runChart(), []);
 
   useEffect(() => {
+    const CHUNK_SIZE = 100;
     if (chart && nodes.current.length == 0) {
       console.log("Running useEffect, ");
-      nodeData.forEach((point) => {
-        // console.log("Building point with name: ", point.name);
-        addPoint(buildDataPoint(point));
-      });
+      // nodeData.forEach((point) => {
+      //   // console.log("Building point with name: ", point.name);
+      //   addPoint(buildDataPoint(point));
+      // });
+
+      for (let i = 0; i < nodeData.length; i += CHUNK_SIZE) {
+        addPoints(nodeData.slice(i, i + CHUNK_SIZE));
+      }
 
       edgeData.forEach((edge) => {
         addEdge(edge.source, edge.target);
       });
 
-      chart.setOption({
-        series: [{ roam: true, data: nodes.current }],
-      });
+      // chart.setOption({
+      //   series: [{ roam: true, data: nodes.current }],
+      // });
     }
   }, [chart]);
 
-  useEffect(() => {
-    console.log("Nodes updated: ", nodes.current);
-  }, [nodes.current]);
+  // useEffect(() => {
+  //   console.log("Nodes updated: ", nodes.current);
+  // }, [nodes.current]);
 
   useEffect(() => {
     if (chart) {
@@ -253,15 +289,44 @@ export default function GraphForceDynamic({ nodeData, edgeData }: NetworkProps) 
   }
 
   useEffect(() => {
-    console.log("Selected changing: ", selected.current);
+    if (selected.current) {
+      console.log("Selected changing: ", selected.current);
+    }
   }, [selected.current]);
 
   return (
-    <View style={blockStyle} onLayout={handleLayout}>
+    <View style={styles.blockStyle} onLayout={handleLayout}>
       <SkiaChart ref={svgRef} />
       <Button onPress={addRandomPoint} text="+ node" top={10} />
       <Button onPress={addRandomEdge} text="+ edge" top={80} />
-      <Button onPress={resetPositions} text="reset" top={120} />
+      <Button onPress={refreshOptions} text="refresh" top={120} />
+      <ThemedText
+        type="default"
+        text="electric atmospheric"
+        style={{ zIndex: 2, position: "absolute", top: 5, left: 5 }}
+      />
+      <ThemedText
+        type="default"
+        text="organic atmospheric"
+        style={{ zIndex: 2, position: "absolute", bottom: 5, left: 5 }}
+      />
+      <ThemedText
+        type="default"
+        text="electric spiky"
+        style={{ zIndex: 2, position: "absolute", top: 5, right: 5 }}
+      />
+      <ThemedText
+        type="default"
+        text="organic spiky"
+        style={{ zIndex: 2, position: "absolute", bottom: 5, right: 5 }}
+      />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  blockStyle: {
+    flex: 1,
+    backgroundColor: "transparent",
+  },
+});
