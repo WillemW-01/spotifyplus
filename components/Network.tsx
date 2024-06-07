@@ -1,28 +1,30 @@
-import * as echarts from "echarts/core";
+import { SVGRenderer, SkiaChart } from "@wuba/react-native-echarts";
+import { GraphSeriesOption } from "echarts";
 import { GraphChart } from "echarts/charts";
 import {
+  DataZoomComponent,
+  DatasetComponent,
+  GraphicComponent,
+  GridComponent,
+  LegendComponent,
   TitleComponent,
   TooltipComponent,
-  GridComponent,
-  DatasetComponent,
   TransformComponent,
-  LegendComponent,
-  DataZoomComponent,
-  GraphicComponent,
 } from "echarts/components";
+import * as echarts from "echarts/core";
 import { LabelLayout, UniversalTransition } from "echarts/features";
+import { GraphNodeItemOption } from "echarts/types/src/chart/graph/GraphSeries";
 import React, { useEffect, useRef, useState } from "react";
-import { SVGRenderer, SvgChart as SvgComponent } from "@wuba/react-native-echarts";
 import {
-  View,
-  StyleProp,
-  ViewStyle,
   LayoutChangeEvent,
+  StyleProp,
   Text,
   TouchableOpacity,
+  View,
+  ViewStyle,
 } from "react-native";
-import { GraphSeriesOption } from "echarts";
-import { GraphNodeItemOption } from "echarts/types/src/chart/graph/GraphSeries";
+
+import { PlotPoint } from "@/app/(tabs)/mood";
 
 type ECOption = echarts.ComposeOption<GraphSeriesOption>;
 
@@ -41,8 +43,6 @@ echarts.use([
   GraphChart,
 ]);
 
-const E_HEIGHT = 500;
-const E_WIDTH = 500;
 const blockStyle: StyleProp<ViewStyle> = {
   flex: 1,
   backgroundColor: "lightblue",
@@ -57,16 +57,12 @@ type Dictionary<T> = {
   [key: string]: T;
 };
 
-// interface DataPoint {
-//   fixed?: boolean;
-//   x?: number;
-//   y?: number;
-//   symbolSize?: number;
-//   label?: unknown;
-//   id: string;
-// }
+interface NetworkProps {
+  nodeData: PlotPoint[];
+  edgeData: Link[];
+}
 
-export default function GraphForceDynamic() {
+export default function GraphForceDynamic({ nodeData, edgeData }: NetworkProps) {
   const svgRef = useRef(null);
   const nodes = useRef<GraphNodeItemOption[]>([]);
   const edges = useRef<Link[]>([]);
@@ -80,7 +76,7 @@ export default function GraphForceDynamic() {
       series: [
         {
           type: "graph",
-          layout: "force",
+          layout: "none",
           animation: false,
           data: nodes.current,
           selectedMode: "single",
@@ -92,18 +88,24 @@ export default function GraphForceDynamic() {
             edgeLength: 5,
           },
           edges: edges.current,
+          scaleLimit: {
+            min: 0.9,
+            // max: 2,
+          },
+          height: "auto",
+          width: "auto",
         },
       ],
     };
   };
 
-  const buildDataPoint = (): GraphNodeItemOption => {
+  const buildDataPoint = (point: PlotPoint): GraphNodeItemOption => {
     return {
-      fixed: false,
-      x: chartWidth / 2,
-      y: chartHeight / 2,
-      symbolSize: 20,
-      id: "-1",
+      fixed: true,
+      x: Number(point.x),
+      y: Number(point.y),
+      symbolSize: point.size,
+      id: point.name,
       label: {
         show: true,
       },
@@ -119,8 +121,9 @@ export default function GraphForceDynamic() {
 
   const addPoint = (point: GraphNodeItemOption) => {
     if (chart) {
-      console.log(`Adding new node #${nodes.current.length} at ${point.x} ${point.y}`);
-      nodes.current.push({ id: nodes.current.length + "" });
+      // console.log(`Adding new node #${nodes.current.length} at ${point.x} ${point.y}`);
+      // console.log(point);
+      nodes.current.push({ ...point });
       chart.setOption({ series: [{ roam: true, data: nodes.current }] });
     }
   };
@@ -189,9 +192,14 @@ export default function GraphForceDynamic() {
   useEffect(() => {
     if (chart && nodes.current.length == 0) {
       console.log("Running useEffect, ");
-      addPoint({ x: chartHeight / 2, y: chartHeight / 2, symbolSize: 20, fixed: true });
-      addPoint({ x: chartHeight / 2, y: chartHeight / 2, symbolSize: 20, fixed: true });
-      addPoint({ x: chartHeight / 2, y: chartHeight / 2, symbolSize: 20, fixed: true });
+      nodeData.forEach((point) => {
+        // console.log("Building point with name: ", point.name);
+        addPoint(buildDataPoint(point));
+      });
+
+      edgeData.forEach((edge) => {
+        addEdge(edge.source, edge.target);
+      });
 
       chart.setOption({
         series: [{ roam: true, data: nodes.current }],
@@ -249,13 +257,11 @@ export default function GraphForceDynamic() {
   }, [selected.current]);
 
   return (
-    <>
-      <View style={blockStyle} onLayout={handleLayout}>
-        <SvgComponent ref={svgRef} />
-        <Button onPress={addRandomPoint} text="+ node" top={10} />
-        <Button onPress={addRandomEdge} text="+ edge" top={80} />
-        <Button onPress={resetPositions} text="reset" top={120} />
-      </View>
-    </>
+    <View style={blockStyle} onLayout={handleLayout}>
+      <SkiaChart ref={svgRef} />
+      <Button onPress={addRandomPoint} text="+ node" top={10} />
+      <Button onPress={addRandomEdge} text="+ edge" top={80} />
+      <Button onPress={resetPositions} text="reset" top={120} />
+    </View>
   );
 }
