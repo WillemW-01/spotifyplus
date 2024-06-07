@@ -45,7 +45,7 @@ export function useRequestBuilder() {
 
   const checkForRefresh = async () => {
     if (token && refreshToken && (await shouldRefresh())) {
-      await refreshAccessToken(token);
+      await refreshAccessToken(refreshToken);
     }
   };
 

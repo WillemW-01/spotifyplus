@@ -113,6 +113,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setTokenState(null);
     setRefreshToken(null);
     setTimeStamp(null);
+    setAuthorized(false);
   };
 
   const loadToken = async () => {
@@ -128,7 +129,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (await shouldRefresh(Number(storedTimestamp))) {
         addLog("Token needs to be refreshed. Only setting refresh token", "loadToken", 1);
-        addLog(`Passing: ${storedRefreshToken} to refreshAccessToken`, "loadToken", 2);
+        addLog(
+          `Passing: ${storedRefreshToken.slice(0, 20)} to refreshAccessToken`,
+          "loadToken",
+          2
+        );
         await refreshAccessToken(storedRefreshToken);
         setAuthorized(true);
       } else {
@@ -201,7 +206,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const refreshAccessToken = async (token: string) => {
-    addLog(`Got: ${token} at refreshAccessToken`, "refreshAccessToken", 2);
+    addLog(`Got: ${token.slice(0, 20)} at refreshAccessToken`, "refreshAccessToken", 2);
     try {
       if (isRefreshing.current) {
         console.log("Already getting new access token. Ignoring.");

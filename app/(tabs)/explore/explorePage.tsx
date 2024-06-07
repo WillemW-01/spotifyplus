@@ -132,9 +132,9 @@ export default function Explore() {
       if (obj && obj.href) {
         console.log(obj);
         const regex = /(?<=playlists\/)[^/]+/;
-        const match = obj.href.match(regex)[0];
+        const match = obj.href.match(regex);
         console.log(match);
-        match && playPlayList(match);
+        match && playPlayList(match[0]);
       }
     } catch (error) {
       console.log(error);

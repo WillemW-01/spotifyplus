@@ -1,6 +1,7 @@
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { Button, SafeAreaView, Text, TouchableOpacity, View } from "react-native";
+import * as Linking from "expo-linking";
 
 import { SimplifiedPlayList } from "@/interfaces/playlists";
 
@@ -29,10 +30,7 @@ export default function Debug() {
   const [ids, setIds] = useState<string[] | null>([]);
 
   const playSong = () => {
-    playTracks([
-      "spotify:track:0TVFCP4LM2CTn4uOhdQP4k",
-      "spotify:track:5HD4hzwB33Jyr4vhQqLQit",
-    ]);
+    playTracks(["0TVFCP4LM2CTn4uOhdQP4k", "5HD4hzwB33Jyr4vhQqLQit"]);
   };
 
   const fetchRecent = async () => {
@@ -64,6 +62,14 @@ export default function Debug() {
   const clearTokens = async () => {
     console.log("Clearing tokens!");
     clearToken();
+  };
+
+  const openSpotify = async () => {
+    try {
+      Linking.openURL("spotify://open");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   interface PlayListProps {
@@ -114,6 +120,7 @@ export default function Debug() {
           disabled={!authorized}
         />
         <Button title="Clear tokens" onPress={clearTokens} />
+        <Button title="Open Spotify" onPress={openSpotify} />
 
         <Text>Should shuffle: {String(shouldShuffle)}</Text>
 

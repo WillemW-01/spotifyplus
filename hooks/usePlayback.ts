@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Alert } from "react-native";
+import * as Linking from "expo-linking";
 
 import { PlaybackStateResponse } from "@/interfaces/player";
 import { PlayHistoryObject, RecentlyPlayed } from "@/interfaces/tracks";
@@ -101,6 +102,9 @@ export function usePlayback() {
   };
 
   const playPlayList = async (playListId: string) => {
+    const canRun = isSpotifyRunning();
+    if (!canRun) return;
+
     const phone = phoneId ?? (await getPhoneId());
     console.log(`Phone ID: `, phone);
 
@@ -116,7 +120,15 @@ export function usePlayback() {
   };
 
   const playArtist = async (artistId: string) => {
-    const url = `https://api.spotify.com/v1/me/player/play`;
+    const canRun = isSpotifyRunning();
+    if (!canRun) return;
+
+    const phone = phoneId ?? (await getPhoneId());
+    console.log(`Phone ID: `, phone);
+
+    const url = `https://api.spotify.com/v1/me/player/play${
+      phone ? `?device_id=${phone}` : ""
+    }`;
     const body = {
       context_uri: `spotify:artist:${artistId}`,
     };
@@ -126,6 +138,9 @@ export function usePlayback() {
 
   const playTracks = async (uris: string[]) => {
     try {
+      const canRun = isSpotifyRunning();
+      if (!canRun) return;
+
       const phone = phoneId ?? (await getPhoneId());
       console.log(`Phone ID: `, phone);
 
@@ -192,6 +207,33 @@ export function usePlayback() {
     }
 
     setShouldShuffle((prev) => !prev);
+  };
+
+  const openSpotify = async () => {
+    const url = "https://open.spotify.com/";
+    await Linking.openURL(url);
+  };
+
+  const isSpotifyRunning = async () => {
+    const response = await buildGet("https://api.spotify.com/v1/me/player");
+
+    try {
+      await response.json();
+      return true;
+    } catch (error) {
+      Alert.alert(
+        "Spotify is not playing something",
+        "Click on the button below to open Spotify. Once you've started playing something, come back.",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          { text: "OK", onPress: openSpotify },
+        ]
+      );
+      return false;
+    }
   };
 
   return {
