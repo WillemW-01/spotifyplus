@@ -191,7 +191,7 @@ export default function Explore() {
   };
 
   const fetchArtists = async () => {
-    const items = await getTopArtists();
+    const items = await getTopArtists("long_term");
     if (items) {
       console.log("Artsts came back");
       const formattedArtists = packArtists(items);
@@ -200,7 +200,7 @@ export default function Explore() {
   };
 
   const fetchTracks = async () => {
-    const items = await getTopTracks();
+    const items = await getTopTracks("long_term");
     if (items) {
       console.log("Tracks came back");
       const formattedTracks = packTracks(items);
