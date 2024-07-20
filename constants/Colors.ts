@@ -22,3 +22,5 @@ export const Colors = {
     text: "#F0E5E7",
   },
 };
+
+// StyleSheet.create({});
