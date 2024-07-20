@@ -11,6 +11,10 @@ things with a user's music library. See more information below.
 ![Lines of code](https://tokei.rs/b1/github/willemw-01/spotifyplus)
 [![](https://tokei.rs/b1/github/XAMPPRocky/tokei?category=lines)](https://github.com/willemw-01/tokei).
 
+## Demo
+
+https://github.com/user-attachments/assets/c99918b1-a6c6-4784-a697-8da8cc8db15d
+
 ## Installation
 
 These instructions will get you a copy of the project up and running on your
