@@ -15,6 +15,10 @@ export function useUser() {
     itemType: "artists" | "tracks";
   }
 
+  interface GetAllTopProps {
+    itemType: "artists" | "tracks";
+  }
+
   const getTopItems = async ({
     itemType,
     timeRange,
@@ -41,6 +45,26 @@ export function useUser() {
     return data.items;
   };
 
+  const getAllTopItems = async ({
+    itemType,
+  }: GetAllTopProps): Promise<TopTrack[] | TopArtist[] | null> => {
+    const url = `https://api.spotify.com/v1/me/top/${itemType}`;
+    const limit = 50;
+    let total = 51;
+    const items = [] as TopTrack[] | TopArtist[];
+
+    for (let offset = 0; offset < total; offset += limit) {
+      const currUrl = url + `?offset=${offset}&limit=${limit}`;
+      const response = await buildGet(currUrl);
+
+      const data = await response.json();
+      total = data.total;
+      items.push(...data.items);
+    }
+
+    return items;
+  };
+
   const getTopArtists = async (
     timeRange?: "short_term" | "medium_term" | "long_term",
     limit?: number,
@@ -53,6 +77,14 @@ export function useUser() {
       offset,
     })) as TopArtist[];
 
+    return artists;
+  };
+
+  const getTopArtistsAll = async (): Promise<TopArtist[] | null> => {
+    const artists = (await getAllTopItems({
+      itemType: "artists",
+    })) as TopArtist[];
+    console.log(artists == null);
     return artists;
   };
 
@@ -73,6 +105,7 @@ export function useUser() {
 
   return {
     getTopArtists,
+    getTopArtistsAll,
     getTopTracks,
   };
 }
