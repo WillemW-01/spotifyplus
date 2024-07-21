@@ -4,6 +4,10 @@ import { useUser } from "./useUser";
 import { Data } from "react-native-vis-network";
 import { getNeighbours, PackedArtist } from "@/utils/graphUtils";
 import { useArtist } from "./useArtist";
+import { usePlayLists } from "./usePlayList";
+import { PlayListObject } from "@/interfaces/playlists";
+import { Track } from "@/interfaces/tracks";
+import { dedup, dedupObjArray } from "@/utils/miscUtils";
 
 interface Edge {
   from: number;
@@ -15,9 +19,11 @@ export function useGraphData() {
   const [graphData, setGraphData] = useState<Data>({ nodes: [], edges: [] });
   const [loading, setLoading] = useState(false);
   const artists = useRef<PackedArtist[]>([]);
+  const tracks = useRef<PackedPlaylistObject[]>([]);
 
   const { getTopArtistsAll } = useUser();
   const { getArtistGenres } = useArtist();
+  const { getPlayListItemsAll } = usePlayLists();
 
   const packArtistItem = useCallback(
     (artistItem: TopArtist, index: number) => ({
@@ -32,19 +38,48 @@ export function useGraphData() {
     []
   );
 
+  interface PackedTrack extends Omit<Track, "id"> {
+    id: number;
+    guid: string;
+  }
+
+  interface PackedPlaylistObject extends PlayListObject {
+    track: PackedTrack;
+  }
+
+  const packPlayListItem = useCallback(
+    (playListItem: PlayListObject, index: number): PackedPlaylistObject => ({
+      added_at: playListItem.added_at,
+      added_by: playListItem.added_by,
+      is_local: playListItem.is_local,
+      track: {
+        ...playListItem.track,
+        id: index,
+        guid: playListItem.track.id,
+      },
+    }),
+    []
+  );
+
   const packArtists = useCallback(
     (artists: TopArtist[]): PackedArtist[] => artists.map(packArtistItem),
     [packArtistItem]
   );
 
+  const packPlayListItems = useCallback(
+    (playLists: PlayListObject[]): PackedPlaylistObject[] =>
+      playLists.map(packPlayListItem),
+    [packPlayListItem]
+  );
+
   const alreadyConnected = (
-    artistFrom: PackedArtist,
-    artistTo: PackedArtist,
+    nodeFrom: PackedArtist | PackedTrack,
+    nodeTo: PackedArtist | PackedTrack,
     edges: Edge[]
   ): number => {
     for (let i = 0; i < edges.length; i++) {
-      const fromTo = edges[i].from === artistFrom.id && edges[i].to === artistTo.id;
-      const toFrom = edges[i].to === artistFrom.id && edges[i].from === artistTo.id;
+      const fromTo = edges[i].from === nodeFrom.id && edges[i].to === nodeTo.id;
+      const toFrom = edges[i].to === nodeFrom.id && edges[i].from === nodeTo.id;
       if (fromTo || toFrom) {
         return i;
       }
@@ -105,7 +140,7 @@ export function useGraphData() {
     [artists]
   );
 
-  const fetchArtists = useCallback(async () => {
+  const buildGraphArtists = useCallback(async () => {
     setLoading(true);
     try {
       const items = await getTopArtistsAll();
@@ -144,11 +179,144 @@ export function useGraphData() {
     [getNeighbours, graphData.edges]
   );
 
+  const removeDuplicates = (artists: FlatArtist[]): FlatArtist[] => {
+    const seen = new Set<string>();
+    return artists.filter((artist) => {
+      const duplicate = seen.has(artist.guid);
+      seen.add(artist.guid);
+      return !duplicate;
+    });
+  };
+
+  const getAllArtists = (tracks: PackedPlaylistObject[]) => {
+    let artists = [] as FlatArtist[];
+    tracks.forEach((track) => {
+      const flatArtists = track.track.artists.map(
+        (a) => ({ id: 0, guid: a.id, name: a.name } as FlatArtist)
+      );
+      console.log("Artist names: ", flatArtists);
+      artists.push(...flatArtists);
+    });
+
+    artists = removeDuplicates(artists);
+
+    return artists.map((a, i) => ({ ...a, id: i }));
+  };
+
+  const shareMutualArtists = (trackFrom: PackedTrack, trackTo: PackedTrack) => {
+    return trackFrom.artists.some((artistFrom) =>
+      trackTo.artists.some((artistTo) => artistFrom.id === artistTo.id)
+    );
+  };
+
+  const connectMutualTracks = useCallback(
+    (trackFrom: PackedTrack, trackTo: PackedTrack, cumulatedEdges: Edge[]) => {
+      // first, connect two tracks if they share any artists
+      if (shareMutualArtists(trackFrom, trackTo)) {
+        const connected = alreadyConnected(trackFrom, trackTo, cumulatedEdges);
+        if (connected >= 0) {
+          return;
+        } else {
+          cumulatedEdges.push({
+            from: trackFrom.id,
+            to: trackTo.id,
+            value: 1,
+          });
+        }
+      }
+    },
+    []
+  );
+
+  interface FlatArtist {
+    id: number;
+    guid: string;
+    name: string;
+  }
+
+  const connectTracksToArtists = useCallback(
+    (tracks: PackedPlaylistObject[], allArtists: FlatArtist[]) => {
+      const tempEdges = [] as Edge[];
+      tracks.forEach((from, i) => {
+        from.track.artists.forEach((artist) => {
+          const index = allArtists.findIndex((a) => a.guid === artist.id);
+          if (index >= 0) {
+            tempEdges.push({
+              from: i,
+              to: index + tracks.length,
+              value: 1,
+            });
+          }
+        });
+      });
+      return tempEdges;
+    },
+    [getNeighbours, graphData.edges]
+  );
+
+  const connectTracksViaGenres = useCallback(
+    (tracks: PackedPlaylistObject[]) => {
+      const tempEdges = [] as Edge[];
+      tracks.forEach((from, i) => {
+        tracks.forEach((to, j) => {
+          if (i !== j) {
+            connectMutualTracks(from.track, to.track, tempEdges);
+          }
+        });
+      });
+      return tempEdges;
+    },
+    [getNeighbours, graphData.edges]
+  );
+
+  const buildGraphPlaylist = async (playListId: string) => {
+    setLoading(true);
+    try {
+      const response = await getPlayListItemsAll(playListId);
+      console.log(`Got back ${response.length} items!`);
+      const formattedItems = packPlayListItems(response);
+
+      const allArtists = getAllArtists(formattedItems);
+      tracks.current = formattedItems;
+      const tempNodes = formattedItems.map((item) => {
+        return {
+          id: item.track.id,
+          label: item.track.name,
+          shape: "dot",
+        };
+      });
+
+      tempNodes.push(
+        ...allArtists.map((a) => ({
+          id: a.id + formattedItems.length,
+          label: a.name,
+          shape: "dot",
+          color: "#ff0000",
+          mass: 5,
+        }))
+      );
+      const tempEdges = connectTracksToArtists(formattedItems, allArtists);
+      console.log(`Edges Length: ${tempEdges.length}`);
+
+      setGraphData({
+        nodes: tempNodes,
+        edges: tempEdges,
+      });
+      console.log("Done connecting!");
+    } catch (error) {
+      console.log("Failed to fetch playlists: ", error);
+    } finally {
+      console.log("Setting loading to false");
+      setLoading(false);
+    }
+  };
+
   return {
     graphData,
     artists: artists.current,
     loading,
-    fetchArtists,
+    buildGraphArtists,
+    buildGraphPlaylist,
     getArtistNeighbours,
   };
 }

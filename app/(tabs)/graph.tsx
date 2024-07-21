@@ -4,21 +4,20 @@ import BrandGradient from "@/components/BrandGradient";
 import { usePlayback } from "@/hooks/usePlayback";
 import { useGraphData } from "@/hooks/useGraphData";
 import { useArtist } from "@/hooks/useArtist";
-import {
-  Text,
-  View,
-  StyleSheet,
-  Modal,
-  ModalBaseProps,
-  Pressable,
-  TouchableOpacity,
-} from "react-native";
+import { Text, View, StyleSheet } from "react-native";
 import { getNeighbours } from "@/utils/graphUtils";
 import GraphButtonPlay from "@/components/GraphButtonPlay";
 import { shuffleArray } from "@/utils/miscUtils";
 import GraphControls from "@/components/ZoomControls";
-import { SafeAreaView } from "react-native-safe-area-context";
 import GraphModal from "@/components/GraphModal";
+import { usePlayLists } from "@/hooks/usePlayList";
+
+const PHYSICS = {
+  barnesHut: "barnesHut",
+  forceAtlas2Based: "forceAtlas2Based",
+  repulsion: "repulsion",
+  hierarchicalRepulsion: "hierarchicalRepulsion",
+};
 
 export default function Graph() {
   const [selectedArtist, setSelectedArtist] = useState<number>(-1);
@@ -27,7 +26,8 @@ export default function Graph() {
   const [hasChosen, setHasChosen] = useState(false);
   const [modalVisible, setModalVisible] = useState(true);
 
-  const { graphData, loading, artists, fetchArtists } = useGraphData();
+  const { graphData, loading, artists, buildGraphArtists, buildGraphPlaylist } =
+    useGraphData();
 
   const { getTopTracks } = useArtist();
   const { playTracks } = usePlayback();
@@ -65,12 +65,12 @@ export default function Graph() {
       const subscription = visNetworkRef.current.addEventListener(
         "click",
         async (event: any) => {
-          console.log(JSON.stringify(event));
+          // console.log(JSON.stringify(event));
 
           if (event.nodes.length > 0) {
             const currNode = event.nodes[0];
             // const neighbours = await getImmediateNeighbours(currNode);
-            setSelectedArtist(currNode);
+            // setSelectedArtist(currNode);
           } else if (event.nodes.length == 0) {
             setSelectedArtist(-1);
           }
@@ -80,12 +80,6 @@ export default function Graph() {
       return subscription.remove;
     }
   }, [graphReady]);
-
-  useEffect(() => {
-    if (hasChosen) {
-      fetchArtists();
-    }
-  }, [hasChosen]);
 
   if (loading) {
     return (
@@ -100,8 +94,8 @@ export default function Graph() {
       <GraphModal
         visible={modalVisible}
         setVisible={setModalVisible}
-        onArtist={() => console.log("Ran artists!")}
-        onPlaylist={(playlistId: string) => console.log("Chose: ", playlistId)}
+        onArtist={() => buildGraphArtists()}
+        onPlaylist={(playlistId: string) => buildGraphPlaylist(playlistId)}
         setHasChosen={setHasChosen}
       />
     );
@@ -114,10 +108,11 @@ export default function Graph() {
         options={{
           nodes: { color: { background: "#0d1030" } },
           edges: {
-            color: { color: "#0d1030", highlight: "#e9495f" },
+            color: { color: "#57585c44", highlight: "#e9495f" },
             scaling: { min: 1, max: 6 },
+            hidden: false,
           },
-          physics: { enabled: true },
+          physics: { enabled: true, solver: PHYSICS.barnesHut },
         }}
         onLoad={() => setGraphReady(true)}
         ref={visNetworkRef}

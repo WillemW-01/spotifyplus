@@ -1,4 +1,4 @@
-import { PlayListItems, PlayListResponse } from "@/interfaces/playlists";
+import { PlayListItems, PlayListObject, PlayListResponse } from "@/interfaces/playlists";
 
 import { useRequestBuilder } from "./useRequestBuilder";
 
@@ -20,28 +20,31 @@ export function usePlayLists() {
     return playlists;
   };
 
-  const getPlayListItems = async (playListId: string) => {
-    try {
-      console.log("Fetching ids");
-      const url = `https://api.spotify.com/v1/playlists/${playListId}/tracks`;
+  const getPlayListItemsPage = async (playListId: string, limit = 100, offset = 0) => {
+    console.log("Fetching ids");
+    const url = `https://api.spotify.com/v1/playlists/${playListId}/tracks?limit=${limit}&offset=${offset}`;
+    const response = await buildGet(url);
+    const data: PlayListItems = await response.json();
+    console.log(
+      `This playlist can return ${data.total} items, now at offset: ${data.offset}, with limit: ${data.limit}`
+    );
+    return data;
+  };
 
-      const response = await buildGet(url);
-
-      if (!response.ok) {
-        console.log("Didn't fetch playlist ids okay! ", response.status);
-        return null;
-      }
-
-      const data: PlayListItems = await response.json();
-
-      return data.items;
-    } catch (error) {
-      console.log("Error when fetching ids: ", error);
+  const getPlayListItemsAll = async (playListId: string): Promise<PlayListObject[]> => {
+    const playlistItems = [] as PlayListObject[];
+    const limit = 50;
+    let page = await getPlayListItemsPage(playListId, 50, 0);
+    playlistItems.push(...page.items);
+    for (let offset = limit; offset < page.total; offset += limit) {
+      page = await getPlayListItemsPage(playListId, 50, offset);
+      playlistItems.push(...page.items);
     }
+    return playlistItems;
   };
 
   const getPlayListItemsIds = async (playListId: string): Promise<string[] | null> => {
-    const items = await getPlayListItems(playListId);
+    const items = await getPlayListItemsPage(playListId);
     if (items) {
       const filteredItems = items.map((item) => item.track.id);
       return filteredItems;
@@ -52,7 +55,8 @@ export function usePlayLists() {
 
   return {
     listPlayLists,
-    getPlayListItems,
+    getPlayListItemsPage,
+    getPlayListItemsAll,
     getPlayListItemsIds,
   };
 }

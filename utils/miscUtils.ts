@@ -9,3 +9,7 @@ export function shuffleArray(array: any[]) {
 export function dedup(array: any[]) {
   return [...new Set(array)];
 }
+
+export function dedupObjArray(array: any[]) {
+  return array.filter((item, index) => array.indexOf(item) === index);
+}
