@@ -4,16 +4,28 @@ import BrandGradient from "@/components/BrandGradient";
 import { usePlayback } from "@/hooks/usePlayback";
 import { useGraphData } from "@/hooks/useGraphData";
 import { useArtist } from "@/hooks/useArtist";
-import { Text, View, StyleSheet } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  Modal,
+  ModalBaseProps,
+  Pressable,
+  TouchableOpacity,
+} from "react-native";
 import { getNeighbours } from "@/utils/graphUtils";
 import GraphButtonPlay from "@/components/GraphButtonPlay";
 import { shuffleArray } from "@/utils/miscUtils";
-import ZoomControls from "@/components/ZoomControls";
+import GraphControls from "@/components/ZoomControls";
+import { SafeAreaView } from "react-native-safe-area-context";
+import GraphModal from "@/components/GraphModal";
 
 export default function Graph() {
   const [selectedArtist, setSelectedArtist] = useState<number>(-1);
   const visNetworkRef = useRef<VisNetworkRef>(null);
   const [graphReady, setGraphReady] = useState(false);
+  const [hasChosen, setHasChosen] = useState(false);
+  const [modalVisible, setModalVisible] = useState(true);
 
   const { graphData, loading, artists, fetchArtists } = useGraphData();
 
@@ -70,14 +82,28 @@ export default function Graph() {
   }, [graphReady]);
 
   useEffect(() => {
-    fetchArtists();
-  }, []);
+    if (hasChosen) {
+      fetchArtists();
+    }
+  }, [hasChosen]);
 
   if (loading) {
     return (
       <View>
         <Text>Loading...</Text>
       </View>
+    );
+  }
+
+  if (!hasChosen) {
+    return (
+      <GraphModal
+        visible={modalVisible}
+        setVisible={setModalVisible}
+        onArtist={() => console.log("Ran artists!")}
+        onPlaylist={(playlistId: string) => console.log("Chose: ", playlistId)}
+        setHasChosen={setHasChosen}
+      />
     );
   }
 
@@ -106,7 +132,7 @@ export default function Graph() {
           iconName="play-outline"
         />
       </View>
-      <ZoomControls graphRef={visNetworkRef} />
+      <GraphControls graphRef={visNetworkRef} setHasChosen={setHasChosen} />
     </BrandGradient>
   );
 }
