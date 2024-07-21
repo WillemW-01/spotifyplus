@@ -9,6 +9,10 @@ import { useAuth } from "@/hooks/AuthContext";
 import { usePlayLists } from "@/hooks/usePlayList";
 import { usePlayback } from "@/hooks/usePlayback";
 import { useTracks } from "@/hooks/useTracks";
+import { useArtist } from "@/hooks/useArtist";
+
+const KAHAN_ARTIST_ID = "2RQXRUsr4IW1f3mKyKsy4B";
+const KAHAN_ALBUM_ID = "50ZenUP4O2Q5eCy2NRNvuz";
 
 export default function Debug() {
   const {
@@ -24,6 +28,7 @@ export default function Debug() {
   const { clearToken, authorized } = useAuth();
   const { getRecent, getTracksNames, getTrackInfo } = useTracks();
   const { listPlayLists, getPlayListItemsIds } = usePlayLists();
+  const { getArtistGenres } = useArtist();
 
   const [recent, setRecent] = useState<string[]>([]);
   const [playLists, setPlayLists] = useState<SimplifiedPlayList[]>([]);
@@ -121,6 +126,11 @@ export default function Debug() {
         />
         <Button title="Clear tokens" onPress={clearTokens} />
         <Button title="Open Spotify" onPress={openSpotify} />
+
+        <Button
+          title="Get Artist Genres"
+          onPress={() => getArtistGenres("2RQXRUsr4IW1f3mKyKsy4B", 0)}
+        />
 
         <Text>Should shuffle: {String(shouldShuffle)}</Text>
 

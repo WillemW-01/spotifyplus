@@ -4,6 +4,7 @@ import { TopArtist } from "@/interfaces/topItems";
 interface Edge {
   from: number;
   to: number;
+  value: number;
 }
 
 // interface Node {
@@ -69,12 +70,37 @@ export const getNeighbours = (
   return [...new Set(neighbours)];
 };
 
+const alreadyConnected = (
+  artistFrom: PackedArtist,
+  artistTo: PackedArtist,
+  edges: Edge[]
+): number => {
+  for (let i = 0; i < edges.length; i++) {
+    const fromToExists = edges[i].from === artistFrom.id && edges[i].to === artistTo.id;
+    const toFromExists = edges[i].to === artistFrom.id && edges[i].from === artistTo.id;
+    console.log(
+      `FromTo: ${fromToExists}, ToFrom: ${toFromExists}, edgesLength: ${edges.length}`
+    );
+    if (fromToExists || toFromExists) {
+      return i;
+    }
+  }
+  return -1;
+};
+
 const connectMutalGenres = (artistFrom: PackedArtist, artistTo: PackedArtist): Edge[] => {
   const edges = [] as Edge[];
 
   artistFrom.genres.forEach((genre) => {
     if (artistTo.genres.includes(genre)) {
-      edges.push({ from: artistFrom.id, to: artistTo.id });
+      const connected = alreadyConnected(artistFrom, artistTo, edges);
+      if (connected >= 0) {
+        console.log("Already connected!, new value: ", edges[connected].value + 1);
+        edges[connected].value += 1;
+      } else {
+        console.log("New edge: ", artistFrom.id, artistTo.id, "edgesLen: ", edges.length);
+        edges.push({ from: artistFrom.id, to: artistTo.id, value: 1 });
+      }
     }
   });
   return edges;

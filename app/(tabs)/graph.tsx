@@ -49,15 +49,14 @@ export default function Graph() {
   };
 
   useEffect(() => {
-    if (visNetworkRef.current) {
+    if (!loading && graphReady && visNetworkRef.current) {
       const subscription = visNetworkRef.current.addEventListener(
         "click",
         async (event: any) => {
-          // console.log(JSON.stringify(event));
+          console.log(JSON.stringify(event));
 
           if (event.nodes.length > 0) {
             const currNode = event.nodes[0];
-            console.log(`Node clicked: ${currNode}`);
             // const neighbours = await getImmediateNeighbours(currNode);
             setSelectedArtist(currNode);
           } else if (event.nodes.length == 0) {
@@ -88,7 +87,10 @@ export default function Graph() {
         data={graphData}
         options={{
           nodes: { color: { background: "#0d1030" } },
-          edges: { color: { color: "#0d1030", highlight: "#e9495f" } },
+          edges: {
+            color: { color: "#0d1030", highlight: "#e9495f" },
+            scaling: { min: 1, max: 6 },
+          },
           physics: { enabled: true },
         }}
         onLoad={() => setGraphReady(true)}

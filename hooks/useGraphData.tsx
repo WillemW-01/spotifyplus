@@ -3,10 +3,12 @@ import { useCallback, useRef, useState } from "react";
 import { useUser } from "./useUser";
 import { Data } from "react-native-vis-network";
 import { getNeighbours, PackedArtist } from "@/utils/graphUtils";
+import { useArtist } from "./useArtist";
 
 interface Edge {
   from: number;
   to: number;
+  value: number;
 }
 
 export function useGraphData() {
@@ -15,6 +17,7 @@ export function useGraphData() {
   const artists = useRef<PackedArtist[]>([]);
 
   const { getTopArtistsAll } = useUser();
+  const { getArtistGenres } = useArtist();
 
   const packArtistItem = useCallback(
     (artistItem: TopArtist, index: number) => ({
@@ -34,16 +37,40 @@ export function useGraphData() {
     [packArtistItem]
   );
 
-  const connectMutalGenres = useCallback(
-    (artistFrom: PackedArtist, artistTo: PackedArtist): Edge[] => {
-      const edges = [] as Edge[];
+  const alreadyConnected = (
+    artistFrom: PackedArtist,
+    artistTo: PackedArtist,
+    edges: Edge[]
+  ): number => {
+    for (let i = 0; i < edges.length; i++) {
+      const fromTo = edges[i].from === artistFrom.id && edges[i].to === artistTo.id;
+      const toFrom = edges[i].to === artistFrom.id && edges[i].from === artistTo.id;
+      if (fromTo || toFrom) {
+        return i;
+      }
+    }
+    return -1;
+  };
 
-      artistFrom.genres.forEach((genre) => {
+  const connectMutalGenres = useCallback(
+    (artistFrom: PackedArtist, artistTo: PackedArtist, cumulatedEdges: Edge[]) => {
+      // if (artistFrom.genres.length == 0) {
+      //   console.log(`Artist ${artistFrom.guid} has no genres, skipping`);
+      // }
+      for (const genre of artistFrom.genres) {
         if (artistTo.genres.includes(genre)) {
-          edges.push({ from: artistFrom.id, to: artistTo.id });
+          const connected = alreadyConnected(artistFrom, artistTo, cumulatedEdges);
+          if (connected >= 0) {
+            cumulatedEdges[connected].value += 1;
+          } else {
+            cumulatedEdges.push({
+              from: artistFrom.id,
+              to: artistTo.id,
+              value: 1,
+            });
+          }
         }
-      });
-      return edges;
+      }
     },
     []
   );
@@ -51,13 +78,11 @@ export function useGraphData() {
   const connectArtists = useCallback(
     (artists: PackedArtist[]): Edge[] => {
       const tempEdges = [] as Edge[];
+
       for (let i = 0; i < artists.length; i++) {
         for (let j = 0; j < artists.length; j++) {
           if (i !== j) {
-            const edges = connectMutalGenres(artists[i], artists[j]);
-            if (edges.length > 0) {
-              tempEdges.push(...edges);
-            }
+            connectMutalGenres(artists[i], artists[j], tempEdges);
           }
         }
       }
@@ -67,6 +92,19 @@ export function useGraphData() {
     [connectMutalGenres]
   );
 
+  // Unused: because spotify doesn't give you genre info...
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const buildArtistGenreMap = useCallback(
+    async (artists: TopArtist[]) => {
+      for (let i = 0; i < artists.length; i++) {
+        console.log("Build progress: ", ((i / artists.length) * 100).toFixed(1), "%");
+        const genres = await getArtistGenres(artists[i].id, 1);
+        artists[i].genres = artists[i].genres.concat(...genres);
+      }
+    },
+    [artists]
+  );
+
   const fetchArtists = useCallback(async () => {
     setLoading(true);
     try {
@@ -74,6 +112,8 @@ export function useGraphData() {
       console.log("Got artists!");
       if (items) {
         console.log("Artsts came back");
+        // await buildArtistGenreMap(items);
+        // console.log(artists);
         const formattedArtists = packArtists(items);
         artists.current = formattedArtists;
         console.log("artists length: ", artists.current.length);

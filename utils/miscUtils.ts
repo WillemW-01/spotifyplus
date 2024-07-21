@@ -5,3 +5,7 @@ export function shuffleArray(array: any[]) {
   }
   return array;
 }
+
+export function dedup(array: any[]) {
+  return [...new Set(array)];
+}
