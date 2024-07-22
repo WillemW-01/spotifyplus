@@ -5,10 +5,10 @@ import { View } from "react-native";
 
 interface Props {
   graphRef: React.RefObject<VisNetworkRef>;
-  setHasChosen: React.Dispatch<React.SetStateAction<boolean>>;
+  resetGraph: () => void;
 }
 
-export default function GraphControls({ graphRef: visNetworkRef, setHasChosen }: Props) {
+export default function GraphControls({ graphRef: visNetworkRef, resetGraph }: Props) {
   const zoom = useRef(1);
 
   const zoomIn = () => {
@@ -40,7 +40,7 @@ export default function GraphControls({ graphRef: visNetworkRef, setHasChosen }:
 
   return (
     <View style={{ position: "absolute", top: 40, right: 10, gap: 10 }}>
-      <GraphButton onPress={() => setHasChosen(false)} iconName="refresh" />
+      <GraphButton onPress={resetGraph} iconName="refresh" />
       <GraphButton onPress={resetZoom} iconName="scan-outline" />
       <GraphButton onPress={zoomIn} iconName="add-outline" />
       <GraphButton onPress={zoomOut} iconName="remove-outline" />

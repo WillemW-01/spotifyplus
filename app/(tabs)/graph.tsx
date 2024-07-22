@@ -20,24 +20,32 @@ const PHYSICS = {
 };
 
 export default function Graph() {
-  const [selectedArtist, setSelectedArtist] = useState<number>(-1);
+  const [key, setKey] = useState(0);
+  const [selectedNode, setSelectedNode] = useState<number>(-1);
   const visNetworkRef = useRef<VisNetworkRef>(null);
   const [graphReady, setGraphReady] = useState(false);
   const [hasChosen, setHasChosen] = useState(false);
   const [modalVisible, setModalVisible] = useState(true);
 
-  const { graphData, loading, artists, buildGraphArtists, buildGraphPlaylist } =
+  const { graphData, loading, artists, buildGraphArtists, buildGraphPlaylist, tracks } =
     useGraphData();
 
   const { getTopTracks } = useArtist();
   const { playTracks } = usePlayback();
 
+  const getNodeName = (nodeId: number) => {
+    console.log("Artists: ", artists.length, "Tracks: ", tracks.length);
+    if (artists.length > 0) return artists[nodeId].title;
+    if (tracks.length > 0) return tracks[nodeId].track.name;
+    return "";
+  };
+
   const playArtistAndNeighbours = async (nodeId: number, degree = 1 | 2) => {
-    if (selectedArtist == -1) {
+    if (selectedNode == -1) {
       return;
     }
     const neighbours = getNeighbours(nodeId, degree, graphData.edges);
-    console.log("Neighbours: ", neighbours);
+    console.log("Playing neighbours: ", neighbours);
     if (neighbours.length === 0) {
       neighbours.push(nodeId);
     }
@@ -60,8 +68,15 @@ export default function Graph() {
     }
   };
 
-  useEffect(() => {
-    if (!loading && graphReady && visNetworkRef.current) {
+  const resetGraph = async () => {
+    setSelectedNode(-1);
+    setHasChosen(false);
+    setGraphReady(false);
+    setKey((prev) => prev + 1);
+  };
+
+  const setupEventListener = () => {
+    if (visNetworkRef.current) {
       const subscription = visNetworkRef.current.addEventListener(
         "click",
         async (event: any) => {
@@ -70,16 +85,22 @@ export default function Graph() {
           if (event.nodes.length > 0) {
             const currNode = event.nodes[0];
             // const neighbours = await getImmediateNeighbours(currNode);
-            // setSelectedArtist(currNode);
+            setSelectedNode(currNode);
           } else if (event.nodes.length == 0) {
-            setSelectedArtist(-1);
+            setSelectedNode(-1);
           }
         }
       );
 
       return subscription.remove;
     }
-  }, [graphReady]);
+  };
+
+  useEffect(() => {
+    if (!loading && graphReady && visNetworkRef.current) {
+      return setupEventListener();
+    }
+  }, [graphReady, loading]);
 
   if (loading) {
     return (
@@ -95,7 +116,12 @@ export default function Graph() {
         visible={modalVisible}
         setVisible={setModalVisible}
         onArtist={() => buildGraphArtists()}
-        onPlaylist={(playlistId: string) => buildGraphPlaylist(playlistId)}
+        onPlaylist={(playlistId: string) =>
+          buildGraphPlaylist(playlistId).then(() => {
+            setGraphReady(true);
+            setHasChosen(true);
+          })
+        }
         setHasChosen={setHasChosen}
       />
     );
@@ -104,9 +130,16 @@ export default function Graph() {
   return (
     <BrandGradient>
       <VisNetwork
+        key={key}
         data={graphData}
         options={{
-          nodes: { color: { background: "#0d1030" } },
+          nodes: {
+            borderWidthSelected: 4,
+            color: {
+              background: "#0d1030",
+              highlight: { background: "white", border: "#0d1030" },
+            },
+          },
           edges: {
             color: { color: "#57585c44", highlight: "#e9495f" },
             scaling: { min: 1, max: 6 },
@@ -114,20 +147,23 @@ export default function Graph() {
           },
           physics: { enabled: true, solver: PHYSICS.barnesHut },
         }}
-        onLoad={() => setGraphReady(true)}
+        onLoad={() => {
+          setGraphReady(true);
+          setupEventListener();
+        }}
         ref={visNetworkRef}
       />
       <View style={styles.bottomContainer}>
         <Text style={{ fontSize: 22, color: "#0d1030", flex: 1 }}>
-          Selected: {selectedArtist >= 0 ? artists[selectedArtist].title : ""}
+          Selected: {selectedNode >= 0 ? getNodeName(selectedNode) : ""}
         </Text>
         <GraphButtonPlay
-          playImmediate={() => playArtistAndNeighbours(selectedArtist, 1)}
-          playSecondDegree={() => playArtistAndNeighbours(selectedArtist, 2)}
+          playImmediate={() => playArtistAndNeighbours(selectedNode, 1)}
+          playSecondDegree={() => playArtistAndNeighbours(selectedNode, 2)}
           iconName="play-outline"
         />
       </View>
-      <GraphControls graphRef={visNetworkRef} setHasChosen={setHasChosen} />
+      <GraphControls graphRef={visNetworkRef} resetGraph={resetGraph} />
     </BrandGradient>
   );
 }
