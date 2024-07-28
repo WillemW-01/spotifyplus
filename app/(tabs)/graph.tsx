@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import VisNetwork, { VisNetworkRef } from "react-native-vis-network";
 import BrandGradient from "@/components/BrandGradient";
 import { usePlayback } from "@/hooks/usePlayback";
@@ -11,6 +11,8 @@ import { shuffleArray } from "@/utils/miscUtils";
 import GraphControls from "@/components/ZoomControls";
 import GraphModal from "@/components/GraphModal";
 import { usePlayLists } from "@/hooks/usePlayList";
+import { useFocusEffect } from "expo-router";
+import SettingsView from "@/components/SettingsView";
 
 const PHYSICS = {
   barnesHut: "barnesHut",
@@ -25,7 +27,8 @@ export default function Graph() {
   const visNetworkRef = useRef<VisNetworkRef>(null);
   const [graphReady, setGraphReady] = useState(false);
   const [hasChosen, setHasChosen] = useState(false);
-  const [modalVisible, setModalVisible] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [settingsVisible, setSettingsVisible] = useState(false);
 
   const { graphData, loading, artists, buildGraphArtists, buildGraphPlaylist, tracks } =
     useGraphData();
@@ -163,7 +166,25 @@ export default function Graph() {
           iconName="play-outline"
         />
       </View>
-      <GraphControls graphRef={visNetworkRef} resetGraph={resetGraph} />
+      <View
+        style={{
+          position: "absolute",
+          top: 0,
+          right: 0,
+          gap: 10,
+          marginHorizontal: 10,
+          marginVertical: 20,
+          backgroundColor: "black",
+          flexDirection: "row-reverse",
+        }}
+      >
+        <GraphControls
+          graphRef={visNetworkRef}
+          resetGraph={resetGraph}
+          showSettings={() => setSettingsVisible((prev) => !prev)}
+        />
+        <SettingsView visible={settingsVisible} />
+      </View>
     </BrandGradient>
   );
 }
