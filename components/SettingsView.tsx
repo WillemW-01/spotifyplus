@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Modal,
   Text,
@@ -12,7 +12,9 @@ import {
 } from "react-native";
 import { ModalBaseProps } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
-import Slider from "@react-native-community/slider";
+import SettingSlider from "./SettingSlider";
+import { SettingsObjectType } from "@/constants/resolverObjects";
+import SettingsObject from "./SettingsObject";
 
 const PHYSICS = {
   barnesHut: "barnesHut",
@@ -24,11 +26,20 @@ const PHYSICS = {
 interface ModalProps extends ModalBaseProps {
   visible: boolean;
   setForce: React.Dispatch<React.SetStateAction<string>>;
+  setSlider: React.Dispatch<React.SetStateAction<number>>;
+  resolverObj: SettingsObjectType;
+  setResolverObj: React.Dispatch<React.SetStateAction<SettingsObjectType>>;
 }
 
-export default function SettingsView({ visible, setForce }: ModalProps) {
+export default function SettingsView({
+  visible,
+  setForce,
+  setSlider,
+  resolverObj,
+  setResolverObj,
+}: ModalProps) {
   const [internalForce, setInternalForce] = useState("barnesHut");
-  const [internalSlideValue, setInternalSlideValue] = useState(0.5);
+  // const [internalSlideValue, setInternalSlideValue] = useState(0.5);
 
   const [parentWidth, setParentWidth] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -76,12 +87,17 @@ export default function SettingsView({ visible, setForce }: ModalProps) {
         <ScrollView
           ref={scrollViewRef}
           horizontal
-          style={{ flex: 1, borderBottomLeftRadius: 12, borderBottomRightRadius: 12 }}
+          style={{
+            flex: 1,
+            borderBottomLeftRadius: 12,
+            borderBottomRightRadius: 12,
+          }}
           contentContainerStyle={{
             justifyContent: "center",
             alignContent: "center",
           }}
           pagingEnabled
+          indicatorStyle="black"
         >
           <View
             style={{
@@ -127,16 +143,22 @@ export default function SettingsView({ visible, setForce }: ModalProps) {
             }}
             contentContainerStyle={{
               gap: 10,
+              paddingBottom: 20,
             }}
           >
-            <Text style={{ fontSize: 20, color: "black" }}>Resolver settings:</Text>
-            <SettingSlider label="theta" />
-            <SettingSlider label="gravitationalConstant" />
-            <SettingSlider label="centralGravity" />
-            <SettingSlider label="springLength" />
-            <SettingSlider label="springConstant" />
-            <SettingSlider label="damping" />
-            <SettingSlider label="avoidOverlap" />
+            <SettingsObject
+              type={internalForce}
+              setResolverObj={setResolverObj}
+              resolverObj={resolverObj}
+            />
+            {/* <Text style={{ fontSize: 20, color: "black" }}>Resolver settings:</Text>
+            <SettingSlider label="theta" setValue={setSlider} />
+            <SettingSlider label="gravitationalConstant" setValue={setSlider} />
+            <SettingSlider label="centralGravity" setValue={setSlider} />
+            <SettingSlider label="springLength" setValue={setSlider} />
+            <SettingSlider label="springConstant" setValue={setSlider} />
+            <SettingSlider label="damping" setValue={setSlider} />
+            <SettingSlider label="avoidOverlap" setValue={setSlider} /> */}
           </ScrollView>
           <View
             style={{
@@ -252,37 +274,3 @@ const physicsSettings = {
     avoidOverlap: 0,
   },
 };
-
-interface Props {
-  label: string;
-}
-
-function SettingSlider({ label }: Props) {
-  const [internalSlideValue, setInternalSlideValue] = useState(0.5);
-
-  return (
-    <View
-      style={{
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: 5,
-      }}
-    >
-      <Text style={{ fontSize: 15, color: "black", flex: 1 }}>{label}</Text>
-      <Slider
-        style={{
-          width: 120,
-          backgroundColor: "white",
-          maxHeight: 30,
-        }}
-        onValueChange={(value) => setInternalSlideValue(value)}
-        minimumValue={0}
-        maximumValue={1}
-        minimumTrackTintColor="#FFFFFF"
-        maximumTrackTintColor="#000000"
-      />
-      <Text>{internalSlideValue.toFixed(2)}</Text>
-    </View>
-  );
-}

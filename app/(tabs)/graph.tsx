@@ -13,6 +13,7 @@ import GraphModal from "@/components/GraphModal";
 import { usePlayLists } from "@/hooks/usePlayList";
 import { useFocusEffect } from "expo-router";
 import SettingsView from "@/components/SettingsView";
+import { resolvers, SettingsObjectType } from "@/constants/resolverObjects";
 
 const PHYSICS = {
   barnesHut: "barnesHut",
@@ -31,6 +32,8 @@ export default function Graph() {
   const [settingsVisible, setSettingsVisible] = useState(false);
 
   const [force, setForce] = useState("barnesHut");
+  const [slider, setSlider] = useState(0.5);
+  const [resolverObj, setResolverObj] = useState<SettingsObjectType>(resolvers.barnesHut);
 
   const { graphData, loading, artists, buildGraphArtists, buildGraphPlaylist, tracks } =
     useGraphData();
@@ -97,13 +100,36 @@ export default function Graph() {
         }
       );
 
+      visNetworkRef.current.setOptions({
+        physics: {
+          barnesHut: {
+            centralGravity: 5,
+          },
+        },
+      });
+
       return subscription.remove;
     }
   };
 
   useEffect(() => {
     console.log("Force: ", force);
+    if (!loading && graphReady && visNetworkRef.current) {
+      setResolverObj(resolvers[`${force}`]);
+    }
   }, [force]);
+
+  useEffect(() => {
+    console.log("Calling this effect");
+    if (!loading && graphReady && visNetworkRef.current && resolverObj) {
+      console.log("Updating settings with resolverObj: ", resolverObj);
+      visNetworkRef.current.setOptions({
+        physics: {
+          [`${force}`]: resolverObj.values,
+        },
+      });
+    }
+  }, [graphReady, loading, resolverObj]);
 
   useEffect(() => {
     if (!loading && graphReady && visNetworkRef.current) {
@@ -154,7 +180,12 @@ export default function Graph() {
             scaling: { min: 1, max: 6 },
             hidden: false,
           },
-          physics: { enabled: true, solver: force },
+          physics: {
+            enabled: true,
+            solver: force,
+            barnesHut: force === "barnesHut" ? resolverObj.values : {},
+            forceAtlas2Based: force === "forceAtlas2Based" ? resolverObj.values : {},
+          },
           // layout: { improvedLayout: true },
           groups: {
             group1: { color: { background: "red", borderWidth: 3 } },
@@ -193,7 +224,13 @@ export default function Graph() {
           resetGraph={resetGraph}
           showSettings={() => setSettingsVisible((prev) => !prev)}
         />
-        <SettingsView visible={settingsVisible} setForce={setForce} />
+        <SettingsView
+          visible={settingsVisible}
+          setForce={setForce}
+          setSlider={setSlider}
+          resolverObj={resolverObj}
+          setResolverObj={setResolverObj}
+        />
       </View>
     </BrandGradient>
   );
