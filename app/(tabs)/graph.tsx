@@ -31,10 +31,17 @@ export default function Graph() {
   const { getTopTracks } = useArtist();
   const { playTracks } = usePlayback();
 
-  const getNodeName = (nodeId: number) => {
+  const getNodeName = (nodeId: number): string => {
     console.log("Artists: ", artists.length, "Tracks: ", tracks.length);
-    if (artists.length > 0) return artists[nodeId].title;
-    if (tracks.length > 0) return tracks[nodeId].track.name;
+    if (artists.length > 0) {
+      console.log("Checking for the artist, id: ", nodeId, " name: ", artists[nodeId]);
+      return artists[nodeId].title;
+    }
+    if (tracks.length > 0) {
+      console.log("Checking for the track ");
+
+      return tracks[nodeId].track.name;
+    }
     return "";
   };
 
@@ -85,6 +92,7 @@ export default function Graph() {
             const currNode = event.nodes[0];
             // const neighbours = await getImmediateNeighbours(currNode);
             setSelectedNode(currNode);
+            console.log("Selected node: ", currNode);
           } else if (event.nodes.length == 0) {
             setSelectedNode(-1);
           }
