@@ -22,14 +22,7 @@ export default function SettingSlider({
   const [internalSlideValue, setInternalSlideValue] = useState(initial);
 
   return (
-    <View
-      style={
-        {
-          // alignItems: "center",
-          // justifyContent: "space-between",
-        }
-      }
-    >
+    <View>
       <Text style={{ fontSize: 15, color: "black", flex: 1 }}>{label}</Text>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
         <Slider
@@ -44,13 +37,15 @@ export default function SettingSlider({
           maximumValue={max || 5}
           step={step || 0.05}
           value={initial || 0.5}
-          minimumTrackTintColor="#dedede"
-          maximumTrackTintColor="#000000"
+          minimumTrackTintColor="#e9495e29"
+          maximumTrackTintColor="#1d235f"
         />
-        <Text style={{ width: 60, textAlign: "right" }}>
+        <Text style={{ width: 70, textAlign: "right" }}>
           {internalSlideValue && internalSlideValue.toFixed(3)}
         </Text>
       </View>
     </View>
   );
 }
+
+// StyleSheet.create({})

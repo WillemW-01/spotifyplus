@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import SettingSlider from "./SettingSlider";
 import React, { useState } from "react";
 import { resolvers, SettingsObjectType } from "@/constants/resolverObjects";
@@ -8,29 +8,38 @@ interface Props {
   type: keyof typeof resolvers;
   resolverObj: SettingsObjectType;
   setResolverObj: React.Dispatch<React.SetStateAction<SettingsObjectType>>;
+  parentWidth: number;
 }
 
-export default function SettingsObject({ type, resolverObj, setResolverObj }: Props) {
-  const [slider, setSlider] = useState(0);
+export default function ResolverSettings({
+  type,
+  resolverObj,
+  setResolverObj,
+  parentWidth,
+}: Props) {
   const [key, setKey] = useState(0);
 
   const updateValue = (key: string, value: number) => {
-    console.log(`Calling updateValue with key: ${key} and value: ${value}`);
     const tempObj = JSON.parse(JSON.stringify(resolverObj));
-    console.log(`Before: `, tempObj.values[`${key}`]);
     tempObj.values[`${key}`] = value;
-    console.log(`After: `, tempObj.values[`${key}`]);
     setResolverObj(tempObj);
   };
 
   const onReset = () => {
-    console.log("Changing to default: ", resolvers[`${type}`]);
+    console.log("Changing back to default: ", resolvers[`${type}`].values);
     setResolverObj(resolvers[`${type}`]);
     setKey((prev) => prev + 1);
   };
 
   return (
-    <View key={key} style={{ flex: 1, gap: 10 }}>
+    <ScrollView
+      key={key}
+      style={{ width: parentWidth, height: "100%", padding: 10, maxHeight: 171 }}
+      contentContainerStyle={{
+        gap: 10,
+        paddingBottom: 20,
+      }}
+    >
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <Text style={{ fontSize: 20, color: "black" }}>Resolver settings:</Text>
         <TouchableOpacity onPress={onReset}>
@@ -48,13 +57,6 @@ export default function SettingsObject({ type, resolverObj, setResolverObj }: Pr
           key={index}
         />
       ))}
-      {/* <SettingSlider label="theta" setValue={setSlider} />
-      <SettingSlider label="gravitationalConstant" setValue={setSlider} />
-      <SettingSlider label="centralGravity" setValue={setSlider} />
-      <SettingSlider label="springLength" setValue={setSlider} />
-      <SettingSlider label="springConstant" setValue={setSlider} />
-      <SettingSlider label="damping" setValue={setSlider} />
-      <SettingSlider label="avoidOverlap" setValue={setSlider} /> */}
-    </View>
+    </ScrollView>
   );
 }

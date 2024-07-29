@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import VisNetwork, { VisNetworkRef } from "react-native-vis-network";
 import BrandGradient from "@/components/BrandGradient";
 import { usePlayback } from "@/hooks/usePlayback";
@@ -10,17 +10,8 @@ import GraphButtonPlay from "@/components/GraphButtonPlay";
 import { shuffleArray } from "@/utils/miscUtils";
 import GraphControls from "@/components/ZoomControls";
 import GraphModal from "@/components/GraphModal";
-import { usePlayLists } from "@/hooks/usePlayList";
-import { useFocusEffect } from "expo-router";
 import SettingsView from "@/components/SettingsView";
 import { resolvers, SettingsObjectType } from "@/constants/resolverObjects";
-
-const PHYSICS = {
-  barnesHut: "barnesHut",
-  forceAtlas2Based: "forceAtlas2Based",
-  repulsion: "repulsion",
-  hierarchicalRepulsion: "hierarchicalRepulsion",
-};
 
 export default function Graph() {
   const [key, setKey] = useState(0);
@@ -32,7 +23,6 @@ export default function Graph() {
   const [settingsVisible, setSettingsVisible] = useState(false);
 
   const [force, setForce] = useState("barnesHut");
-  const [slider, setSlider] = useState(0.5);
   const [resolverObj, setResolverObj] = useState<SettingsObjectType>(resolvers.barnesHut);
 
   const { graphData, loading, artists, buildGraphArtists, buildGraphPlaylist, tracks } =
@@ -87,6 +77,7 @@ export default function Graph() {
     if (visNetworkRef.current) {
       const subscription = visNetworkRef.current.addEventListener(
         "click",
+        // eslint-disable-line @typescript-eslint/no-explicit-any
         async (event: any) => {
           // console.log(JSON.stringify(event));
 
@@ -102,9 +93,7 @@ export default function Graph() {
 
       visNetworkRef.current.setOptions({
         physics: {
-          barnesHut: {
-            centralGravity: 5,
-          },
+          barnesHut: {},
         },
       });
 
@@ -227,7 +216,6 @@ export default function Graph() {
         <SettingsView
           visible={settingsVisible}
           setForce={setForce}
-          setSlider={setSlider}
           resolverObj={resolverObj}
           setResolverObj={setResolverObj}
         />
