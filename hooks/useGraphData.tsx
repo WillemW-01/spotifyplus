@@ -356,7 +356,7 @@ export function useGraphData() {
 }
 
 const savedNodes = [
-  { id: 0, label: "Emily James", shape: "dot" },
+  { id: 0, label: "Emily James", shape: "dot", group: "group1" },
   { id: 1, label: "Trousdale", shape: "dot" },
   { id: 2, label: "The Paper Kites", shape: "dot" },
   { id: 3, label: "Hazlett", shape: "dot" },

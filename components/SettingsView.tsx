@@ -1,5 +1,6 @@
+import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   Modal,
   Text,
@@ -7,32 +8,149 @@ import {
   View,
   StyleSheet,
   ScrollView,
+  LayoutChangeEvent,
 } from "react-native";
 import { ModalBaseProps } from "react-native";
+import RNPickerSelect from "react-native-picker-select";
+import Slider from "@react-native-community/slider";
+
+const PHYSICS = {
+  barnesHut: "barnesHut",
+  forceAtlas2Based: "forceAtlas2Based",
+  repulsion: "repulsion",
+  hierarchicalRepulsion: "hierarchicalRepulsion",
+};
 
 interface ModalProps extends ModalBaseProps {
   visible: boolean;
+  setForce: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export default function SettingsView({ visible }: ModalProps) {
-  const [force, setForce] = useState("force");
+export default function SettingsView({ visible, setForce }: ModalProps) {
+  const [internalForce, setInternalForce] = useState("barnesHut");
+  const [internalSlideValue, setInternalSlideValue] = useState(0.5);
+
+  const [parentWidth, setParentWidth] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  const handleLayout = (e: LayoutChangeEvent) => {
+    const { width } = e.nativeEvent.layout;
+    setParentWidth(width);
+  };
+
+  const scrollToIndex = (index: number) => {
+    if (scrollViewRef.current) {
+      const newIndex = (((index + currentIndex) % 3) + 3) % 3;
+      scrollViewRef.current.scrollTo({ x: newIndex * parentWidth, animated: true });
+      setCurrentIndex(newIndex);
+    }
+  };
+
+  const scrollLeft = () => scrollToIndex(-1);
+  const scrollRight = () => scrollToIndex(1);
 
   return (
     visible && (
       <View style={styles.modalView}>
-        <Text style={styles.modalText}>Graph Settings</Text>
-        <View style={{}}>
-          <Text>Graph force method:</Text>
-          <Picker
-            selectedValue={force}
-            onValueChange={(itemValue) => setForce(itemValue)}
-            style={{ height: 150, width: 150, borderColor: "black", borderWidth: 5 }}
-          >
-            <Picker.Item label="this" value="Unknown" />
-            <Picker.Item label="force" value="force" />
-            <Picker.Item label="circular" value="circular" />
-          </Picker>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: "#0d1030",
+            paddingVertical: 10,
+            paddingHorizontal: 5,
+            borderTopRightRadius: 12,
+            borderTopLeftRadius: 12,
+          }}
+          onLayout={handleLayout}
+        >
+          <TouchableOpacity onPress={scrollLeft}>
+            <Ionicons name="caret-back" size={30} color="#fff" />
+          </TouchableOpacity>
+          <Text style={styles.modalTitle}>Graph Settings</Text>
+          <TouchableOpacity onPress={scrollRight}>
+            <Ionicons name="caret-forward" size={30} color="#fff" />
+          </TouchableOpacity>
         </View>
+        <ScrollView
+          ref={scrollViewRef}
+          horizontal
+          style={{ flex: 1, borderBottomLeftRadius: 12, borderBottomRightRadius: 12 }}
+          contentContainerStyle={{
+            justifyContent: "center",
+            alignContent: "center",
+          }}
+          pagingEnabled
+        >
+          <View
+            style={{
+              width: parentWidth,
+              height: "100%",
+              ...styles.settingScreen,
+            }}
+          >
+            <Text style={{ fontSize: 20, color: "black" }}>Physics resolver:</Text>
+            <RNPickerSelect
+              onValueChange={(value) => setInternalForce(value)}
+              items={[
+                { label: "Barnes Hut", value: PHYSICS.barnesHut },
+                { label: "ForceAtlas2Based", value: PHYSICS.forceAtlas2Based },
+                { label: "Repulsion", value: PHYSICS.repulsion },
+                { label: "Hierarchical Repulsion", value: PHYSICS.hierarchicalRepulsion },
+              ]}
+              style={{
+                inputIOS: {
+                  fontSize: 16,
+                  paddingVertical: 12,
+                  paddingHorizontal: 10,
+                  borderWidth: 1,
+                  borderColor: "gray",
+                  borderRadius: 4,
+                  color: "#000000",
+                  paddingRight: 30,
+                },
+                placeholder: {
+                  color: "#686868",
+                  fontSize: 16,
+                },
+              }}
+              onDonePress={() => setForce(internalForce)}
+              onClose={() => setForce(internalForce)}
+            />
+          </View>
+          <ScrollView
+            style={{
+              width: parentWidth,
+              height: "100%",
+              ...styles.settingScreen,
+            }}
+            contentContainerStyle={{
+              gap: 10,
+            }}
+          >
+            <Text style={{ fontSize: 20, color: "black" }}>Resolver settings:</Text>
+            <SettingSlider label="theta" />
+            <SettingSlider label="gravitationalConstant" />
+            <SettingSlider label="centralGravity" />
+            <SettingSlider label="springLength" />
+            <SettingSlider label="springConstant" />
+            <SettingSlider label="damping" />
+            <SettingSlider label="avoidOverlap" />
+          </ScrollView>
+          <View
+            style={{
+              backgroundColor: "green",
+              width: parentWidth,
+              height: "100%",
+              ...styles.settingScreen,
+            }}
+          />
+        </ScrollView>
+        {/* <View style={{}}>
+          <Text>Graph force method:</Text>
+
+        </View> */}
       </View>
     )
   );
@@ -41,10 +159,10 @@ export default function SettingsView({ visible }: ModalProps) {
 const styles = StyleSheet.create({
   modalView: {
     flex: 1,
-    padding: 20,
     alignItems: "center",
     shadowColor: "#000",
-    backgroundColor: "#dbbaba",
+    backgroundColor: "#fff",
+    borderRadius: 12,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -52,8 +170,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-    gap: 20,
-    maxHeight: 171,
+    // maxHeight: 171,
   },
   choiceButton: {
     flex: 1,
@@ -79,9 +196,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 25,
   },
-  modalText: {
+  modalTitle: {
     textAlign: "center",
     fontSize: 25,
+    flex: 1,
+    color: "white",
   },
   listItem: {
     width: "100%",
@@ -92,4 +211,78 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingRight: 10,
   },
+  settingScreen: {
+    padding: 10,
+    maxHeight: 171,
+  },
 });
+
+const physicsSettings = {
+  barnesHut: {
+    theta: 0.5,
+    gravitationalConstant: -2000,
+    centralGravity: 0.3,
+    springLength: 95,
+    springConstant: 0.04,
+    damping: 0.09,
+    avoidOverlap: 0,
+  },
+  forceAtlas2Based: {
+    theta: 0.5,
+    gravitationalConstant: -50,
+    centralGravity: 0.01,
+    springConstant: 0.08,
+    springLength: 100,
+    damping: 0.4,
+    avoidOverlap: 0,
+  },
+  repulsion: {
+    centralGravity: 0.2,
+    springLength: 200,
+    springConstant: 0.05,
+    nodeDistance: 100,
+    damping: 0.09,
+  },
+  hierarchicalRepulsion: {
+    centralGravity: 0.0,
+    springLength: 100,
+    springConstant: 0.01,
+    nodeDistance: 120,
+    damping: 0.09,
+    avoidOverlap: 0,
+  },
+};
+
+interface Props {
+  label: string;
+}
+
+function SettingSlider({ label }: Props) {
+  const [internalSlideValue, setInternalSlideValue] = useState(0.5);
+
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 5,
+      }}
+    >
+      <Text style={{ fontSize: 15, color: "black", flex: 1 }}>{label}</Text>
+      <Slider
+        style={{
+          width: 120,
+          backgroundColor: "white",
+          maxHeight: 30,
+        }}
+        onValueChange={(value) => setInternalSlideValue(value)}
+        minimumValue={0}
+        maximumValue={1}
+        minimumTrackTintColor="#FFFFFF"
+        maximumTrackTintColor="#000000"
+      />
+      <Text>{internalSlideValue.toFixed(2)}</Text>
+    </View>
+  );
+}

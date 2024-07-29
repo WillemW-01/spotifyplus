@@ -30,6 +30,8 @@ export default function Graph() {
   const [modalVisible, setModalVisible] = useState(false);
   const [settingsVisible, setSettingsVisible] = useState(false);
 
+  const [force, setForce] = useState("barnesHut");
+
   const { graphData, loading, artists, buildGraphArtists, buildGraphPlaylist, tracks } =
     useGraphData();
 
@@ -100,6 +102,10 @@ export default function Graph() {
   };
 
   useEffect(() => {
+    console.log("Force: ", force);
+  }, [force]);
+
+  useEffect(() => {
     if (!loading && graphReady && visNetworkRef.current) {
       return setupEventListener();
     }
@@ -148,7 +154,11 @@ export default function Graph() {
             scaling: { min: 1, max: 6 },
             hidden: false,
           },
-          physics: { enabled: true, solver: PHYSICS.barnesHut },
+          physics: { enabled: true, solver: force },
+          // layout: { improvedLayout: true },
+          groups: {
+            group1: { color: { background: "red", borderWidth: 3 } },
+          },
         }}
         onLoad={() => {
           setGraphReady(true);
@@ -174,7 +184,7 @@ export default function Graph() {
           gap: 10,
           marginHorizontal: 10,
           marginVertical: 20,
-          backgroundColor: "black",
+          // backgroundColor: "black",
           flexDirection: "row-reverse",
         }}
       >
@@ -183,7 +193,7 @@ export default function Graph() {
           resetGraph={resetGraph}
           showSettings={() => setSettingsVisible((prev) => !prev)}
         />
-        <SettingsView visible={settingsVisible} />
+        <SettingsView visible={settingsVisible} setForce={setForce} />
       </View>
     </BrandGradient>
   );

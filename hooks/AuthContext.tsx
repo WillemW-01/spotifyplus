@@ -30,7 +30,7 @@ const keys = {
   TIMESTAMP: "timeStamp",
 };
 
-const THRESHOLD = 600 / 60; // threshold time of 60 minutes ~ 1 hour
+const THRESHOLD = 3600 / 60; // threshold time of 60 minutes ~ 1 hour
 
 const uri = makeRedirectUri();
 console.log("[AuthContext] Redirect URI: ", uri);
