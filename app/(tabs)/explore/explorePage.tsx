@@ -60,9 +60,10 @@ function SectionButton({ iconColor, title, onPress }: SectionButtonProps) {
 interface SectionProps {
   name: keyof Routes;
   cards: CardProps[];
+  loading?: boolean;
 }
 
-function Section({ name, cards }: SectionProps) {
+function Section({ name, cards, loading }: SectionProps) {
   const theme = useColorScheme() ?? "dark";
   const iconColor = Colors[theme]["light"];
 
@@ -73,7 +74,7 @@ function Section({ name, cards }: SectionProps) {
   return (
     <View style={{ flexShrink: 0, flexGrow: 0, gap: 20 }}>
       <SectionButton iconColor={iconColor} title={name} onPress={() => to(name)} />
-      <CardScroll cards={cards} />
+      <CardScroll cards={cards} loading={loading} />
     </View>
   );
 }
@@ -234,9 +235,14 @@ export default function Explore() {
   const refresh = async () => {
     if (authorized) {
       setRefreshing(true);
+      setPlaylists([]);
+      setArtists([]);
+      setTracks([]);
+      setGenres([]);
       await fetchPlayLists();
       await fetchArtists();
       await fetchTracks();
+      await calculateGenres();
       setRefreshing(false);
     }
   };
@@ -256,28 +262,24 @@ export default function Explore() {
   return (
     <GradientView style={{ alignItems: "center", gap: 30 }}>
       <ThemedText text="Explore Your Library" type="title" />
-      {refreshing ? (
-        <ThemedText type="default" text="Refreshing" />
-      ) : (
-        <ScrollView
-          style={{
-            flex: 1,
-          }}
-          contentContainerStyle={{
-            paddingBottom: 10,
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "flex-start",
-            gap: 15,
-          }}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
-        >
-          <Section name="playlists" cards={playLists} />
-          <Section name="artists" cards={artists} />
-          <Section name="genres" cards={genres} />
-          <Section name="tracks" cards={tracks} />
-        </ScrollView>
-      )}
+      <ScrollView
+        style={{
+          flex: 1,
+        }}
+        contentContainerStyle={{
+          paddingBottom: 10,
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "flex-start",
+          gap: 15,
+        }}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
+      >
+        <Section name="playlists" cards={playLists} loading={playLists.length == 0} />
+        <Section name="artists" cards={artists} loading={artists.length == 0} />
+        <Section name="genres" cards={genres} loading={genres.length == 0} />
+        <Section name="tracks" cards={tracks} loading={tracks.length == 0} />
+      </ScrollView>
     </GradientView>
   );
 }
