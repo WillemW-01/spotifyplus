@@ -17,8 +17,8 @@ export default function ForcePicker({
   setInternalForce,
 }: Props) {
   return (
-    <View style={{ width: parentWidth, height: "100%", padding: 10, maxHeight: 171 }}>
-      <Text style={{ fontSize: 20, color: "black" }}>Physics resolver:</Text>
+    <View style={{ width: parentWidth, height: "100%", padding: 10, gap: 20 }}>
+      <Text style={{ fontSize: 20, color: "black" }}>Physics resolver</Text>
       <RNPickerSelect
         onValueChange={(value) => setInternalForce(value)}
         items={[

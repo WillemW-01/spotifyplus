@@ -81,13 +81,6 @@ export default function SettingsView({
             resolverObj={resolverObj}
             parentWidth={parentWidth}
           />
-          <View
-            style={{
-              backgroundColor: "green",
-              width: parentWidth,
-              ...styles.settingScreen,
-            }}
-          />
         </ScrollView>
       </View>
     )
@@ -128,6 +121,7 @@ const styles = StyleSheet.create({
     flex: 1,
     borderBottomLeftRadius: 12,
     borderBottomRightRadius: 12,
+    maxHeight: 250,
   },
   scrollContent: {
     justifyContent: "center",

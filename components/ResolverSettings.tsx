@@ -34,14 +34,20 @@ export default function ResolverSettings({
   return (
     <ScrollView
       key={key}
-      style={{ width: parentWidth, height: "100%", padding: 10, maxHeight: 171 }}
+      style={{ width: parentWidth, height: "100%", padding: 10 }}
       contentContainerStyle={{
         gap: 10,
         paddingBottom: 20,
       }}
     >
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <Text style={{ fontSize: 20, color: "black" }}>Resolver settings:</Text>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Text style={{ fontSize: 20, color: "black" }}>Resolver settings</Text>
         <TouchableOpacity onPress={onReset}>
           <Ionicons name="refresh-outline" size={25} color="black" />
         </TouchableOpacity>
