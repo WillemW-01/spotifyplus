@@ -84,10 +84,10 @@ const resolverRepulsion = {
     damping: 0.09,
   },
   params: {
-    centralGravity: { min: 0.001, max: 0.05, step: 0.001, },
+    centralGravity: { min: 0.0005, max: 5, step: 0.05, },
     springLength: { min: 0, max: 500, step: 5, },
     springConstant: { min: 0.001, max: 0.5, step: 0.005, },
-    nodeDistance: { min: 0, max: 1, step: 0.01, },
+    nodeDistance: { min: 0, max: 500, step: 5, },
     damping: { min: 0.0, max: 1.0, step: 0.01, },
   },
   labels: [
@@ -101,7 +101,7 @@ const resolverRepulsion = {
 
 const resolverHierarchyRepulsion = {
   values: {
-    centralGravity: 0.0,
+    centralGravity: 0.0001,
     springLength: 100,
     springConstant: 0.01,
     nodeDistance: 120,
@@ -109,10 +109,10 @@ const resolverHierarchyRepulsion = {
     avoidOverlap: 0,
   },
   params: {
-    centralGravity: { min: 0.001, max: 0.05, step: 0.001 },
+    centralGravity: { min: 0.0001, max: 5, step: 0.1 },
     springLength: { min: 0, max: 500, step: 5 },
     springConstant: { min: 0.001, max: 0.5, step: 0.005 },
-    nodeDistance: { min: 0, max: 1, step: 0.01 },
+    nodeDistance: { min: 5, max: 500, step: 5 },
     damping: { min: 0.0, max: 1.0, step: 0.01 },
     avoidOverlap: { min: 0.0, max: 1.0, step: 0.01 },
   },

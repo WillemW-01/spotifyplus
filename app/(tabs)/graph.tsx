@@ -1,17 +1,37 @@
 import React, { useEffect, useRef, useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
 import VisNetwork, { VisNetworkRef } from "react-native-vis-network";
-import BrandGradient from "@/components/BrandGradient";
-import { usePlayback } from "@/hooks/usePlayback";
-import { useGraphData } from "@/hooks/useGraphData";
-import { useArtist } from "@/hooks/useArtist";
-import { Text, View, StyleSheet } from "react-native";
-import { getNeighbours } from "@/utils/graphUtils";
-import GraphButtonPlay from "@/components/GraphButtonPlay";
-import { shuffleArray } from "@/utils/miscUtils";
-import GraphControls from "@/components/ZoomControls";
-import GraphModal from "@/components/GraphModal";
-import SettingsView from "@/components/SettingsView";
+
 import { resolvers, SettingsObjectType } from "@/constants/resolverObjects";
+
+import BrandGradient from "@/components/BrandGradient";
+import GraphButtonPlay from "@/components/GraphButtonPlay";
+import GraphModal from "@/components/GraphModal";
+import LoadingCircle from "@/components/LoadingCircle";
+import SettingsView from "@/components/SettingsView";
+import GraphControls from "@/components/ZoomControls";
+
+import { useArtist } from "@/hooks/useArtist";
+import { useGraphData } from "@/hooks/useGraphData";
+import { usePlayback } from "@/hooks/usePlayback";
+
+import { getNeighbours } from "@/utils/graphUtils";
+import { shuffleArray } from "@/utils/miscUtils";
+
+const getPhysicsOptions = (resolverType: string, resolverObj: SettingsObjectType) => {
+  switch (resolverType) {
+    case "barnesHut":
+      return { barnesHut: resolverObj.values ?? {} };
+    case "forceAtlas2Based":
+      return { forceAtlas2Based: resolverObj.values ?? {} };
+    case "repulsion":
+      return { repulsion: resolverObj.values ?? {} };
+    case "hierarchicalRepulsion":
+      return { hierarchicalRepulsion: resolverObj.values ?? {} };
+    default:
+      return {};
+  }
+};
 
 export default function Graph() {
   const [key, setKey] = useState(0);
@@ -21,6 +41,7 @@ export default function Graph() {
   const [hasChosen, setHasChosen] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [settingsVisible, setSettingsVisible] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const [force, setForce] = useState("barnesHut");
   const [resolverObj, setResolverObj] = useState<SettingsObjectType>(resolvers.barnesHut);
@@ -105,7 +126,21 @@ export default function Graph() {
         },
       });
 
-      return subscription.remove;
+      const progressSubscription = visNetworkRef.current.addEventListener(
+        "stabilizationProgress",
+        ({ iterations, total }: any) => setProgress(iterations / total)
+      );
+
+      const doneSubscription = visNetworkRef.current.addEventListener(
+        "stabilizationIterationsDone",
+        () => setProgress(1)
+      );
+
+      return () => {
+        subscription.remove();
+        progressSubscription.remove();
+        doneSubscription.remove();
+      };
     }
   };
 
@@ -117,9 +152,9 @@ export default function Graph() {
   }, [force]);
 
   useEffect(() => {
-    console.log("Calling this effect");
+    // console.log("Calling this effect");
     if (!loading && graphReady && visNetworkRef.current && resolverObj) {
-      console.log("Updating settings with resolverObj: ", resolverObj);
+      // console.log("Updating settings with resolverObj: ", resolverObj);
       visNetworkRef.current.setOptions({
         physics: {
           [`${force}`]: resolverObj.values,
@@ -127,12 +162,6 @@ export default function Graph() {
       });
     }
   }, [graphReady, loading, resolverObj]);
-
-  useEffect(() => {
-    if (!loading && graphReady && visNetworkRef.current) {
-      return setupEventListener();
-    }
-  }, [graphReady, loading]);
 
   if (loading) {
     return (
@@ -180,8 +209,7 @@ export default function Graph() {
           physics: {
             enabled: true,
             solver: force,
-            barnesHut: force === "barnesHut" ? resolverObj.values : {},
-            forceAtlas2Based: force === "forceAtlas2Based" ? resolverObj.values : {},
+            ...getPhysicsOptions(force, resolverObj),
           },
           // layout: { improvedLayout: true },
           groups: {
@@ -196,7 +224,7 @@ export default function Graph() {
       />
       <View style={styles.bottomContainer}>
         <Text style={{ fontSize: 22, color: "#0d1030", flex: 1 }}>
-          Selected: {selectedNode >= 0 ? getNodeName(selectedNode) : ""}
+          Selected: {selectedNode >= 0 ? getNodeName(selectedNode) : "-"}
         </Text>
         <GraphButtonPlay
           playImmediate={() => playArtistAndNeighbours(selectedNode, 1)}
@@ -204,18 +232,7 @@ export default function Graph() {
           iconName="play-outline"
         />
       </View>
-      <View
-        style={{
-          position: "absolute",
-          top: 0,
-          right: 0,
-          gap: 10,
-          marginHorizontal: 10,
-          marginVertical: 20,
-          // backgroundColor: "black",
-          flexDirection: "row-reverse",
-        }}
-      >
+      <View style={styles.controlsContainer}>
         <GraphControls
           graphRef={visNetworkRef}
           resetGraph={resetGraph}
@@ -228,6 +245,7 @@ export default function Graph() {
           setResolverObj={setResolverObj}
         />
       </View>
+      {progress < 1 && <LoadingCircle progress={progress} />}
     </BrandGradient>
   );
 }
@@ -241,5 +259,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 10,
     paddingBottom: 20,
+  },
+  controlsContainer: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    gap: 10,
+    marginHorizontal: 10,
+    marginVertical: 20,
+    flexDirection: "row-reverse",
   },
 });
