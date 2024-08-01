@@ -28,6 +28,8 @@ const getPhysicsOptions = (
 };
 
 export default function Graph() {
+  console.log("Graph loaded");
+
   const [key, setKey] = useState(0);
   const [selectedNode, setSelectedNode] = useState<number>(-1);
   const visNetworkRef = useRef<VisNetworkRef>(null);
