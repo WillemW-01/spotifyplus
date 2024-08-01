@@ -44,7 +44,7 @@ export function usePlayLists() {
   };
 
   const getPlayListItemsIds = async (playListId: string): Promise<string[] | null> => {
-    const items = await getPlayListItemsPage(playListId);
+    const items = await getPlayListItemsAll(playListId);
     if (items) {
       const filteredItems = items.map((item) => item.track.id);
       return filteredItems;

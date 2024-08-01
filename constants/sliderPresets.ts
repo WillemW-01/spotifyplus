@@ -16,6 +16,8 @@ export interface Parameter {
   step: number;
 }
 
+export const VARIANCE = 0.2;
+
 export const PARAMETERS = {
   danceability: {
     min: 0,

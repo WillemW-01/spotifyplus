@@ -1,6 +1,7 @@
-import { PlayHistoryObject, Track } from "@/interfaces/tracks";
+import { PlayHistoryObject, Track, TrackFeatureResponse } from "@/interfaces/tracks";
 
 import { useRequestBuilder } from "./useRequestBuilder";
+import { PRESETS, TrackFeatures, VARIANCE } from "@/constants/sliderPresets";
 
 export function useTracks() {
   const { buildGet } = useRequestBuilder();
@@ -32,7 +33,7 @@ export function useTracks() {
     return names;
   };
 
-  const getTrackInfo = async (trackId: string) => {
+  const getTrackFeatures = async (trackId: string) => {
     const url = `https://api.spotify.com/v1/audio-features/${trackId}`;
     const response = await buildGet(url);
 
@@ -41,13 +42,49 @@ export function useTracks() {
     }
 
     const data = await response.json();
-    console.log(JSON.stringify(data));
-    return data;
+    return data as TrackFeatureResponse;
+  };
+
+  const packFeatures = (features: TrackFeatureResponse) => {
+    return {
+      danceability: features.danceability,
+      energy: features.danceability,
+      loudness: features.danceability,
+      speechiness: features.danceability,
+      acousticness: features.danceability,
+      instrumentalness: features.danceability,
+      liveness: features.danceability,
+      valence: features.danceability,
+      tempo: features.danceability,
+    };
+  };
+
+  const isInRange = (value: number, target: number, variance: number) => {
+    const isIn = value >= target - variance && value <= target + variance;
+    console.log(`${target - variance} vs ${value} vs ${target + variance}: ${isIn}`);
+    return isIn;
+  };
+
+  const fitsInPreset = async (sliderValues: TrackFeatures, trackId: string) => {
+    const response = await getTrackFeatures(trackId);
+    const features = packFeatures(response);
+    let isSuitable = true;
+    const keys = Object.keys(sliderValues) as (keyof TrackFeatures)[];
+    for (const key of keys) {
+      if (!isInRange(features[key], sliderValues[key], VARIANCE)) {
+        console.log(`Feature ${key} is not in range`);
+        isSuitable = false;
+        break;
+      }
+    }
+    console.log(`Returning ${isSuitable} for track ${trackId}`);
+    return isSuitable;
   };
 
   return {
     getRecent,
     getTracksNames,
-    getTrackInfo,
+    getTrackFeatures,
+    fitsInPreset,
   };
 }

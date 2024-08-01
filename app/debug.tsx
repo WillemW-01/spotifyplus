@@ -26,7 +26,7 @@ export default function Debug() {
     shouldShuffle,
   } = usePlayback();
   const { clearToken, authorized } = useAuth();
-  const { getRecent, getTracksNames, getTrackInfo } = useTracks();
+  const { getRecent, getTracksNames, getTrackFeatures } = useTracks();
   const { listPlayLists, getPlayListItemsIds } = usePlayLists();
   const { getArtistGenres } = useArtist();
 
@@ -59,7 +59,7 @@ export default function Debug() {
 
   const getInfoAllTracks = async (trackIds: string[]) => {
     for (const track in trackIds) {
-      const info = await getTrackInfo(trackIds[track]);
+      const info = await getTrackFeatures(trackIds[track]);
       return info;
     }
   };

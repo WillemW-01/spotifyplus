@@ -1,5 +1,5 @@
 import { useAuth } from "@/hooks/AuthContext";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ScrollView,
   Text,
@@ -19,10 +19,13 @@ import MoodSlider from "@/components/MoodSlider";
 import { Ionicons } from "@expo/vector-icons";
 import { PRESETS, TrackFeatures } from "@/constants/sliderPresets";
 import MoodButton from "@/components/MoodButton";
+import { useTracks } from "@/hooks/useTracks";
+import { usePlayback } from "@/hooks/usePlayback";
 
 export default function Mood() {
   const [playlists, setPlaylists] = useState<SimplifiedPlayList[]>([]);
   const [sliderValues, setSliderValues] = useState<TrackFeatures>(PRESETS.default);
+  const currPlayList = useRef<SimplifiedPlayList | null>(null);
 
   const updateValue = (featureName: keyof TrackFeatures, value: number) => {
     setSliderValues((prev) => ({
@@ -40,13 +43,34 @@ export default function Mood() {
   };
 
   const { authorized } = useAuth();
-  // const { playTrack } = usePlayback();
-  const { listPlayLists } = usePlayLists();
+  const { playTracks } = usePlayback();
+  const { listPlayLists, getPlayListItemsIds } = usePlayLists();
   const theme = useColorScheme() ?? "dark";
+  const { fitsInPreset } = useTracks();
 
   const fetchPlaylists = async () => {
     const response = await listPlayLists();
     setPlaylists(response);
+  };
+
+  const onPlay = async () => {
+    if (currPlayList.current) {
+      const tracks = await getPlayListItemsIds(currPlayList.current.id);
+      if (!tracks) return;
+      console.log("Getting tracks with sliders: ", sliderValues);
+      console.log("Before filtering: ", tracks);
+
+      const promises = tracks.map(async (t) => ({
+        track: t,
+        fits: await fitsInPreset(sliderValues, t),
+      }));
+
+      const results = await Promise.all(promises);
+      const filteredTracks = results.filter((r) => r.fits).map((r) => r.track);
+      console.log("After filtering: ", filteredTracks);
+
+      playTracks(filteredTracks);
+    }
   };
 
   useEffect(() => {
@@ -89,6 +113,7 @@ export default function Mood() {
                 subtitle={item.owner.display_name}
                 imageUri={item.images[0].url}
                 onPress={() => {
+                  currPlayList.current = item;
                   bottomSheetRef.current?.expand();
                 }}
                 width={90}
@@ -116,7 +141,7 @@ export default function Mood() {
             >
               <Text style={{ color: "black", fontSize: 30 }}>Customise</Text>
               <TouchableOpacity
-                onPress={resetSliders}
+                onPress={onPlay}
                 style={{
                   width: 80,
                   height: 40,
