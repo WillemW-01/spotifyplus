@@ -8,22 +8,25 @@ import { Colors } from "@/constants/Colors";
 import Card from "@/components/Card";
 import BrandGradient from "@/components/BrandGradient";
 import ThemedText from "@/components/ThemedText";
+import { SimplifiedPlayList } from "@/interfaces/playlists";
+import { usePlayLists } from "@/hooks/usePlayList";
 
 export default function Mood() {
-  const [recents, setRecents] = useState<PlayHistoryObject[]>([]);
+  const [playlists, setPlaylists] = useState<SimplifiedPlayList[]>([]);
 
   const { authorized } = useAuth();
-  const { getRecent, playTrack } = usePlayback();
+  // const { playTrack } = usePlayback();
+  const { listPlayLists } = usePlayLists();
   const theme = useColorScheme() ?? "dark";
 
-  const fetchRecents = async () => {
-    const response = await getRecent();
-    setRecents(response);
+  const fetchPlaylists = async () => {
+    const response = await listPlayLists();
+    setPlaylists(response);
   };
 
   useEffect(() => {
     if (authorized) {
-      fetchRecents();
+      fetchPlaylists();
     }
   }, []);
 
@@ -45,17 +48,15 @@ export default function Mood() {
           width: "100%",
         }}
       >
-        {recents &&
-          recents.map((item, index) => {
+        {playlists &&
+          playlists.map((item, index) => {
             return (
               <Card
                 key={index}
-                title={item.track.name}
-                subtitle={item.track.artists[0].name}
-                imageUri={item.track.album.images[0].url}
-                onPress={() => {
-                  playTrack(item.track.id);
-                }}
+                title={item.name}
+                subtitle={item.owner.display_name}
+                imageUri={item.images[0].url}
+                onPress={() => {}}
                 width={90}
               />
             );
