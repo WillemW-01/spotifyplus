@@ -8,7 +8,7 @@ import { usePlayLists } from "./usePlayList";
 import { PlayListObject } from "@/interfaces/playlists";
 import { Track } from "@/interfaces/tracks";
 
-interface Edge {
+export interface Edge {
   from: number;
   to: number;
   value: number;
@@ -100,9 +100,6 @@ export function useGraphData() {
     artistTo: PackedArtist,
     cumulatedEdges: Edge[]
   ) => {
-    // if (artistFrom.genres.length == 0) {
-    //   console.log(`Artist ${artistFrom.guid} has no genres, skipping`);
-    // }
     for (const genre of artistFrom.genres) {
       if (artistTo.genres.includes(genre)) {
         const connected = alreadyConnected(artistFrom, artistTo, cumulatedEdges);
@@ -251,31 +248,6 @@ export function useGraphData() {
     return artists.map((a, i) => ({ ...a, id: i }));
   };
 
-  const shareMutualArtists = (trackFrom: PackedTrack, trackTo: PackedTrack) => {
-    return trackFrom.artists.some((artistFrom) =>
-      trackTo.artists.some((artistTo) => artistFrom.id === artistTo.id)
-    );
-  };
-
-  // const connectMutualTracks = useCallback(
-  //   (trackFrom: PackedTrack, trackTo: PackedTrack, cumulatedEdges: Edge[]) => {
-  //     // first, connect two tracks if they share any artists
-  //     if (shareMutualArtists(trackFrom, trackTo)) {
-  //       const connected = alreadyConnected(trackFrom, trackTo, cumulatedEdges);
-  //       if (connected >= 0) {
-  //         return;
-  //       } else {
-  //         cumulatedEdges.push({
-  //           from: trackFrom.id,
-  //           to: trackTo.id,
-  //           value: 1,
-  //         });
-  //       }
-  //     }
-  //   },
-  //   []
-  // );
-
   interface FlatArtist {
     id: number;
     guid: string;
@@ -301,21 +273,6 @@ export function useGraphData() {
     },
     [getNeighbours, graphData.edges]
   );
-
-  // const connectTracksViaGenres = useCallback(
-  //   (tracks: PackedPlaylistObject[]) => {
-  //     const tempEdges = [] as Edge[];
-  //     tracks.forEach((from, i) => {
-  //       tracks.forEach((to, j) => {
-  //         if (i !== j) {
-  //           connectMutualTracks(from.track, to.track, tempEdges);
-  //         }
-  //       });
-  //     });
-  //     return tempEdges;
-  //   },
-  //   [getNeighbours, graphData.edges]
-  // );
 
   const buildGraphPlaylist = async (playListId: string) => {
     setLoading(true);
@@ -1215,97 +1172,6 @@ const savedArtists = [
   },
 ];
 
-const savedNodes = [
-  { id: 0, label: "Emily James", shape: "dot", group: "group1" },
-  { id: 1, label: "Trousdale", shape: "dot" },
-  { id: 2, label: "The Paper Kites", shape: "dot" },
-  { id: 3, label: "Hazlett", shape: "dot" },
-  { id: 4, label: "Catching Flies", shape: "dot" },
-  { id: 5, label: "Sweatson Klank", shape: "dot" },
-  { id: 6, label: "Wild Rivers", shape: "dot" },
-  { id: 7, label: "santpoort", shape: "dot" },
-  { id: 8, label: "Johnnyswim", shape: "dot" },
-  { id: 9, label: "Parra for Cuva", shape: "dot" },
-  { id: 10, label: "Matthew Mole", shape: "dot" },
-  { id: 11, label: "Hermanito", shape: "dot" },
-  { id: 12, label: "Alex Lustig", shape: "dot" },
-  { id: 13, label: "Ben Rector", shape: "dot" },
-  { id: 14, label: "Angus & Julia Stone", shape: "dot" },
-  { id: 15, label: "Jordy Searcy", shape: "dot" },
-  { id: 16, label: "Passenger", shape: "dot" },
-  { id: 17, label: "Bonobo", shape: "dot" },
-  { id: 18, label: "Benson Boone", shape: "dot" },
-  { id: 19, label: "The National Parks", shape: "dot" },
-  { id: 20, label: "Aquilo", shape: "dot" },
-  { id: 21, label: "Riaan Benadé", shape: "dot" },
-  { id: 22, label: "Stephen Sanchez", shape: "dot" },
-  { id: 23, label: "Carly Rae Jepsen", shape: "dot" },
-  { id: 24, label: "Ben Böhmer", shape: "dot" },
-  { id: 25, label: "John Mayer", shape: "dot" },
-  { id: 26, label: "erwOn", shape: "dot" },
-  { id: 27, label: "braj mahal", shape: "dot" },
-  { id: 28, label: "Laura Omloop", shape: "dot" },
-  { id: 29, label: "Affelaye", shape: "dot" },
-  { id: 30, label: "Henry Green", shape: "dot" },
-  { id: 31, label: "Emily James", shape: "dot" },
-  { id: 32, label: "George Ezra", shape: "dot" },
-  { id: 33, label: "FLEUR", shape: "dot" },
-  { id: 34, label: "Jacana People", shape: "dot" },
-  { id: 35, label: "Schule der Erweckung", shape: "dot" },
-  { id: 36, label: "Liam Mour", shape: "dot" },
-  { id: 37, label: "Duke Boara", shape: "dot" },
-  { id: 38, label: "AVAION", shape: "dot" },
-  { id: 39, label: "Chance Peña", shape: "dot" },
-  { id: 40, label: "Riley Pearce", shape: "dot" },
-  { id: 41, label: "Woodlock", shape: "dot" },
-  { id: 42, label: "Noah Kahan", shape: "dot" },
-  { id: 43, label: "Blanco White", shape: "dot" },
-  { id: 44, label: "Dilla", shape: "dot" },
-  { id: 45, label: "The Light The Heat", shape: "dot" },
-  { id: 46, label: "Ryan Harris", shape: "dot" },
-  { id: 47, label: "Hollow Coves", shape: "dot" },
-  { id: 48, label: "MEAU", shape: "dot" },
-  { id: 49, label: "LO Worship", shape: "dot" },
-  { id: 50, label: "Gregory Alan Isakov", shape: "dot" },
-  { id: 51, label: "Paul Sinha", shape: "dot" },
-  { id: 52, label: "Bjéar", shape: "dot" },
-  { id: 53, label: "Penny and Sparrow", shape: "dot" },
-  { id: 54, label: "Drew Holcomb & The Neighbors", shape: "dot" },
-  { id: 55, label: "Jon and Roy", shape: "dot" },
-  { id: 56, label: "Bridge Worship", shape: "dot" },
-  { id: 57, label: "Hans Zimmer", shape: "dot" },
-  { id: 58, label: "Dekker", shape: "dot" },
-  { id: 59, label: "Dean Lewis", shape: "dot" },
-  { id: 60, label: "NEEDTOBREATHE", shape: "dot" },
-  { id: 61, label: "Ed Sheeran", shape: "dot" },
-  { id: 62, label: "Samuel Harfst", shape: "dot" },
-  { id: 63, label: "Oshima Brothers", shape: "dot" },
-  { id: 64, label: "Mura Masa", shape: "dot" },
-  { id: 65, label: "Novo Amor", shape: "dot" },
-  { id: 66, label: "GoldLink", shape: "dot" },
-  { id: 67, label: "Colossal Trailer Music", shape: "dot" },
-  { id: 68, label: "Gordi", shape: "dot" },
-  { id: 69, label: "Suzan & Freek", shape: "dot" },
-  { id: 70, label: "Shallou", shape: "dot" },
-  { id: 71, label: "Olivia Rodrigo", shape: "dot" },
-  { id: 72, label: "mehro", shape: "dot" },
-  { id: 73, label: "Ramin Djawadi", shape: "dot" },
-  { id: 74, label: "Provinz", shape: "dot" },
-  { id: 75, label: "Elderbrook", shape: "dot" },
-  { id: 76, label: "WizTheMc", shape: "dot" },
-  { id: 77, label: "Garrett Kato", shape: "dot" },
-  { id: 78, label: "Abby Holliday", shape: "dot" },
-  { id: 79, label: "Dermot Kennedy", shape: "dot" },
-  { id: 80, label: "Morningsiders", shape: "dot" },
-  { id: 81, label: "Steve Umculo", shape: "dot" },
-  { id: 82, label: "Bre Kennedy", shape: "dot" },
-  { id: 83, label: "TWO LANES", shape: "dot" },
-  { id: 84, label: "Umberto Tozzi", shape: "dot" },
-  { id: 85, label: "Tropikel Ltd", shape: "dot" },
-  { id: 86, label: "Eros Ramazzotti", shape: "dot" },
-  { id: 87, label: "Annika Bennett", shape: "dot" },
-  { id: 88, label: "LULLANAS", shape: "dot" },
-];
 const savedEdges = [
   { from: 0, to: 18, value: 2 },
   { from: 0, to: 39, value: 2 },

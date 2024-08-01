@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import VisNetwork, { VisNetworkRef } from "react-native-vis-network";
 
-import { resolvers, SettingsObjectType } from "@/constants/resolverObjects";
+import { PHYSICS, resolvers, SettingsObjectType } from "@/constants/resolverObjects";
 
 import BrandGradient from "@/components/BrandGradient";
 import GraphButtonPlay from "@/components/GraphButtonPlay";
@@ -12,25 +12,19 @@ import SettingsView from "@/components/SettingsView";
 import GraphControls from "@/components/ZoomControls";
 
 import { useArtist } from "@/hooks/useArtist";
-import { useGraphData } from "@/hooks/useGraphData";
+import { Edge, useGraphData } from "@/hooks/useGraphData";
 import { usePlayback } from "@/hooks/usePlayback";
 
 import { getNeighbours } from "@/utils/graphUtils";
 import { shuffleArray } from "@/utils/miscUtils";
 
-const getPhysicsOptions = (resolverType: string, resolverObj: SettingsObjectType) => {
-  switch (resolverType) {
-    case "barnesHut":
-      return { barnesHut: resolverObj.values ?? {} };
-    case "forceAtlas2Based":
-      return { forceAtlas2Based: resolverObj.values ?? {} };
-    case "repulsion":
-      return { repulsion: resolverObj.values ?? {} };
-    case "hierarchicalRepulsion":
-      return { hierarchicalRepulsion: resolverObj.values ?? {} };
-    default:
-      return {};
-  }
+const getPhysicsOptions = (
+  resolverType: keyof typeof PHYSICS,
+  resolverObj: SettingsObjectType
+) => {
+  return {
+    [`${resolverType}`]: resolverObj.values,
+  };
 };
 
 export default function Graph() {
@@ -43,7 +37,7 @@ export default function Graph() {
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  const [force, setForce] = useState("barnesHut");
+  const [force, setForce] = useState<keyof typeof PHYSICS>("barnesHut");
   const [resolverObj, setResolverObj] = useState<SettingsObjectType>(resolvers.barnesHut);
 
   const { graphData, loading, artists, buildGraphArtists, buildGraphPlaylist, tracks } =
@@ -70,7 +64,7 @@ export default function Graph() {
     if (selectedNode == -1) {
       return;
     }
-    const neighbours = getNeighbours(nodeId, degree, graphData.edges);
+    const neighbours = getNeighbours(nodeId, degree, graphData.edges as Edge[]);
     console.log("Playing neighbours: ", neighbours);
     if (neighbours.length === 0) {
       neighbours.push(nodeId);
@@ -105,13 +99,12 @@ export default function Graph() {
     if (visNetworkRef.current) {
       const subscription = visNetworkRef.current.addEventListener(
         "click",
-        // eslint-disable-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         async (event: any) => {
           // console.log(JSON.stringify(event));
 
           if (event.nodes.length > 0) {
             const currNode = event.nodes[0];
-            // const neighbours = await getImmediateNeighbours(currNode);
             setSelectedNode(currNode);
             console.log("Selected node: ", currNode);
           } else if (event.nodes.length == 0) {
@@ -128,6 +121,7 @@ export default function Graph() {
 
       const progressSubscription = visNetworkRef.current.addEventListener(
         "stabilizationProgress",
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ({ iterations, total }: any) => setProgress(iterations / total)
       );
 

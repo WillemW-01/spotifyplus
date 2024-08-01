@@ -5,9 +5,9 @@ import { PHYSICS } from "@/constants/resolverObjects";
 
 interface Props {
   parentWidth: number;
-  setForce: React.Dispatch<React.SetStateAction<string>>;
-  internalForce: string;
-  setInternalForce: React.Dispatch<React.SetStateAction<string>>;
+  setForce: React.Dispatch<React.SetStateAction<keyof typeof PHYSICS>>;
+  internalForce: keyof typeof PHYSICS;
+  setInternalForce: React.Dispatch<React.SetStateAction<keyof typeof PHYSICS>>;
 }
 
 export default function ForcePicker({

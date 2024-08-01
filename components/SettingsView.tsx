@@ -9,13 +9,13 @@ import {
   LayoutChangeEvent,
 } from "react-native";
 import { ModalBaseProps } from "react-native";
-import { SettingsObjectType } from "@/constants/resolverObjects";
+import { PHYSICS, SettingsObjectType } from "@/constants/resolverObjects";
 import ResolverSettings from "./ResolverSettings";
 import ForcePicker from "./ForcePicker";
 
 interface ModalProps extends ModalBaseProps {
   visible: boolean;
-  setForce: React.Dispatch<React.SetStateAction<string>>;
+  setForce: React.Dispatch<React.SetStateAction<keyof typeof PHYSICS>>;
   resolverObj: SettingsObjectType;
   setResolverObj: React.Dispatch<React.SetStateAction<SettingsObjectType>>;
 }
@@ -26,7 +26,7 @@ export default function SettingsView({
   resolverObj,
   setResolverObj,
 }: ModalProps) {
-  const [internalForce, setInternalForce] = useState("barnesHut");
+  const [internalForce, setInternalForce] = useState<keyof typeof PHYSICS>("barnesHut");
 
   const [parentWidth, setParentWidth] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
