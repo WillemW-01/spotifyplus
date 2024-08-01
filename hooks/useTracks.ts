@@ -1,7 +1,7 @@
 import { PlayHistoryObject, Track, TrackFeatureResponse } from "@/interfaces/tracks";
 
 import { useRequestBuilder } from "./useRequestBuilder";
-import { PRESETS, TrackFeatures, VARIANCE } from "@/constants/sliderPresets";
+import { TrackFeatures, VARIANCE } from "@/constants/sliderPresets";
 
 export function useTracks() {
   const { buildGet } = useRequestBuilder();

@@ -1,9 +1,10 @@
-import { Colors } from "@/constants/Colors";
-import { DESCRIPTIONS, PARAMETERS, TrackFeatures } from "@/constants/sliderPresets";
 import { Ionicons } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
 import React, { useEffect, useState } from "react";
-import { Button, Modal, Text, TouchableOpacity, View } from "react-native";
+import { Button, Modal, Text, TouchableOpacity, View, StyleSheet } from "react-native";
+
+import { Colors } from "@/constants/Colors";
+import { DESCRIPTIONS, PARAMETERS, TrackFeatures } from "@/constants/sliderPresets";
 
 interface Props {
   label: keyof TrackFeatures;
@@ -38,7 +39,7 @@ export default function MoodSlider({ label, value, setValue }: Props) {
 
   return (
     <View style={{ width: "100%" }}>
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
+      <View style={styles.labelContainer}>
         <Text style={{ fontSize: 18 }}>{label.toUpperCase()}</Text>
         <TouchableOpacity onPress={() => setModalVisible(true)}>
           <Ionicons
@@ -49,39 +50,17 @@ export default function MoodSlider({ label, value, setValue }: Props) {
         </TouchableOpacity>
 
         <Modal visible={modalVisible} transparent animationType="slide">
-          <TouchableOpacity
-            style={{
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            activeOpacity={1}
-          >
-            <View
-              style={{
-                backgroundColor: "white",
-                padding: 20,
-                borderRadius: 12,
-                width: "80%",
-              }}
-            >
-              <Text style={{ fontSize: 18, lineHeight: 28 }}>{DESCRIPTIONS[label]}</Text>
+          <TouchableOpacity style={styles.infoButton} activeOpacity={1}>
+            <View style={styles.infoButtonContent}>
+              <Text style={styles.infoText}>{DESCRIPTIONS[label]}</Text>
               <Button title="Close" onPress={() => setModalVisible(false)} />
             </View>
           </TouchableOpacity>
         </Modal>
       </View>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
+      <View style={styles.sliderContainer}>
         <Slider
-          style={{
-            flex: 1,
-          }}
+          style={{ flex: 1 }}
           onValueChange={handleValueChange}
           onSlidingComplete={handleSlidingComplete}
           minimumValue={PARAMETERS ? PARAMETERS[label].min : 0}
@@ -92,9 +71,7 @@ export default function MoodSlider({ label, value, setValue }: Props) {
           maximumTrackTintColor={isDisabled ? "#a0a0a0" : Colors.light.lightDark}
         />
 
-        <Text style={{ width: 50, textAlign: "center", fontSize: 18 }}>
-          {internalValue.toFixed(0)}
-        </Text>
+        <Text style={styles.sliderValue}>{internalValue.toFixed(0)}</Text>
         <TouchableOpacity onPress={() => setIsDisabled((prev) => !prev)}>
           <Ionicons
             name={isDisabled ? "add-circle-outline" : "remove-circle-outline"}
@@ -107,4 +84,24 @@ export default function MoodSlider({ label, value, setValue }: Props) {
   );
 }
 
-// StyleSheet.create({})
+const styles = StyleSheet.create({
+  labelContainer: { flexDirection: "row", alignItems: "center", gap: 20 },
+  infoButton: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  infoButtonContent: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 12,
+    width: "80%",
+  },
+  infoText: { fontSize: 18, lineHeight: 28 },
+  sliderContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  sliderValue: { width: 50, textAlign: "center", fontSize: 18 },
+});
