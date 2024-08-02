@@ -7,7 +7,7 @@ interface Error {
   };
 }
 
-export function useRequestBuilder() {
+export function useRequestBuilder(usingSpotify = true) {
   const { token, refreshToken, shouldRefresh, refreshAccessToken } = useAuth();
 
   const catchError = async (response: Response, url: string) => {
@@ -50,7 +50,7 @@ export function useRequestBuilder() {
   };
 
   const build = async (method: "GET" | "POST" | "PUT", url: string, body?: unknown) => {
-    await checkForRefresh();
+    usingSpotify && (await checkForRefresh());
     const response = await fetch(url, {
       method: method,
       headers: headers[method],

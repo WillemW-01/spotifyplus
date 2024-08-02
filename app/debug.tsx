@@ -10,6 +10,7 @@ import { usePlayLists } from "@/hooks/usePlayList";
 import { usePlayback } from "@/hooks/usePlayback";
 import { useTracks } from "@/hooks/useTracks";
 import { useArtist } from "@/hooks/useArtist";
+import { useLastFm } from "@/hooks/useLastFM";
 
 const KAHAN_ARTIST_ID = "2RQXRUsr4IW1f3mKyKsy4B";
 const KAHAN_ALBUM_ID = "50ZenUP4O2Q5eCy2NRNvuz";
@@ -29,6 +30,7 @@ export default function Debug() {
   const { getRecent, getTracksNames, getTrackFeatures } = useTracks();
   const { listPlayLists, getPlayListItemsIds } = usePlayLists();
   const { getArtistGenres } = useArtist();
+  const { getTrackTopTags, getArtistTopTags } = useLastFm();
 
   const [recent, setRecent] = useState<string[]>([]);
   const [playLists, setPlayLists] = useState<SimplifiedPlayList[]>([]);
@@ -75,6 +77,12 @@ export default function Debug() {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const testLastFM = async () => {
+    // const results = await getTrackTopTags("Dans in Afrikaans", "Kurt Darren");
+    const results = await getArtistTopTags("Kurt Darren");
+    console.log("results: ", JSON.stringify(results));
   };
 
   interface PlayListProps {
@@ -131,6 +139,8 @@ export default function Debug() {
           title="Get Artist Genres"
           onPress={() => getArtistGenres("2RQXRUsr4IW1f3mKyKsy4B", 0)}
         />
+
+        <Button title="Test LastFM" onPress={testLastFM} />
 
         <Text>Should shuffle: {String(shouldShuffle)}</Text>
 
