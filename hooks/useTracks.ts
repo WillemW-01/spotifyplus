@@ -3,6 +3,8 @@ import { PlayHistoryObject, Track, TrackFeatureResponse } from "@/interfaces/tra
 import { useRequestBuilder } from "./useRequestBuilder";
 import { TrackFeatures, VARIANCE } from "@/constants/sliderPresets";
 
+import fs from "fs";
+
 export function useTracks() {
   const { buildGet } = useRequestBuilder();
 
@@ -61,23 +63,24 @@ export function useTracks() {
 
   const isInRange = (value: number, target: number, variance: number) => {
     const isIn = value >= target - variance && value <= target + variance;
-    console.log(`${target - variance} vs ${value} vs ${target + variance}: ${isIn}`);
+    // console.log(`${target - variance} vs ${value} vs ${target + variance}: ${isIn}`);
     return isIn;
   };
 
   const fitsInPreset = async (sliderValues: TrackFeatures, trackId: string) => {
     const response = await getTrackFeatures(trackId);
+    console.log(`${trackId}: ${JSON.stringify(response)}`);
     const features = packFeatures(response);
     let isSuitable = true;
     const keys = Object.keys(sliderValues) as (keyof TrackFeatures)[];
     for (const key of keys) {
       if (!isInRange(features[key], sliderValues[key], VARIANCE)) {
-        console.log(`Feature ${key} is not in range`);
+        // console.log(`Feature ${key} is not in range`);
         isSuitable = false;
         break;
       }
     }
-    console.log(`Returning ${isSuitable} for track ${trackId}`);
+    // console.log(`Returning ${isSuitable} for track ${trackId}`);
     return isSuitable;
   };
 

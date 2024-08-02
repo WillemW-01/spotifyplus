@@ -1,0 +1,2137 @@
+nodedef>name INTEGER,guid VARCHAR,artist VARCHAR,label VARCHAR
+0,00cBcYOlnHoXX9ver3cmdE,JP Saxe,"A Little Bit Yours"
+1,01LEUIGH4Mup0hV3gHNgx0,Emily James,"Dreaming"
+2,031tI90Tz4hlhPmvi3djr0,Ben Rector,"It Would Be You"
+3,04JhvPreqxWlAV5SdK4mNo,The Paper Kites,"Don't Keep Driving"
+4,05FiTaRgf61OkgSDiN9RXR,Ed Sheeran,"Give Me Love"
+5,05tKse2mbMxPPDqJDPunMD,Timeflies,"Raincoat - Loote Remix"
+6,05u81UgU27g8uL5twJ7ABz,Tom Walker,"Fly Away With Me"
+7,06voX63M9lLDmlIt2zrHpe,Jordy Searcy,"Daylight"
+8,07m8PuXxxv5J4qPEDq6ZkK,Ben Rector,"Brand New"
+9,09yBr7jcbBNt8FCnC6Txcu,The National Parks,"Coração"
+10,0A3zAuF47kvuDVmnwPd1g1,The Paper Kites,"The Mortal Boy King"
+11,0B4oP0rG4y7oxugGDNNw78,Mountains of the Moon,"Bayou"
+12,0bYDebBlQxsDR4hCgbbpOW,John Mayer,"I'm Gonna Find Another You"
+13,0CKPLoYW0nsAnjnr00HRWV,Billy Raffoul,"I'm Not A Saint"
+14,0dxaY8QH7eD9SE5HRjxNKI,Fergus James,"Backseat"
+15,0E5qs1cpZclZrTRAlhuyMh,Emily James,"I'm Not In Love"
+16,0GZlSlTZdE43baosGAgQJa,The Paper Kites,"Too Late"
+17,0hNOP5epEjX8Zj5aSGr6JU,Dean Lewis,"Waves"
+18,0HtGPWuefVqjV64QTD5i0v,Emily James,"Lighten Up"
+19,0Io5aNyPCvK31w1hffcTbC,Jordy Searcy,"Friendship?"
+20,0iULaBlXOJFxqXPWDE325p,ISLAND,"Just That Time of the Night"
+21,0JXmh947In51NEtBgQyud4,Jordy Searcy,"Jenny - Live in Nashville"
+22,0nJW01T7XtvILxQgC5J7Wh,Bruno Mars,"When I Was Your Man"
+23,0NL2M63Em2rH5PD8idftkm,Andreas Moe,"Tangled Vine"
+24,0pipZCAXwFPd4efn3xU4x3,Jordy Searcy,"Jealousy"
+25,0qDG9MjRZISlT31enV6xOA,Ben Rector,"Let the Good Times Roll"
+26,0R7EWhquaAICmyE5MZqt3q,Ben Rector,"Living My Best Life"
+27,0rM6Q9AmKWhCs1Yla9r3Pr,Passenger,"And I Love Her"
+28,0roPf0bwAsBDZv1bR15m15,Ben Rector,"It Would Be You"
+29,0tgBtQ0ISnMQOKorrN9HLX,John Mayer,"Last Train Home"
+30,0THzW6DgTrtGpl69aWFAvS,The Paper Kites,"Renegade"
+31,0ulLs8vN4SBtVHc5KDAamV,The Paper Kites,"Revelator Eyes"
+32,0v8iaQnFPT8qkicB880pAr,Wild Rivers,"Weatherman"
+33,0VONB1WEbtmatvlsmaPZKj,Jordy Searcy,"Rosalyn"
+34,0vXx9GT0HPlkEsdkpfylU6,Ed Sheeran,"Afterglow"
+35,0XwrsfUtf47y3z1kS81Hql,The Paper Kites,"Does it Ever Cross Your Mind"
+36,0y4zq960wgBj2gTdpshCZ1,Hazlett,"Cemetery"
+37,0yGODiR387R0pcOPkU1Tt3,ISLAND,"Young Days"
+38,0YPWqS1QVVB0LQ5h3gxbBH,The National Parks,"Lights in the City"
+39,0z3cJsLM4vvmdZJ8lulR5t,ISLAND,"Something Perfect"
+40,124KRi7jkm9Skq89xIK28V,NEEDTOBREATHE,"I Wanna Remember (feat. Carrie Underwood)"
+41,12rcsuv4QgpfAGlYaYj43c,ISLAND,"We Can Go Anywhere"
+42,14PGuHlKGSYWFEVOWw40Va,The National Parks,"I Can Feel It"
+43,14uhiVl5NwPDCmlRUgo4l6,Jordy Searcy,"Love & War in Your Twenties"
+44,15JVqbFEDFosNfeWOaVo88,The National Parks,"Places"
+45,16u9nt8ZyBfrf3M4tnt6Td,Jordy Searcy,"Morning Glow"
+46,170sne6Q3FktcEFxfK6oTR,Passenger,"Young as the Morning Old as the Sea"
+47,18gbbV2VidYvGSblo3aGVt,The Paper Kites,"A Gathering On 57th"
+48,1ApB2QRPQi3MlBUFeegVUr,Andreas Moe,"Something Right"
+49,1b4QFVYQHqmLMn7exYauCj,Andreas Moe,"How Many Miles Away?"
+50,1BrU8tQjSCR2kEkouF0ldN,ISLAND,"Horizon"
+51,1BYNqzIR1Pawhzx44YvXdw,Brooke Fraser,"Sailboats"
+52,1bzymgL9lQBAYNhJIXlNNG,The Paper Kites,"Woodland"
+53,1C4VJyyTv66D32uIHkrAdC,Ed Prosek,"Ever After (Wedding Song)"
+54,1dkdkugKNWnTtymesLcxGG,ISLAND,"Lilyflower"
+55,1DQzw4dCdY5iGnOPNHEoPz,ISLAND,"She"
+56,1FB6JEDsy3w5YTgg9d9zGw,Ben Rector,"Cliches (feat. Taylor Goldsmith)"
+57,1Fh2slksBn9TpTu3tSHSMa,George Ezra,"Anyone For You (Tiger Lily) - Acoustic"
+58,1GgoypuXSxpTKOxEYiZ3JJ,Ben Rector,"Drive"
+59,1HbcclMpw0q2WDWpdGCKdS,Ed Sheeran,"Tenerife Sea"
+60,1ixD29DWr5eSZ1vZROT40I,Riley Pearce,"Human"
+61,1jzo5QmpKa8eLSF3NOJzPe,Birdtalker,"Heavy"
+62,1kEM39SfejDKRNwrWLkISI,Andreas Moe,"Frozen River"
+63,1mkwI947OIcgdzBvRjRPPx,Passenger,"27"
+64,1OqpsF9qZ8tpiwiywtCiif,The National Parks,"Ghosts - Campfire Version"
+65,1rEA1VSVUMpeKcBBG1Huaz,Passenger,"Restless Wind"
+66,1rjg4eh7GNbiTJIVrwqSTR,Jordy Searcy,"Shoulda Been In A Band"
+67,1teEKotmDNiPOECzlV9Q9P,Andreas Moe,"All We Know"
+68,1xgT3Hn05j9ypY3lNuCfqc,Charlie Finch,"Into the Woods"
+69,1xVi1xnR1B6EECYOd5GUwI,Emily James,"Lovely Enough"
+70,1xXSof69SqdGxJAdAIukRQ,Ben Rector,"Dream On"
+71,1XZeBXHGMqYVvVqeBe2QoS,ISLAND,"All in My Head"
+72,1ySdKj9IbvIRCyjPBe6NpV,Christopher,"Ghost"
+73,1zlgJFFI9jNGVFeAMOIoxt,The Paper Kites,"Red Light"
+74,20zcj4PSozTDNFGjML8fJS,Gregory Alan Isakov,"Idaho"
+75,22GUd9JOxhSidGguHxf3Nu,George Ezra,"All My Love"
+76,23KE83mQ6w9bk6bdMCZ0CU,Wild Rivers,"I Do - Bonus Track"
+77,27BrerRuQ8H2nqXuiKtBah,ISLAND,"The Day I Die"
+78,2Ak6HZreZATE3X1hxzGWVc,Andreas Moe,"Volcanoes"
+79,2b2uqeIFEPZAjKtUdfGoTD,Ben Rector,"Steady Love (Live)"
+80,2BkyYZmU4JuWW2sYi9EzpC,Dean Lewis,"7 Minutes"
+81,2BVxCW4Yry9SaMVETrybRR,ISLAND,"God Forgive"
+82,2CEEKREL8eUBhNvsafRAsb,Rhys Lewis,"Seasons"
+83,2clElTsD1qOztIwI9CuJvu,Matthew Mole,"Okay"
+84,2Ct8N1IDU0a9vakWJY7gFp,Riaan Benadé,"Nallies"
+85,2cVBRjkwEdb4m5umqm10MD,Emily James,"New Name to Heartbreak"
+86,2cXcizftGUHRwgDgXLSHVb,The Lumineers,"Boots Of Spanish Leather"
+87,2Dad2dzctBwgh4EvrYkq5M,Passenger,"Heart's on Fire"
+88,2E0Lr1ecydv5MjTYYM0WhN,Stephen Sanchez,"Easy On My Eyes"
+89,2eOYPlzlcyxjWkNlpz8Hyv,The National Parks,"Don't Go My Darlin'"
+90,2fipF2hExZjd8qLCFQBpJa,Ben Rector,"Hanging out (feat. Kenny G)"
+91,2G7sptnwIKiPWrbKTlLhWQ,Ben Howard,"Only Love"
+92,2HnqhhoVPWwIxnpdSKfyGA,Passenger,"Catch in the Dark"
+93,2iCcbMCYkRYIHatUoWfKIL,Andreas Moe,"Rise & Fall"
+94,2JAeS9tZjjAiJ2RHDfJMbo,Cody Fry,"Sailboat"
+95,2jdAk8ATWIL3dwT47XpRfu,John Mayer,"Slow Dancing in a Burning Room"
+96,2K28PAjVBhB6jOUVyj7PLT,The Paper Kites,"When It Hurts You"
+97,2KuDjmr5mllSNgpk1PtVd5,Stephen Sanchez,"Hold Her While You Can"
+98,2LTl1pU074hnzAdy0SpHAb,Coldplay,"The Scientist"
+99,2lxBZVbkiCXC1soks2RXwV,Ben Rector,"Love Like This"
+100,2msdr19RehOAL1RTTRwfCg,Rubber Duc,"Wellington"
+101,2oZsDq0pwp9yLgHGoI2Y5F,Wallows,"Are You Bored Yet? (feat. Clairo)"
+102,2p5peGFsiSfp155oGdEdqZ,Elina,"I Don’t Know Love"
+103,2rBIC9Uc5qZeBjJvWulFTN,Jordy Searcy,"Fire"
+104,2RcEpOohSehGSfXnx9eA5k,Hazlett,"Hesitate"
+105,2RdcyZsOisQLRE8L2K456O,Emily James,"what do i"
+106,2smpiAZfaN0GFi15MqAq6E,Dean Lewis,"Stay Awake"
+107,2TmhGoQFEc0Pr43v9Ub9Rd,Caitlyn Smith,"Lately"
+108,2tTFLd7fZCB2yCQM2fhJ8s,Hazlett,"My Skin"
+109,2VDKSRDTpqWgczc33Lk9h5,The National Parks,"As We Ran"
+110,2wcRuegxLUW1IznkfPHTBc,Jordy Searcy,"Everything I Want"
+111,2x0kzA6hfFhSgHLqdW6UwP,Ben Howard,"Everything"
+112,2z74tRiKWd5Yv6d3qbNUCy,The Lumineers,"Holdin' Out"
+113,30sxyKdIiwUIMDarYXO7F7,Emily James,"Down the Line"
+114,30Ws4fQbAhaKWTS0hr0wJt,Drew Holcomb & The Neighbors,"Dance With Everybody"
+115,34PTkw8vVXf3jSy9G4KcKo,The Paper Kites,"Woke Up From a Dream"
+116,35RrDnREM1xxx4YBxDHikm,Ben Rector,"I Will Always Be Yours"
+117,37kLxS3IntmCnoE4a5XMKy,Charlie Finch,"Growing Up"
+118,38zsOOcu31XbbYj9BIPUF1,Elton John,"Your Song"
+119,3aA1dyHSCU6obV2HgARNdX,Ben Rector,"Daughter"
+120,3AjlWSiT9RBW9JMZOvZkpe,Emily James,"Think I'm Gonna Make It"
+121,3BAwNf0KLSp7SOnca0Q4j7,Neon Trees,"animal - revisited version"
+122,3brmDf3GLNsiWxJobTCn4a,Florence + The Machine,"Never Let Me Go"
+123,3BRztJrZyWFwaRP6VYNsA1,The National Parks,"At the Heart"
+124,3CN9WtSBqCI6TXne9XNomb,The Lumineers,"Gloria"
+125,3CRJORXJpagbUMYZuj2lwX,Tom Odell,"Jubilee Road"
+126,3dEFa9KjOLEZl980ctEEv1,Florence + The Machine,"Ship To Wreck"
+127,3DJRR3CAwbu3m0azA7DHzL,Jordy Searcy,"Mirror Girl"
+128,3E3SMSm6FMRA9gkpaFRFrC,Stephen Sanchez,"Love Life"
+129,3e5yu9MkIvQx17mm7LF6KY,Canyon City,"Alone with You"
+130,3eDo0sBUGqFUnnScLAUy0f,Emily James,"Brooklyn"
+131,3eJ5D9HNQAJfHqUFCz8hi9,The Intermission Project,"Sorry"
+132,3eNSC9m8CukWPWdef8znPg,Stephen Sanchez,"Mountain Peaks"
+133,3GKrqEZ0fZpVnD1A0BeAK9,Passenger,"Scare Away the Dark"
+134,3hVrC8e2aBK2suo7EMMXLj,The Lumineers,"Submarines"
+135,3kO5Qsd9257k7ie7lFcFDr,Emily James,"In a Week"
+136,3lw0CSMQ88LcN0ZMP6DlWi,Gregory Alan Isakov,"That Moon Song"
+137,3MXJ1xMir1HdLkFRXPsewv,The Paper Kites,"Turns Within Me,Turns Without Me"
+138,3OQmQTpwZBL3yTr5mCCvOH,Rhys Lewis,"July - Bedroom Session"
+139,3P45QCRDLss7RA2Zg4yj4I,Emily James,"I Saw Your Face"
+140,3p8Kv8GcO4obTLPmsS459h,Stephen Sanchez,"Please Don't Go Home Yet"
+141,3pVfjLi9msLtXG1h5yNn4d,Jordy Searcy,"Dark in the City"
+142,3PWlwy0DdP4vIhzp0RrrOh,BANNERS,"I Wasn't Ready"
+143,3QEOUIgfTjcLR2eyUSujBd,The Script,"I Want It All - Acoustic"
+144,3qGRToYhVCGj41pKzXqua8,Wild Rivers,"I Won't Be Back"
+145,3rm4a3WFvyx71gXPGXsrsd,Emily James,"that'd be alright"
+146,3SIuy1JW4rjGPjX2UA8bYK,Emily James,"For an Evening"
+147,3SktMqZmo3M9zbB7oKMIF7,John Mayer,"Gravity"
+148,3sz2roCk5tyGeMhHftbJye,Jordy Searcy,"All Night"
+149,3tbJoFjD9ea2TRMsbf0z0H,Charlie Finch,"Stay the Winter"
+150,3TKjLfmtDd0hhTU2D3UjsF,Morningsiders,"How Good It Is"
+151,3up9PVg6BatOruFRxi4oLY,Jordy Searcy,"Rich"
+152,3uVEtIOcyE7rGAqcWJt95h,Lewis Capaldi,"Bruises"
+153,3WSfX5RhR8vln6IaaRFjq8,Passenger,"The Last Unicorn"
+154,3xMwMtR0Z30FF8HlQ09wWE,Andreas Moe,"Free Fall"
+155,3yXeVwlkiat9lJmU3gWNU3,ISLAND,"Interlude"
+156,3zDSmvrJLefNhlhW14h5aM,Jordy Searcy,"Whisper"
+157,3ZUPnClu1aKF2Fmt7cFsLP,The Paper Kites,"Mess We Made"
+158,40FTPUBd1fWmaoWKdWteYl,The Lumineers,"In The Light"
+159,41Va4mcT3GyKVu6u6LoLJ6,Charlie Finch,"The Chase"
+160,42bbDWZ8WmXTH7PkYAlGLu,George Ezra,"Hold My Girl"
+161,42UaitnwvuKqNcD5Oa2HlD,Wild Rivers,"Thinking 'Bout Love"
+162,44alNkXsYnTyPnkMdohBcx,The Paper Kites,"Bloom (Online Bonus Track)"
+163,47InLMACV8Tl2JgZL2tVPA,Emily James,"Who Would've Thought"
+164,48ce9gtBjXhq73lTBLM09x,Ben Rector,"Extraordinary Magic"
+165,48Rz0VfdkUPwW81e70c8lZ,The YChromes,"Good Things Fall Apart"
+166,49tW2u59iX2z2thHLkYYo5,The National Parks,"Time"
+167,4abEe6s1Ja2qSxqC6BUzn1,The Paper Kites,"Halcyon"
+168,4aeXMlGikze99fS0PFergJ,The National Parks,"Come Closer"
+169,4APVVf3tigYrkWKY9CA5SF,Andreas Moe,"Ocean (Take the Dive)"
+170,4BdGO1CaObRD4La9l5Zanz,Foster The People,"Sit Next to Me"
+171,4BEI01RMjIuA2geFPZIVHS,The Paper Kites,"On the Corner Where You Live"
+172,4bsDH8p2my1U5QDMZpBxYT,The Paper Kites,"Flashes"
+173,4ewpVpVKmIpA6HaKqUnt5L,Alex Aiono,"Good Morning"
+174,4fp615OQ4jgd3Xf55Uf9Cs,Passenger,"Somebody's Love"
+175,4G1wFvcZmoMvItaRTxAGao,Alex Aiono,"Happy Ending"
+176,4GonX4H1a5XivVwdqZ1Hzo,The Paper Kites,"I'm Lying to You Cause I'm Lost"
+177,4gSBbAnct4qt5XbkCbTdnc,Passenger,"When We Were Young"
+178,4GvCKO2vlWeMpI46X8xQKK,Lewis Capaldi,"Someone You Loved"
+179,4gXpkXmHvaktsmmA1TJ2nv,Jordy Searcy,"Always/almost"
+180,4gYJWH66QxTo87XlVFtziu,ISLAND,"Try"
+181,4I1MhYsQQ71wkE5DiCWw5T,Hazlett,"Stolen Seasons"
+182,4jA0Ol7OXOMt2ZCHNiEVMU,Emily James,"Happy for Me"
+183,4K9YS0nkXZMgV0F9JQoirx,Passenger,"Beautiful Birds (feat. Birdy)"
+184,4kcnySwaXAKatz4c5U8MSI,Noah Reid,"Simply the Best (From Schitt's Creek)"
+185,4LDOieBPdFL4E8Z5raYuoq,The Paper Kites,"A Silent Cause"
+186,4ltyZZtnOj9PtqOvDtOd4t,The Paper Kites,"Midtown Waitress"
+187,4lzyue8f0NOU3xSpm0CVgV,The National Parks,"Young"
+188,4MYUnIBcd3NsQbPJm6RGRZ,The Paper Kites,"Electric Indigo"
+189,4nWoYN8aF05BZgeMj7sbnp,Ben Rector,"What Makes a Man"
+190,4oVwdsQwrZAivpVy5paqL2,The Paper Kites,"Neon Crimson"
+191,4qwjkpSiA4XZXNmk0Cmpfi,Ben Rector,"Duo"
+192,4R1Y1sR53VJoqLjiJkaKrW,Norah Jones,"Those Sweet Words - Live"
+193,4RE3vueod5PL48rvHtuu9C,James Bay,"Peer Pressure"
+194,4rypm0OAHbU1IXLA8atiGE,Stephen Sanchez,"Hey Girl"
+195,4S5LEWgXWQkqC2EEOmRCF9,Ben Rector,"Life Keeps Moving On"
+196,4T6FWA703h6H7zk1FoSARw,John Mayer,"New Light"
+197,4Tm5i27TUx2y3mCz9OweLR,The National Parks,"Open Skies (Wildflower)"
+198,4VNu1KwwmGgHjImpQotEsn,Dean Lewis,"Straight Back Down"
+199,4WN7sK5S0oQ74hT6brZ46K,Chelou,"Telstar"
+200,4xq4DzQf2XkTKXwVZ5S7FT,The Paper Kites,"Bleed Confusion"
+201,4YeUVRpVxaDx6zu6CtB01j,Ben Rector,"When I'm With You"
+202,4ZnEY01lDD6wkuzAUPppx3,The National Parks,"You Are Gold"
+203,4ztgjcOsR0HGsm1vkzh0Ky,Ben Rector,"Sunday (feat. Snoop Dogg)"
+204,4ZUUXUKXWc7YQuUY53Tfwx,Stephen Sanchez,"Kayla"
+205,5063zWIUKknkMJ7D9GbGSG,Jordy Searcy,"I Think It’s You"
+206,50YBK8OKWYxD4eBNRwT7Qz,BANNERS,"Happier"
+207,52BtapS0Wy7LM8R6QvJRpp,Wild Rivers,"Amsterdam"
+208,54hznmb8FaTCdwZvRGGUu9,Emily James,"Past Tense"
+209,55oLoWqGQ3unkMunMzgKeY,Andreas Moe,"Second Wind"
+210,55zgIXyhi8z6snmSx0iXQi,ISLAND,"Feels Like Air"
+211,57Gcs9Mo5wvO8gvp3fsle5,Andreas Moe,"Wholeheartedly"
+212,58J2it1iBwQ9QoEm1gelbD,Alex Aiono,"Unloving You - Acoustic Guitar Version"
+213,59rK5CDvt3z9BMadJlRjcL,Emily James,"that was then"
+214,5bZeugrr7oIATt1CLJuhT4,James TW,"Incredible"
+215,5cKQeqXKhyclhejXHMlrI4,Passenger,"Everything"
+216,5dlZWqrKiUY2xpCRFDcVLO,Emily James,"Bird of Prey"
+217,5Ewz5ms8XpjtkihWFLnJJs,The Paper Kites,"Paint"
+218,5gza85soOXdZTE2TMfqDWM,ISLAND,"Ride"
+219,5htghP7rThIe6oXBN6uYI5,Drew Holcomb & The Neighbors,"Find Your People"
+220,5igrAKYGCpB81myxGig5Mw,Birdtalker,"Blue Healer"
+221,5imShWWzwqfAJ9gXFpGAQh,John Mayer,"Waiting On the World to Change"
+222,5J7zqPpQkN9JZiaELHNKSL,Vance Joy,"We're Going Home"
+223,5KxcMQlpKTEIkLEGE5nset,Charlie Finch,"No Escape"
+224,5lalGRKfTwohXUhiNttBXn,Jordy Searcy,"Favorite Days"
+225,5MfSZLVieda0XEtoaMX0oj,Hazlett,"Blame The Moon"
+226,5MFW5SOyi2uPppqJib5pVw,Jordy Searcy,"I Don't Think You Love Me"
+227,5Ms8gtJUCzJ4IVWd7gCSR6,Ben Rector,"Wherever You Are"
+228,5NffPhg2C8T8GM8WTMvADQ,The Paper Kites,"Willow Tree March"
+229,5nsFJfYtAFZmL9PbtYKYcA,Stephen Sanchez,"See The Light"
+230,5NsvxfpGzOXalL32GAH8Fr,Passenger,"Whispers"
+231,5Ny6HXUK1LMW3opDVnQCvi,Lewis Capaldi,"Grace"
+232,5o792XuwxIxqwr73ZsACfJ,Jordy Searcy,"Why Can't We Be Friends?"
+233,5OnyAcESvyIfRG3MkstEAC,Jordy Searcy,"..."
+234,5pjETtb5hpSStfFlAAU0J7,Ben Rector,"Kids"
+235,5sHlU2ejWIzJDHgSrwSxx6,Passenger,"Anywhere"
+236,5SQkpKQP4woq7R4kG53HAy,Ben Rector,"Wonderful World"
+237,5w3VUZNrbbbfURsJ8CPbQy,The Lumineers,"My Eyes"
+238,5WfRUXwgd5KWRPG9bAmWst,ISLAND,"Lyra"
+239,5YjnnWg091lEmPrTSTLHgc,Ben Rector,"Beautiful"
+240,5zT5cMnMKoyruPj13TQXGx,Amber Run,"I Found"
+241,600oiqLkQIJ85HvQGIQWvO,The Script,"The Last Time"
+242,608JEuAS9UXSt39HvUw9aX,Twiceyoung,"Slow Down"
+243,61CVlBAPN1rIJdJdpU2MHx,Wild Rivers,"Mayday"
+244,63q3GlHZstxXzfb0zt7ZYY,The Lumineers,"BRIGHTSIDE"
+245,66zJFuhki4Yaskr20Yo0eH,BANNERS,"Serenade"
+246,6c6t0aQOtVUZTxRQTlEkZQ,Owl City,"If My Heart Was a House"
+247,6C9hKHg0L0JffoqL9uceE8,The Intermission Project,"I've Been Waiting"
+248,6CFkHFZqvv5LTTzDGggLP6,Charlie Finch,"Life's Journey"
+249,6dIZb64N6ICAWrf1RJrKfB,Dean Lewis,"Hold Of Me"
+250,6dux5viG3Ku3IefPx3gFNT,Florence + The Machine,"Dog Days Are Over"
+251,6e98Eg40UdsdXqnfamel4E,The Magic Gang,"Feeling Better"
+252,6Ek1l5BODK5Y0BErHkOWrj,Andreas Moe,"Bus Stop"
+253,6fjLKdbtosUNaCfypOPqvn,The Paper Kites,"Without Your Love (feat. Julia Stone)"
+254,6FRSh751lnqS0JGHRg8Dol,Jordy Searcy,"Loved Loving You"
+255,6H37tOnHZK67vNMN9Mjkgt,Jordy Searcy,"...."
+256,6hZmapFfbOBqQiKR4eMcbJ,The Collection,"Sing of the Moon"
+257,6K0b2FYLwAbq90OgmrMvdg,Matthew Mole,"Let Me"
+258,6k5o8YQhioUz54YY3CfcYB,Hazlett,"Mama's Boy"
+259,6lTDzhs8J9mqHs4cShQFVO,Elina,"Wild Enough"
+260,6Nbvi82Fs1sUOTkGYog85E,Dustin Tebbutt,"Harvest"
+261,6nmukSDAmw3XtbGKGD8056,Stephen Sanchez,"Because Of You"
+262,6NzO8H8HWe1hHaiZWiGpXH,Skott,"Overcome"
+263,6Od2OWvoT4embWAgIGeFRd,Vance Joy,"Like Gold"
+264,6OPCPWHHpFeRm60hiZuRrP,Wild Rivers,"Already Gone"
+265,6r4jouSQy2Hl77pwMwChcM,Ben Rector,"Thank You"
+266,6TpyujRefwsflWFXbmjVpj,Luke Combs,"Doin' This"
+267,6UOkF086zUgYXnqFxqUvEI,Ben Rector,"Steady Love"
+268,6upqycHdFZkd1JzVeqjnGo,NEEDTOBREATHE,"Dreams (feat. Judah & The Lion)"
+269,6vfmmwCPsz5xNLjKIlzwOF,Ben Rector,"Heroes"
+270,6VhuP99TE6gYNQRJIlAWFD,Stephen Sanchez,"Until I Found You"
+271,6VoonmHLcrkzKEfPWnV5SE,Ben Rector,"Sailboat"
+272,6Vp0ofQMO9LY8EJOwokZq2,Ben Rector,"Forever Like That - Live"
+273,6Y5chnfpGt3f6HM5xA8Pd1,Wild Rivers,"Call It a Night"
+274,6YfSuIS9WW0JClHpJpULxM,Morningsiders,"Nightingale"
+275,72NfA7H7MNNRivi623c34g,Andreas Moe,"Holding On"
+276,74iZuPGwyL33VlTr6jTnab,Lady Gaga,"Always Remember Us This Way"
+277,75yHLmXyBRvPa1e8czGlxu,Ben Rector,"Supernatural (feat. Dave Koz)"
+278,77kB9ndJCAwkZk1k0i8igr,ISLAND,"Moth"
+279,77Y57qRJBvkGCUw9qs0qMg,John Mayer,"In the Blood"
+280,783ICUdmtVQgg1meszkCfS,Passenger,"If You Go"
+281,7Afr3PKTtlFGHGiXYgnv6P,Ben Rector,"I Like You"
+282,7AkPusgKsrTqbOcTTbRnFr,Novo Amor,"Halloween"
+283,7bcnTUSnxnt30Y4ynLCQ6T,Ben Rector,"We Will Never Be This Young Again"
+284,7CEIn4lDK1nZQRfc6XVTqU,The Script,"The Last Time - Acoustic"
+285,7Cy46glHTiYmExbOMhLb5K,Ben Rector,"Joy"
+286,7DZ8n63a46dU6iUyN9OeRl,Passenger,"The Way That I Love You - Single Version"
+287,7fsDd3jNcfOnRIJ17kPkbo,Justin Bieber,"Anyone"
+288,7Hgn6MVuZTVHL17KlBsoSa,Drew Holcomb,"Hung the Moon"
+289,7iTZBQ5kH8ZYDRNwF1OSmw,Hazlett,"Slow Running"
+290,7JrhgIcZbn8NEU7mLSmjNH,Passenger,"The Long Road"
+291,7k89nEaNK54kLKXHFbERzQ,Rubber Duc,"Down on My Knees"
+292,7kr3xZk4yb3YSZ4VFtg2Qt,Billy Raffoul,"Acoustic"
+293,7ldIYiFIvxPyTiy0iO9UqV,The Paper Kites,"Featherstone"
+294,7mMZ8mAtEWwx16VNKQKCtQ,The Paper Kites,"St. Clarity (Mahogany Sessions)"
+295,7Mxht6E0pDbEb8vyP76Amm,Hazlett,"Missionary Feelings"
+296,7nYyorbIVpbo1PaowBE5c6,The National Parks,"Waiting for Lightning"
+297,7oekneJCJO74ycdLzdk16v,Vance Joy,"Lay It on Me"
+298,7onS7sAXzPt7Qf3ngWqu8Q,Jordy Searcy,"Better"
+299,7pwv8qF2fnu4Pbo43rd7i1,Jordy Searcy,"Explaining Jesus"
+300,7rpZJ7nSe2m5he3OHEz8Yv,Ben Rector,"Paris"
+301,7tjD0hvDyA9LecANtqIaEh,Ben Rector,"It Would Be You (Acoustic)"
+302,7vh8aA3VMof7m2JR8hX8Nm,The Paper Kites,"Deep Burn Blue"
+303,7w87IxuO7BDcJ3YUqCyMTT,Foster The People,"Pumped Up Kicks"
+304,7wF4asYZw8cAHEljYd2Wid,Ben Rector,"Forever Like That"
+305,7x46YkKAwp3yZpaa72n5Mu,The Lumineers,"Stubborn Love"
+306,7xKH2vppMfhWsx6u7BFDIt,Jordy Searcy,"Molly"
+307,7xT7S9uNrRkYTl4U4xps4M,The Paper Kites,"Give Me Your Fire,Give Me Your Rain"
+308,7ylOCfpjsuxM6w7W7b3W91,Kygo,"I See You (feat. Billy Raffoul)"
+309,7zWYskRENVPyJUh8FLzuoT,Orla Gartland,"Flatline"
+edgedef>source INTEGER,target INTEGER,weight DOUBLE
+0,10,3
+0,15,3
+0,21,3
+0,33,3
+0,34,4
+0,45,3
+0,104,4
+0,108,3
+0,111,3
+0,113,3
+0,118,3
+0,125,3
+0,129,3
+0,135,3
+0,137,3
+0,148,4
+0,179,3
+0,189,3
+0,195,3
+0,217,3
+0,256,3
+0,264,3
+0,288,3
+0,296,3
+0,301,3
+0,304,3
+1,16,4
+1,54,3
+1,86,3
+1,113,4
+1,140,3
+1,183,3
+1,184,3
+1,186,3
+1,243,4
+1,262,3
+1,289,3
+2,28,5
+2,61,3
+2,119,3
+2,127,4
+2,153,3
+2,198,3
+2,219,3
+2,252,3
+2,265,3
+3,186,3
+3,194,3
+3,210,3
+3,302,3
+4,19,3
+4,34,3
+4,53,3
+4,59,4
+4,68,3
+4,69,3
+4,89,3
+4,102,3
+4,120,3
+4,147,3
+4,240,3
+4,247,3
+4,256,3
+4,286,4
+4,302,3
+5,110,3
+6,45,3
+6,90,3
+6,91,3
+6,133,3
+6,156,3
+6,213,4
+6,296,3
+6,301,3
+6,305,3
+7,161,3
+7,275,3
+8,14,3
+8,37,4
+8,38,4
+8,64,3
+8,79,3
+8,123,3
+8,126,4
+8,128,3
+8,168,4
+8,171,3
+8,177,3
+8,193,3
+8,212,3
+8,223,3
+8,247,3
+8,249,3
+8,254,3
+9,37,4
+9,38,4
+9,50,3
+9,115,3
+9,123,3
+9,159,3
+9,168,4
+9,176,3
+9,177,3
+9,193,3
+9,226,4
+9,241,3
+9,246,3
+9,247,3
+9,248,3
+9,249,3
+9,278,3
+9,286,3
+10,21,3
+10,29,3
+10,69,3
+10,104,4
+10,105,3
+10,139,3
+10,141,3
+10,148,3
+10,197,3
+10,260,3
+10,264,3
+10,300,3
+11,183,3
+11,184,3
+11,224,3
+11,237,3
+11,243,3
+12,33,3
+12,74,3
+12,118,3
+12,195,3
+12,216,3
+12,217,3
+12,225,3
+12,240,3
+12,242,3
+12,258,3
+12,259,3
+12,264,3
+12,267,3
+12,294,3
+13,26,3
+13,44,3
+13,81,3
+13,149,4
+13,170,3
+13,191,3
+13,229,3
+13,241,3
+13,245,3
+13,251,3
+13,297,3
+13,303,4
+14,37,3
+14,39,3
+14,42,3
+14,62,3
+14,73,3
+14,80,3
+14,96,3
+14,100,3
+14,120,3
+14,142,3
+14,162,3
+14,168,3
+14,169,3
+14,170,3
+14,188,3
+14,193,4
+14,223,4
+14,234,4
+14,239,3
+14,249,3
+14,263,3
+14,283,3
+15,45,3
+15,60,3
+15,158,3
+15,291,3
+16,19,3
+16,34,3
+16,54,3
+16,78,3
+16,89,3
+16,113,3
+16,120,3
+16,140,3
+17,39,3
+17,44,3
+17,97,3
+17,112,3
+17,116,3
+17,187,3
+17,201,3
+17,250,3
+17,268,3
+18,68,3
+18,293,3
+19,120,4
+19,138,3
+19,153,3
+20,71,3
+20,105,3
+20,109,3
+20,133,3
+20,230,3
+21,56,3
+21,96,3
+21,104,3
+21,127,4
+21,148,3
+21,153,3
+21,167,3
+21,186,3
+21,189,3
+21,219,3
+21,244,3
+21,252,3
+21,260,3
+21,264,3
+21,265,3
+21,281,3
+22,33,3
+22,70,4
+22,99,3
+22,137,3
+22,138,3
+22,148,3
+22,162,3
+22,163,3
+22,197,3
+22,200,3
+22,209,3
+22,217,4
+22,223,3
+22,301,3
+23,35,3
+23,51,3
+23,70,3
+23,137,3
+23,145,3
+23,155,3
+23,163,3
+23,205,3
+23,247,3
+23,261,3
+23,286,3
+23,301,3
+24,27,3
+24,34,3
+24,54,3
+24,62,3
+24,92,3
+24,95,3
+24,113,4
+24,140,3
+24,150,4
+24,158,3
+24,172,3
+24,181,3
+24,294,3
+24,308,3
+25,30,3
+25,42,3
+25,80,3
+25,101,3
+25,110,3
+25,119,3
+25,170,3
+25,198,3
+25,229,3
+25,277,3
+25,287,3
+26,31,4
+26,44,3
+26,124,3
+26,168,3
+26,170,3
+26,176,3
+26,188,3
+26,221,4
+26,234,3
+26,241,3
+26,257,3
+27,34,3
+27,35,3
+27,36,4
+27,51,3
+27,54,3
+27,99,3
+27,113,3
+27,140,3
+27,150,3
+27,172,3
+27,202,3
+27,205,3
+27,240,3
+27,294,3
+27,299,3
+27,308,3
+28,61,3
+28,119,3
+28,127,4
+28,153,3
+28,198,3
+28,219,3
+28,252,3
+28,265,3
+29,57,3
+29,63,3
+29,83,4
+29,96,3
+29,131,3
+29,170,3
+29,188,3
+30,32,3
+30,46,3
+30,101,3
+30,149,3
+30,229,3
+30,235,3
+30,245,3
+30,282,3
+30,287,4
+30,308,3
+31,44,3
+31,115,3
+31,165,4
+31,171,3
+31,187,4
+31,227,3
+31,244,3
+31,251,3
+32,43,4
+32,110,3
+32,117,3
+32,121,3
+32,198,3
+32,276,3
+32,287,3
+32,297,3
+33,45,3
+33,70,4
+33,85,3
+33,111,3
+33,125,3
+33,129,3
+33,133,3
+33,179,3
+33,185,3
+33,216,3
+33,225,3
+33,259,3
+33,292,3
+33,301,4
+34,46,3
+34,49,3
+34,69,3
+34,95,3
+34,132,3
+34,147,3
+34,150,3
+34,152,3
+34,172,4
+34,195,3
+34,239,3
+34,267,3
+34,283,3
+34,304,4
+34,305,3
+34,308,3
+35,51,3
+35,86,3
+35,88,3
+35,155,3
+35,194,3
+35,261,3
+36,51,3
+36,54,4
+36,56,3
+36,86,3
+36,88,3
+36,92,3
+36,140,3
+36,202,3
+36,205,3
+36,240,4
+36,246,3
+36,269,3
+36,294,4
+36,295,3
+36,299,3
+37,38,4
+37,39,3
+37,66,3
+37,72,3
+37,97,4
+37,116,3
+37,128,3
+37,142,3
+37,159,3
+37,168,4
+37,177,3
+37,193,4
+37,223,3
+37,241,4
+37,244,3
+37,247,3
+37,254,3
+37,263,3
+38,55,3
+38,58,4
+38,63,3
+38,71,3
+38,100,3
+38,126,3
+38,168,4
+38,171,3
+38,177,3
+38,193,3
+38,218,3
+38,241,3
+38,247,3
+38,250,3
+39,44,3
+39,59,3
+39,81,3
+39,83,3
+39,97,3
+39,123,3
+39,168,3
+39,176,3
+39,201,3
+39,218,3
+39,223,3
+39,228,3
+39,234,3
+39,241,3
+39,246,3
+39,269,3
+39,272,3
+39,277,3
+39,283,3
+39,304,3
+40,97,3
+40,112,3
+40,252,3
+40,263,3
+41,44,3
+41,81,3
+41,101,3
+41,115,3
+41,123,3
+41,149,3
+41,215,3
+41,245,4
+41,251,3
+41,261,3
+41,268,3
+41,280,3
+41,284,3
+41,297,3
+41,303,3
+42,100,3
+42,198,3
+42,239,3
+42,277,3
+42,283,3
+43,117,3
+43,121,3
+43,287,3
+44,73,3
+44,81,3
+44,102,3
+44,115,3
+44,118,3
+44,123,3
+44,188,3
+44,240,3
+44,241,3
+44,244,3
+44,245,3
+44,268,3
+44,269,3
+44,276,3
+44,278,3
+44,284,3
+44,296,3
+44,303,3
+45,111,3
+45,125,3
+45,132,4
+45,178,3
+45,213,3
+45,259,3
+45,288,3
+45,301,3
+46,49,3
+46,103,3
+46,120,3
+46,131,4
+46,158,3
+46,172,4
+46,211,3
+46,282,3
+47,56,3
+47,88,3
+47,138,3
+47,164,3
+47,190,3
+47,225,3
+47,279,3
+48,110,3
+48,252,3
+49,78,3
+49,95,3
+49,103,3
+49,128,3
+49,147,3
+49,194,3
+49,213,3
+49,276,3
+49,300,3
+50,97,3
+50,102,3
+50,115,4
+50,116,3
+50,133,3
+50,141,3
+50,168,3
+50,176,3
+50,185,3
+50,188,3
+50,226,3
+50,249,3
+50,291,3
+50,307,3
+51,54,3
+51,88,3
+51,99,3
+51,146,3
+51,155,3
+51,163,3
+51,164,3
+51,184,3
+51,202,4
+51,204,3
+51,205,4
+51,240,3
+51,261,3
+51,299,3
+52,65,3
+52,91,4
+52,97,3
+52,107,3
+52,128,3
+52,148,3
+52,166,3
+52,266,3
+52,296,3
+53,59,3
+53,79,3
+53,108,3
+53,124,3
+53,247,3
+53,298,3
+54,56,3
+54,57,3
+54,73,3
+54,86,4
+54,99,3
+54,113,3
+54,140,5
+54,148,3
+54,158,3
+54,162,3
+54,164,3
+54,202,3
+54,239,3
+54,240,3
+54,253,3
+54,264,3
+54,272,4
+54,294,3
+55,63,4
+55,97,3
+55,129,3
+55,166,3
+55,171,3
+55,218,3
+55,234,3
+55,246,3
+55,250,4
+55,258,3
+55,294,3
+56,138,3
+56,140,4
+56,148,3
+56,153,3
+56,162,3
+56,183,3
+56,224,3
+56,279,3
+56,289,4
+56,294,4
+57,131,4
+57,140,3
+57,153,3
+57,167,3
+57,181,3
+57,219,3
+57,253,3
+57,282,3
+58,63,3
+58,77,3
+58,83,3
+58,100,4
+58,123,3
+58,126,3
+58,166,3
+58,171,3
+58,176,3
+58,241,3
+58,246,3
+58,298,3
+58,309,3
+59,84,3
+59,102,4
+59,108,3
+59,111,3
+59,118,4
+59,128,3
+59,130,3
+59,147,3
+59,148,3
+59,215,3
+59,217,3
+59,240,3
+59,247,3
+59,273,3
+59,278,3
+59,286,4
+59,288,3
+60,101,3
+60,117,3
+60,149,3
+60,172,3
+60,178,3
+60,195,3
+60,206,3
+60,229,3
+60,277,3
+61,90,4
+61,144,3
+61,213,3
+61,214,3
+61,219,3
+61,220,3
+61,228,3
+61,239,3
+61,260,4
+61,269,3
+61,276,3
+61,296,4
+61,305,3
+62,131,3
+62,141,3
+62,150,3
+62,151,3
+62,159,3
+62,160,3
+62,175,3
+62,180,3
+62,198,3
+62,226,3
+62,235,3
+62,239,3
+62,249,3
+62,266,3
+62,282,3
+62,304,3
+62,305,3
+63,83,3
+63,97,3
+63,166,3
+63,171,3
+63,188,3
+63,191,3
+63,218,4
+63,250,3
+64,98,3
+64,102,3
+64,121,3
+64,128,3
+64,162,3
+64,165,3
+64,177,4
+64,193,3
+64,249,3
+64,254,3
+64,273,3
+64,281,3
+64,298,3
+65,183,3
+65,185,3
+66,91,3
+66,111,3
+66,122,3
+66,177,3
+66,187,3
+66,226,3
+66,228,3
+66,254,3
+66,271,3
+66,278,3
+67,68,3
+67,91,3
+67,98,3
+67,111,3
+67,123,3
+67,128,3
+67,165,3
+67,220,4
+67,273,3
+67,276,3
+67,296,3
+67,304,3
+67,308,3
+68,107,3
+68,186,3
+68,200,3
+68,210,3
+68,295,3
+68,304,3
+69,104,3
+69,105,3
+69,125,3
+69,135,4
+69,179,4
+69,199,3
+69,256,3
+69,267,3
+69,300,3
+70,85,3
+70,125,3
+70,133,3
+70,137,4
+70,184,3
+70,185,5
+70,192,3
+70,205,3
+70,217,3
+70,259,3
+70,290,3
+70,301,5
+71,87,3
+71,109,4
+71,142,3
+71,201,3
+71,230,3
+71,234,3
+71,238,3
+71,241,3
+72,77,3
+72,95,3
+72,122,3
+72,123,4
+72,159,3
+72,168,3
+72,191,3
+72,193,4
+72,227,3
+72,241,3
+72,249,3
+72,250,3
+72,277,3
+72,283,4
+72,284,4
+73,86,3
+73,107,3
+73,127,3
+73,140,3
+73,176,3
+73,188,3
+73,189,3
+73,214,3
+73,234,3
+73,235,4
+73,239,4
+73,246,3
+73,258,3
+73,260,3
+73,264,3
+73,269,3
+73,291,3
+73,294,3
+73,305,3
+74,85,3
+74,111,3
+74,118,4
+74,129,4
+74,145,3
+74,147,3
+74,155,3
+74,163,3
+74,199,3
+74,204,3
+74,205,4
+74,240,3
+74,241,3
+74,246,3
+74,247,3
+74,254,3
+74,267,3
+74,295,3
+75,173,3
+75,187,3
+75,221,3
+75,268,3
+76,298,3
+77,134,3
+77,144,3
+77,154,3
+77,159,3
+77,182,3
+77,193,3
+77,207,3
+77,239,3
+77,246,3
+77,277,3
+78,84,3
+78,145,3
+79,120,3
+79,121,4
+79,143,4
+79,177,3
+79,220,3
+79,281,3
+80,131,3
+80,151,4
+80,170,3
+80,188,4
+80,221,3
+80,234,3
+80,277,3
+80,304,3
+81,102,3
+81,112,3
+81,116,3
+81,133,3
+81,263,3
+81,268,3
+81,271,3
+81,278,3
+82,104,3
+82,181,3
+82,202,3
+82,270,3
+82,299,4
+83,142,3
+83,221,3
+83,223,4
+83,234,3
+84,111,3
+84,145,3
+84,147,3
+84,182,3
+84,213,3
+85,88,3
+85,125,4
+85,129,4
+85,146,3
+85,163,3
+85,185,4
+85,190,3
+85,199,4
+85,205,3
+85,217,3
+85,258,3
+85,259,4
+85,267,3
+85,301,4
+86,113,3
+86,140,3
+86,148,3
+86,153,3
+86,162,3
+86,239,3
+86,240,3
+86,253,3
+86,264,3
+86,272,5
+87,105,3
+87,109,3
+87,155,3
+87,199,3
+87,230,4
+87,238,3
+87,242,3
+87,288,3
+88,146,4
+88,163,3
+88,190,3
+88,205,3
+88,246,3
+88,262,3
+89,132,3
+89,164,3
+90,105,3
+90,122,3
+90,214,3
+91,97,3
+91,128,3
+91,143,3
+91,166,3
+91,189,3
+91,209,3
+91,213,3
+91,219,3
+91,220,3
+91,260,3
+91,276,3
+91,296,3
+92,129,3
+92,132,3
+92,150,3
+92,155,3
+92,157,3
+92,195,3
+92,199,3
+92,205,3
+92,216,3
+92,240,3
+92,258,3
+92,259,3
+92,304,3
+92,305,3
+93,137,3
+93,153,4
+93,204,3
+93,237,3
+93,290,3
+94,216,3
+94,274,3
+95,118,3
+95,150,3
+95,158,3
+95,215,3
+95,273,3
+95,284,3
+95,298,3
+95,300,3
+96,106,3
+96,127,3
+96,148,3
+96,162,3
+96,223,3
+96,234,3
+96,281,3
+96,302,4
+97,112,3
+97,166,3
+97,168,3
+97,185,3
+97,191,3
+97,241,3
+97,252,3
+97,263,3
+97,278,3
+97,283,3
+97,301,3
+98,104,3
+98,130,3
+98,165,3
+98,208,3
+98,253,3
+98,273,3
+99,113,3
+99,159,3
+99,182,3
+99,193,3
+99,224,3
+99,249,3
+99,261,3
+99,282,3
+100,115,3
+100,145,3
+100,193,3
+100,223,3
+100,249,3
+100,309,3
+101,112,3
+101,141,3
+101,149,5
+101,154,4
+101,170,3
+101,206,3
+101,229,3
+101,245,4
+101,251,4
+101,277,3
+101,287,3
+101,303,3
+102,108,3
+102,115,3
+102,128,3
+102,130,3
+102,148,3
+102,165,3
+102,209,3
+102,241,3
+102,247,3
+102,273,3
+102,278,3
+102,286,3
+102,298,3
+103,131,3
+103,136,3
+103,172,3
+103,208,3
+104,125,3
+104,129,4
+104,148,3
+104,167,3
+104,199,3
+104,234,3
+104,253,3
+104,260,3
+104,264,4
+105,155,3
+105,199,3
+105,230,3
+105,267,3
+106,110,3
+106,127,3
+106,180,3
+106,285,3
+106,287,3
+106,302,3
+107,186,3
+107,189,3
+107,289,3
+108,118,4
+108,130,3
+108,137,3
+108,139,3
+108,148,4
+108,197,3
+108,217,3
+108,240,3
+108,272,3
+108,273,3
+108,304,3
+109,133,3
+109,174,3
+109,230,3
+109,238,4
+109,246,3
+110,114,3
+110,198,3
+110,229,3
+110,257,3
+111,128,3
+111,130,3
+111,204,3
+111,254,3
+111,288,4
+112,115,3
+112,132,3
+112,157,3
+112,245,3
+112,263,4
+112,278,3
+112,283,3
+112,291,3
+113,140,4
+113,158,3
+113,183,3
+113,184,3
+113,233,3
+113,253,3
+113,255,3
+113,261,3
+113,294,3
+114,206,3
+114,285,3
+114,309,3
+115,149,3
+115,168,4
+115,176,3
+115,245,3
+115,249,3
+115,263,3
+115,278,3
+115,286,3
+115,297,3
+115,307,3
+116,122,3
+116,168,3
+116,230,3
+116,268,3
+117,149,3
+117,229,4
+117,248,3
+117,266,3
+117,269,3
+117,287,3
+117,293,3
+118,123,3
+118,129,3
+118,148,3
+118,195,3
+118,197,3
+118,204,3
+118,216,3
+118,228,3
+118,240,4
+118,247,3
+118,264,3
+118,272,3
+118,276,3
+118,286,3
+118,295,3
+118,304,3
+119,127,3
+119,138,3
+119,141,3
+119,144,3
+119,198,3
+119,209,3
+119,235,3
+119,279,3
+119,280,3
+119,284,3
+119,307,3
+120,128,3
+120,132,3
+120,162,3
+121,128,3
+121,174,3
+121,177,4
+121,207,3
+121,220,3
+121,236,3
+121,269,3
+122,203,3
+122,204,3
+122,227,3
+122,250,3
+122,252,3
+123,126,3
+123,159,3
+123,168,3
+123,193,3
+123,220,3
+123,239,3
+123,244,3
+123,249,3
+123,273,3
+123,276,3
+123,283,3
+123,284,3
+125,129,3
+125,135,3
+125,155,3
+125,179,3
+125,185,3
+125,199,3
+125,205,3
+125,259,3
+125,288,3
+125,301,3
+126,165,3
+126,166,3
+126,168,3
+126,171,3
+126,176,3
+126,241,3
+126,244,3
+127,141,3
+127,151,3
+127,153,3
+127,154,3
+127,175,3
+127,180,5
+127,186,3
+127,189,4
+127,235,3
+127,239,3
+127,265,3
+127,279,3
+128,174,3
+128,177,3
+128,209,3
+128,220,3
+128,226,3
+128,247,4
+128,249,3
+128,254,3
+128,273,3
+128,276,3
+128,288,3
+129,135,3
+129,163,3
+129,179,3
+129,199,4
+129,217,3
+129,240,3
+129,253,3
+129,258,5
+129,259,3
+129,264,3
+129,267,4
+129,289,3
+130,148,3
+130,178,3
+130,216,3
+130,264,3
+130,273,3
+131,151,3
+131,162,3
+131,170,3
+131,186,3
+131,188,3
+131,282,3
+132,136,3
+132,157,3
+132,172,4
+132,178,3
+132,271,3
+132,278,3
+132,286,3
+133,174,3
+133,209,3
+133,213,3
+133,274,3
+133,278,3
+134,207,3
+134,287,3
+135,147,3
+135,172,3
+135,179,3
+135,199,3
+135,213,3
+135,256,3
+135,267,4
+136,172,3
+137,139,3
+137,148,4
+137,156,3
+137,184,3
+137,185,4
+137,192,3
+137,217,4
+137,237,3
+137,267,3
+137,288,3
+137,290,4
+137,301,4
+138,223,3
+139,148,3
+139,163,3
+139,200,4
+139,256,3
+140,148,3
+140,153,3
+140,158,3
+140,162,3
+140,164,3
+140,167,3
+140,189,3
+140,202,3
+140,239,3
+140,240,3
+140,253,3
+140,264,3
+140,272,4
+140,282,3
+140,289,3
+140,294,3
+140,295,3
+141,159,3
+141,170,3
+141,180,3
+141,209,3
+141,228,3
+141,249,3
+141,265,3
+141,266,3
+142,168,3
+142,193,3
+142,223,3
+142,234,3
+142,249,3
+142,250,3
+143,177,3
+143,212,3
+143,219,3
+143,276,3
+143,279,3
+144,166,4
+144,179,3
+144,213,3
+144,219,4
+144,260,3
+144,296,3
+145,181,3
+145,182,3
+145,193,3
+145,204,3
+145,240,3
+145,267,3
+146,184,3
+146,190,3
+146,202,3
+146,212,3
+146,299,3
+147,155,3
+147,195,4
+147,240,3
+147,264,3
+147,286,3
+147,300,3
+148,153,3
+148,162,3
+148,185,3
+148,197,3
+148,217,4
+148,240,3
+148,264,3
+148,273,3
+148,281,3
+148,306,3
+149,206,3
+149,229,4
+149,245,4
+149,248,3
+149,251,3
+149,277,3
+149,291,3
+149,297,4
+149,303,3
+150,158,3
+150,160,3
+150,167,3
+150,172,4
+150,194,3
+150,206,3
+150,239,3
+150,253,3
+150,300,3
+150,305,3
+150,308,3
+151,170,3
+151,175,3
+151,235,3
+151,239,3
+151,277,3
+151,308,3
+152,195,4
+152,245,3
+152,291,3
+152,304,3
+152,306,3
+153,162,3
+153,163,3
+153,181,4
+153,265,3
+153,294,3
+154,175,3
+154,180,3
+154,198,3
+154,245,3
+154,251,3
+154,265,3
+154,284,3
+154,287,3
+154,300,3
+155,163,3
+155,194,3
+155,199,3
+155,205,3
+155,226,3
+155,240,3
+155,247,3
+156,181,3
+156,211,3
+156,259,3
+156,294,3
+156,301,3
+157,189,3
+157,228,3
+157,239,3
+157,278,4
+157,291,3
+157,305,3
+158,167,3
+158,172,3
+158,181,3
+158,253,4
+158,258,3
+158,267,3
+158,282,3
+158,294,3
+158,308,3
+159,193,3
+159,226,3
+159,245,3
+159,248,3
+159,278,3
+159,283,3
+160,197,3
+160,213,3
+160,228,3
+160,266,4
+160,269,3
+160,273,3
+160,298,3
+160,304,4
+160,305,4
+161,247,3
+161,288,3
+162,185,3
+162,186,3
+162,192,3
+162,200,3
+162,217,3
+162,253,3
+162,290,3
+163,197,3
+163,199,3
+163,205,4
+163,295,3
+164,178,3
+164,202,3
+164,224,3
+164,225,3
+164,252,3
+164,254,3
+164,272,3
+164,289,3
+165,171,3
+165,187,3
+165,208,3
+165,244,3
+165,273,3
+165,298,3
+166,171,3
+166,176,3
+166,186,3
+166,209,3
+166,223,3
+166,246,3
+166,296,4
+167,181,3
+167,234,3
+167,242,3
+167,253,5
+167,264,4
+167,267,3
+167,299,3
+167,300,3
+168,177,3
+168,193,4
+168,223,3
+168,241,4
+168,244,3
+168,247,3
+168,249,3
+168,250,3
+169,186,3
+169,188,3
+169,189,3
+169,244,3
+169,265,3
+169,279,3
+169,307,3
+170,188,4
+170,221,3
+170,235,3
+170,277,3
+171,176,3
+171,187,3
+171,201,3
+171,250,4
+172,308,3
+174,177,3
+174,207,3
+174,215,3
+174,226,3
+174,238,3
+174,263,3
+174,269,3
+174,288,3
+175,176,3
+175,180,4
+175,188,3
+175,235,3
+175,265,3
+176,180,3
+176,187,3
+176,218,3
+176,239,3
+176,278,4
+176,291,3
+177,182,3
+177,247,3
+177,254,3
+177,266,3
+177,269,3
+177,276,3
+178,212,3
+178,263,3
+178,271,4
+178,286,3
+179,208,3
+179,267,3
+179,292,3
+180,198,3
+180,235,3
+180,244,3
+180,265,3
+180,283,3
+181,204,3
+181,253,3
+181,258,3
+181,272,3
+181,282,4
+181,283,3
+181,294,4
+181,308,3
+182,193,3
+182,198,3
+182,219,3
+182,281,3
+183,184,4
+183,185,3
+183,202,3
+183,224,4
+183,243,3
+183,256,3
+183,262,3
+183,289,3
+184,185,3
+184,202,3
+184,224,3
+184,243,3
+184,261,3
+184,262,3
+184,289,3
+184,301,3
+185,224,3
+185,259,4
+185,301,4
+186,189,3
+186,260,3
+186,289,3
+186,296,3
+187,221,3
+188,218,3
+188,221,3
+188,235,3
+188,249,3
+188,265,3
+188,307,4
+189,214,4
+189,228,3
+189,239,3
+189,260,3
+189,264,3
+189,279,4
+189,294,3
+189,296,3
+190,224,3
+190,243,4
+190,255,3
+191,283,3
+191,297,3
+192,222,3
+192,237,3
+192,271,3
+192,282,3
+192,290,3
+193,223,3
+193,234,3
+193,241,3
+193,249,4
+193,277,3
+193,283,3
+194,238,3
+194,246,3
+194,269,3
+194,276,3
+194,305,3
+195,240,3
+195,245,3
+195,304,3
+196,251,3
+197,228,4
+197,240,3
+197,266,3
+197,269,3
+197,281,3
+197,304,3
+198,219,3
+198,222,3
+198,228,3
+198,245,3
+199,217,3
+199,267,3
+199,304,3
+200,217,3
+201,250,3
+201,268,3
+201,274,3
+202,299,4
+203,285,4
+203,303,3
+204,205,3
+204,215,3
+204,240,3
+204,259,3
+204,261,3
+204,288,3
+204,301,3
+205,240,4
+205,259,3
+205,267,3
+205,301,3
+206,229,4
+206,277,3
+207,208,4
+207,220,3
+207,287,3
+209,217,3
+209,223,3
+209,249,3
+209,266,3
+209,296,4
+210,215,3
+211,252,3
+212,225,3
+212,254,3
+212,289,3
+213,219,3
+213,282,3
+213,296,3
+214,228,3
+214,257,3
+214,276,3
+214,305,3
+215,261,3
+215,300,3
+216,258,4
+216,259,3
+216,294,3
+217,223,3
+217,224,3
+217,240,3
+217,247,3
+217,267,3
+218,223,3
+218,234,3
+218,250,3
+218,277,3
+218,302,3
+219,260,3
+220,236,3
+220,269,3
+220,273,3
+220,276,3
+220,296,3
+220,305,3
+220,308,3
+221,229,3
+221,257,3
+221,268,3
+222,280,3
+223,234,3
+224,243,3
+225,254,3
+225,289,4
+226,247,3
+226,249,3
+226,288,3
+227,230,3
+227,242,3
+227,250,3
+228,245,3
+228,266,4
+228,278,3
+228,284,3
+228,304,3
+228,305,3
+229,245,3
+229,277,3
+229,287,3
+230,238,3
+230,242,3
+230,288,3
+231,236,3
+233,261,3
+234,235,3
+234,239,3
+234,241,3
+234,277,3
+234,302,3
+235,239,3
+235,249,3
+235,284,3
+235,291,3
+237,242,3
+238,270,3
+239,264,3
+239,266,3
+239,269,3
+239,272,3
+239,304,3
+239,305,4
+240,246,3
+240,264,3
+240,267,3
+240,269,3
+240,276,3
+240,294,3
+240,295,3
+240,305,3
+241,244,3
+241,246,3
+242,253,3
+242,264,3
+242,290,3
+243,255,4
+243,256,3
+243,262,3
+243,289,3
+244,279,3
+244,298,3
+245,248,3
+245,251,3
+245,278,3
+245,283,3
+245,284,3
+245,291,4
+245,297,4
+245,303,3
+246,250,3
+246,269,3
+246,276,3
+246,305,3
+247,254,3
+247,286,3
+247,288,3
+248,278,3
+248,297,3
+248,309,3
+249,284,3
+251,287,3
+251,293,3
+251,297,3
+251,303,3
+252,263,3
+252,265,3
+253,258,3
+253,260,3
+253,264,5
+253,290,3
+253,300,3
+254,295,3
+255,262,3
+258,259,4
+258,264,3
+258,267,3
+258,289,3
+258,294,4
+258,296,3
+259,267,4
+259,294,4
+259,301,5
+260,296,3
+260,302,3
+261,262,3
+263,271,3
+264,296,3
+264,304,3
+265,279,3
+266,269,4
+266,287,3
+266,305,3
+269,276,4
+269,287,3
+269,296,3
+269,305,4
+272,282,3
+272,294,3
+272,304,3
+272,305,3
+273,298,3
+273,304,3
+276,296,3
+276,305,3
+277,283,3
+278,284,3
+278,291,3
+279,307,3
+280,297,3
+282,283,3
+282,308,3
+283,291,3
+283,308,3
+284,291,3
+284,297,3
+285,309,3
+287,308,3
+289,294,3
+291,297,3
+295,299,3
+296,305,3
+296,307,3
+297,303,4
+303,309,3
+304,305,4
+305,308,3
