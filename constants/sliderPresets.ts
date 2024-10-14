@@ -89,7 +89,7 @@ export const PRESETS = {
     valence: 0.5,
     tempo: 0.5,
   },
-  hyped: {
+  upbeat: {
     danceability: 0.9,
     energy: 0.9,
     loudness: 0.9,
@@ -100,7 +100,7 @@ export const PRESETS = {
     valence: 0.9,
     tempo: 0.9,
   },
-  breakup: {
+  sad: {
     danceability: 0.1,
     energy: 0.1,
     loudness: 0.1,
@@ -123,6 +123,13 @@ export const PRESETS = {
     tempo: 0.5,
   },
 } as { [key: string]: TrackFeatures };
+
+export const PREDICATES = {
+  mellow: (song: TrackFeatures) => song.energy < 0.5,
+  upbeat: (song: TrackFeatures) => song.valence > 0.5 && song.energy > 0.4,
+  sad: (song: TrackFeatures) => song.energy < 0.5 && song.valence < 0.4,
+  acoustic: (song: TrackFeatures) => song.acousticness > 0.5,
+};
 
 export const DESCRIPTIONS = {
   danceability:

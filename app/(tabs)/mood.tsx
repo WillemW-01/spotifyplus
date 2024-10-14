@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, Text, useColorScheme } from "react-native";
 import BottomSheet from "@gorhom/bottom-sheet";
 
 import { Colors } from "@/constants/Colors";
-import { PRESETS, TrackFeatures } from "@/constants/sliderPresets";
+import { PREDICATES, PRESETS, TrackFeatures } from "@/constants/sliderPresets";
 
 import { SimplifiedPlayList } from "@/interfaces/playlists";
 
@@ -16,10 +16,32 @@ import { usePlayback } from "@/hooks/usePlayback";
 import { usePlayLists } from "@/hooks/usePlayList";
 import { useTracks } from "@/hooks/useTracks";
 import MoodCustomizer from "@/components/MoodCustomizer";
-import pLimit from "p-limit";
-import { Track } from "@/interfaces/tracks";
 
-const rateLimit = pLimit(15);
+import data from "@/scripts/features.json";
+
+interface Feature {
+  index: number;
+  artist: string;
+  name: string;
+  id: string;
+  danceability: number;
+  energy: number;
+  key: number;
+  loudness: number;
+  mode: number;
+  speechiness: number;
+  acousticness: number;
+  instrumentalness: number;
+  liveness: number;
+  valence: number;
+  tempo: number;
+  type: string;
+  uri: string;
+  track_href: string;
+  analysis_url: string;
+  duration_ms: number;
+  time_signature: number;
+}
 
 export default function Mood() {
   const [playlists, setPlaylists] = useState<SimplifiedPlayList[]>([]);
@@ -54,45 +76,41 @@ export default function Mood() {
     setPlaylists(response);
   };
 
-  const onPlay = async () => {
+  const onPlay = async (mood?: keyof typeof PREDICATES) => {
     if (currPlayList.current) {
       // const tracks = await getPlayListItemsIds(currPlayList.current.id);
-      const tracks = savedTracks;
+      // const tracks = savedTracks;
+      const tracks = data as Feature[];
       if (!tracks) return;
       console.log("Getting tracks with sliders: ", sliderValues);
       console.log("Before filtering: ", tracks.length);
 
-      const batchSize = 10;
-      const filteredTracks = [] as string[];
+      let filteredTracks = [] as string[];
 
-      for (let i = 0; i < tracks.length; i += batchSize) {
-        const batch = tracks.slice(i, i + batchSize);
-        console.log("Should be checking ids: ", batch);
-        const batchPromises = batch.map(async (t) => ({
-          track: t,
-          fits: await fitsInPreset(sliderValues, t),
-        }));
+      if (mood) {
+        filteredTracks = tracks.filter(PREDICATES[mood]).map((t) => t.id);
+      } else {
+        const batchSize = 10;
 
-        const batchResults = await Promise.all(batchPromises);
-        filteredTracks.push(...batchResults.filter((r) => r.fits).map((r) => r.track));
+        for (let i = 0; i < tracks.length; i += batchSize) {
+          const batch = tracks.slice(i, i + batchSize);
+          console.log("Should be checking ids: ", batch);
+          const batchPromises = batch.map(async (t) => ({
+            track: t,
+            fits: await fitsInPreset(sliderValues, t),
+          }));
 
-        // Add a delay between batches to further reduce the risk of rate limiting
-        if (i + batchSize < tracks.length) {
-          await new Promise((resolve) => setTimeout(resolve, 1000)); // 1 second delay
+          const batchResults = await Promise.all(batchPromises);
+          filteredTracks.push(...batchResults.filter((r) => r.fits).map((r) => r.track));
+
+          // Add a delay between batches to further reduce the risk of rate limiting
+          if (i + batchSize < tracks.length) {
+            await new Promise((resolve) => setTimeout(resolve, 1000)); // 1 second delay
+          }
         }
       }
 
-      // const promises = tracks.map((t) =>
-      //   rateLimit(async () => ({
-      //     track: t,
-      //     fits: fitsInPreset(sliderValues, t),
-      //   }))
-      // );
-
-      // const results = await Promise.all(promises);
-      // const filteredTracks = results.filter((r) => r.fits).map((r) => r.track);
-      // console.log("After filtering: ", filteredTracks);
-
+      console.log(`After: ${filteredTracks.length}`);
       playTracks(filteredTracks);
     }
   };
@@ -127,7 +145,7 @@ export default function Mood() {
                 imageUri={item.images[0].url}
                 onPress={() => {
                   currPlayList.current = item;
-                  bottomSheetRef.current?.expand();
+                  bottomSheetRef.current?.snapToIndex(0);
                 }}
                 width={90}
               />

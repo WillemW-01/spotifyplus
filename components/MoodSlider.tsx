@@ -69,6 +69,7 @@ export default function MoodSlider({ label, value, setValue }: Props) {
           value={internalValue}
           minimumTrackTintColor={isDisabled ? "#a0a0a0" : Colors.light.background}
           maximumTrackTintColor={isDisabled ? "#a0a0a0" : Colors.light.lightDark}
+          onTouchEndCapture={() => console.log("Touch end")}
         />
 
         <Text style={styles.sliderValue}>{internalValue.toFixed(0)}</Text>
