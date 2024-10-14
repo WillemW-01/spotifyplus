@@ -42,11 +42,11 @@ const ids = features
   .slice(0, max);
 
 const filter = {
-  danceability: 0.05,
-  energy: 0.05,
-  // valence: 0.05,
+  // danceability: 0.1,
+  energy: 0.1,
+  valence: 0.1,
   // acousticness: 0.05,
-  // tempo: 10,
+  tempo: 15,
 };
 
 function isInRange(value: number, target: number, variance: number) {
@@ -77,26 +77,21 @@ ids.slice(0, max).forEach((from, i) => {
       if (already === -1) {
         const fromFeatures = features[from.index];
         const toFeatures = features[to.index];
-
+        let shouldConnect = true;
         for (const key of filterKeys) {
           if (typeof fromFeatures[key] === "number") {
-            const isIn = isInRange(
-              fromFeatures[key] as number,
-              toFeatures[key] as number,
-              filter[key]
-            );
+            shouldConnect =
+              shouldConnect &&
+              isInRange(
+                fromFeatures[key] as number,
+                toFeatures[key] as number,
+                filter[key]
+              );
             // console.log("Checking", key, fromFeatures[key], toFeatures[key], isIn);
-            if (isIn) {
-              const connected = isConnected(from.index, to.index);
-              if (connected !== -1) {
-                // console.log("Already connected!");
-                edges[connected].weight += 1;
-              } else {
-                // console.log("Connecting!");
-                edges.push({ from: from.index, to: to.index, weight: 1 });
-              }
-            }
           }
+        }
+        if (shouldConnect) {
+          edges.push({ from: from.index, to: to.index, weight: 1 });
         }
       }
     }
@@ -104,8 +99,7 @@ ids.slice(0, max).forEach((from, i) => {
 });
 
 console.log(edges);
-edges = edges.filter((e) => e.weight > 1);
-console.log("edges length: ", edges.length);
+// edges = edges.filter((e) => e.weight > 1);
 
 let writeString = "";
 for (const edge of edges) {
@@ -124,36 +118,33 @@ ids.forEach((id) => {
 
 // Add edges to the graph
 for (const edge of edges) {
-  console.log(`Adding edge: ${edge.from}-${edge.to}`);
   graph.addEdge(edge.from, edge.to);
 }
 
-console.log(graph);
-console.log("Starting clustering");
-// Apply the Louvain clustering algorithm
-// louvain.assign(graph, { resolution: 0.8 });
-
-console.log("Finished clustering");
+console.log("edges length: ", edges.length);
 
 // Print or save the clustering result
 // console.log(clusters);
-const communities = louvain(graph, { resolution: 0.6 });
-console.log(communities);
+// const result = louvain.detailed(graph, { resolution: 1.5 });
+// console.log(result);
+// const communities = result.communities;
+// const namedCommunities = [];
 
-const namedCommunities = [];
+// for (const node in communities) {
+//   const name = ids[Number(node)].name;
+//   const currCommunity = communities[node];
+//   if (currCommunity > namedCommunities.length - 1) {
+//     namedCommunities.push([name]);
+//   } else {
+//     namedCommunities[currCommunity].push(name);
+//   }
+// }
 
-for (const node in communities) {
-  const name = ids[Number(node)].name;
-  const currCommunity = communities[node];
-  console.log("Looking at node: ", node);
-  if (currCommunity > namedCommunities.length - 1) {
-    namedCommunities.push([name]);
-  } else {
-    namedCommunities[currCommunity].push(name);
-  }
-}
+// console.log(namedCommunities);
 
-console.log(namedCommunities);
+// for (const community of namedCommunities) {
+//   console.log(`${community.join("|")}`);
+// }
 
 // Optionally write the clusters to a file
 // fs.writeFileSync("clusters.json", JSON.stringify(clusters, null, 2));
