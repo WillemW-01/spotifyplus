@@ -15,7 +15,17 @@ export function useRequestBuilder(usingSpotify = true) {
       console.log("Response came back with error code ", response.status);
       const error: Error = await response.json();
       console.log(error);
-      catchScopeError(response, error, url);
+      await catchRateLimit(response, error);
+      await catchScopeError(response, error, url);
+    }
+  };
+
+  const catchRateLimit = async (response: Response, error: Error) => {
+    if (response.status === 429) {
+      console.log(response);
+      console.log(JSON.stringify(response.headers.has("Retry-After")));
+      // console.log(`According to response, can retry after: ${retryAfter}`);
+      // console.log(`Error: ${error.error.message}`);
     }
   };
 

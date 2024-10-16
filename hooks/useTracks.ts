@@ -3,8 +3,6 @@ import { PlayHistoryObject, Track, TrackFeatureResponse } from "@/interfaces/tra
 import { useRequestBuilder } from "./useRequestBuilder";
 import { TrackFeatures, VARIANCE } from "@/constants/sliderPresets";
 
-import fs from "fs";
-
 export function useTracks() {
   const { buildGet } = useRequestBuilder();
 
@@ -17,6 +15,13 @@ export function useTracks() {
     const data = await response.json();
     console.log(data);
     return data;
+  };
+
+  const getTrack = async (id: string) => {
+    const url = `https://api.spotify.com/v1/tracks/${id}`;
+    const response = await buildGet(url);
+    const data = await response.json();
+    return data as Track;
   };
 
   const isPlayHistoryObject = (
@@ -45,6 +50,18 @@ export function useTracks() {
 
     const data = await response.json();
     return data as TrackFeatureResponse;
+  };
+
+  const getSeveralTrackFeatures = async (trackIds: string[]) => {
+    const url = `https://api.spotify.com/v1/audio-features?ids=${trackIds.join(",")}`;
+    const response = await buildGet(url);
+
+    if (!response.ok) {
+      console.log("Didn't fetch features okay! ", response.status);
+    }
+
+    const data = await response.json();
+    return data as TrackFeatureResponse[];
   };
 
   const packFeatures = (features: TrackFeatureResponse) => {
@@ -85,9 +102,11 @@ export function useTracks() {
   };
 
   return {
+    getTrack,
     getRecent,
     getTracksNames,
     getTrackFeatures,
+    getSeveralTrackFeatures,
     fitsInPreset,
   };
 }
