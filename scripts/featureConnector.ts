@@ -1,6 +1,5 @@
 import fs from "fs";
-import { UndirectedGraph } from "graphology";
-import louvain from "graphology-communities-louvain";
+import data from "./features/features_all.json";
 
 interface Feature {
   index: number;
@@ -19,12 +18,6 @@ interface Feature {
   valence: number;
   tempo: number;
   type: string;
-  id__1: string;
-  uri: string;
-  track_href: string;
-  analysis_url: string;
-  duration_ms: number;
-  time_signature: number;
 }
 
 interface Edge {
@@ -33,24 +26,21 @@ interface Edge {
   weight: number;
 }
 
-import data from "./features.json";
-const max = data.length;
-
 const features = data as Feature[];
-const ids = features
-  .map((f) => ({ id: f.id, index: f.index, name: f.name, artist: f.artist }))
-  .slice(0, max);
+const edges = [] as Edge[];
+// const filterKeys = Object.keys(filter) as (keyof typeof filter)[];
+const MAX_NEIGHBOURS = 20;
+const DECAY = 2;
+const CUTT_OFF = 0.344;
 
-const filter = {
-  // danceability: 0.1,
-  energy: 0.1,
-  valence: 0.1,
-  // acousticness: 0.05,
-  tempo: 15,
-};
-
-function isInRange(value: number, target: number, variance: number) {
-  return value >= target - variance && value <= target + variance;
+function recalibrate() {
+  console.log("Recalibrating...");
+  for (let i = 0; i < features.length; i++) {
+    features[i].index = i;
+  }
+  fs.writeFile("scripts/features/features_all.json", JSON.stringify(features), (err) => {
+    if (err) console.log(err);
+  });
 }
 
 function isConnected(from: number, to: number) {
@@ -65,86 +55,190 @@ function isConnected(from: number, to: number) {
   return -1;
 }
 
-let edges = [] as Edge[];
-const filterKeys = Object.keys(filter) as (keyof typeof filter)[];
+// interface Weights {
+//   [key: string]: number; // This allows any string as key, but you can restrict it further
+// }
 
-ids.slice(0, max).forEach((from, i) => {
-  const progress = ((i / ids.length) * 100).toFixed(2);
-  console.log(`Checking for ${from.id} (${progress}%)`);
-  ids.slice(0, max).forEach((to) => {
-    if (from.id !== to.id) {
-      const already = isConnected(from.index, to.index);
-      if (already === -1) {
-        const fromFeatures = features[from.index];
-        const toFeatures = features[to.index];
-        let shouldConnect = true;
-        for (const key of filterKeys) {
-          if (typeof fromFeatures[key] === "number") {
-            shouldConnect =
-              shouldConnect &&
-              isInRange(
-                fromFeatures[key] as number,
-                toFeatures[key] as number,
-                filter[key]
-              );
-            // console.log("Checking", key, fromFeatures[key], toFeatures[key], isIn);
-          }
+// const weights: Weights = {
+//   valence: 0.5,
+//   energy: 0.5,
+//   loudness: 0.3,
+//   danceability: 0.3,
+//   speechiness: 0.1,
+//   liveness: 0.1,
+//   tempo: 0.1,
+//   key: 0.1,
+//   mode: 0.1,
+//   instrumentalness: 0.1,
+//   acousticness: 0.1,
+// };
+
+function correctMusicalBPM(inputBPM: number) {
+  // Define a valid BPM range for music
+  const minBPM = 30;
+  const maxBPM = 300;
+
+  const potentialValues = [];
+
+  // Check input value
+  if (inputBPM >= minBPM && inputBPM <= maxBPM) {
+    potentialValues.push(inputBPM);
+  }
+
+  // Check half of input value
+  const halfValue = inputBPM / 2;
+  if (halfValue >= minBPM && halfValue <= maxBPM) {
+    potentialValues.push(halfValue);
+  }
+
+  // Check double of input value
+  const doubleValue = inputBPM * 2;
+  if (doubleValue >= minBPM && doubleValue <= maxBPM) {
+    potentialValues.push(doubleValue);
+  }
+
+  // If no valid values found, return null
+  if (potentialValues.length === 0) {
+    return inputBPM; // or throw new Error("No valid BPM found");
+  }
+
+  // Return the value closest to 120 BPM (a common moderate tempo)
+  return potentialValues.reduce((closest, current) =>
+    Math.abs(current - 120) < Math.abs(closest - 110) ? current : closest
+  );
+}
+
+function normalise(feature: number, key: keyof Feature) {
+  let newValue = feature;
+  switch (key) {
+    case "loudness":
+      newValue = (feature + 60) / 60;
+      break;
+    case "tempo":
+      newValue = correctMusicalBPM(feature) / 210;
+      break;
+    default:
+      // newValue = feature * weights[key];
+      newValue = feature;
+  }
+  return newValue;
+}
+
+function getDistance(f1: Feature, f2: Feature, props: (keyof Feature)[]) {
+  let sum = 0;
+  for (const feature of props) {
+    const v1 = normalise(f1[feature] as number, feature);
+    const v2 = normalise(f2[feature] as number, feature);
+    sum += Math.pow(v1 - v2, 2);
+  }
+  return Math.sqrt(sum);
+}
+
+interface ResultObj {
+  index: number;
+  distance: number;
+}
+
+function connect() {
+  const filterArray = [
+    "acousticness",
+    "danceability",
+    "energy",
+    "instrumentalness",
+    "liveness",
+    "loudness",
+    "speechiness",
+    // "tempo",
+    "valence",
+  ] as (keyof Feature)[];
+  // const allDistances = [] as number[];
+  for (let i = 0; i < features.length; i++) {
+    const from = features[i];
+    const distances = [] as ResultObj[];
+    // console.log(`Base: ${from.name}`);
+    for (let j = 0; j < features.length; j++) {
+      if (i != j) {
+        const to = features[j];
+        const d = getDistance(from, to, filterArray);
+        if (d == 0) {
+          console.log(`Found 0 distance between: ${from.name} and ${to.name}`);
         }
-        if (shouldConnect) {
-          edges.push({ from: from.index, to: to.index, weight: 1 });
+        if (d < CUTT_OFF) {
+          distances.push({ index: to.index, distance: d });
         }
       }
     }
-  });
-});
-
-console.log(edges);
-// edges = edges.filter((e) => e.weight > 1);
-
-let writeString = "";
-for (const edge of edges) {
-  writeString += `${edge.from},${edge.to},${edge.weight}\n`;
-}
-fs.appendFile("scripts/edges.json", writeString, (err) => {
-  if (err) console.log(err);
-});
-console.log("edges written to file");
-
-const graph = new UndirectedGraph();
-
-ids.forEach((id) => {
-  graph.addNode(`${id.index}`, { id: id.id });
-});
-
-// Add edges to the graph
-for (const edge of edges) {
-  graph.addEdge(edge.from, edge.to);
+    distances.sort((a, b) => a.distance - b.distance);
+    const closest = distances.slice(0, MAX_NEIGHBOURS);
+    // allDistances.push(...closest.map((c) => c.distance));
+    // console.log(`Closest: ${JSON.stringify(closest.map((c) => c.distance))}`);
+    for (const to of closest) {
+      const already = isConnected(from.index, to.index);
+      if (already == -1) {
+        edges.push({ from: from.index, to: to.index, weight: to.distance });
+      } else {
+        edges[already].weight += to.distance;
+      }
+    }
+  }
+  // writeToFile("scripts/all_distances.json", JSON.stringify(allDistances));
 }
 
-console.log("edges length: ", edges.length);
+function normaliseEdges() {
+  const edgeWeights = edges.map((e) => e.weight);
+  const maxWeight = Math.max(...edgeWeights);
+  const minWeight = Math.min(...edgeWeights);
+  console.log(`Max weight: ${maxWeight}, min: ${minWeight}`);
+  for (let i = 0; i < edges.length; i++) {
+    edges[i].weight = normaliseExp(edges[i]);
+  }
+}
 
-// Print or save the clustering result
-// console.log(clusters);
-// const result = louvain.detailed(graph, { resolution: 1.5 });
-// console.log(result);
-// const communities = result.communities;
-// const namedCommunities = [];
+function normaliseInverse(edge: Edge, min: number, max: number) {
+  const normDistance = (edge.weight - min) / (max - min);
+  const inverseDistance = 1 / (normDistance + 0.01);
+  return Math.pow(inverseDistance, 2);
+}
 
-// for (const node in communities) {
-//   const name = ids[Number(node)].name;
-//   const currCommunity = communities[node];
-//   if (currCommunity > namedCommunities.length - 1) {
-//     namedCommunities.push([name]);
-//   } else {
-//     namedCommunities[currCommunity].push(name);
-//   }
-// }
+function normaliseExp(edge: Edge) {
+  return Math.exp(-DECAY * edge.weight);
+}
 
-// console.log(namedCommunities);
+function writeToFile(fileName: string, toWrite: string, append = false) {
+  if (append) {
+    fs.appendFile(fileName, toWrite, (err) => {
+      if (err) console.log(err);
+    });
+  } else {
+    fs.writeFile(fileName, toWrite, (err) => {
+      if (err) console.log(err);
+    });
+  }
+}
 
-// for (const community of namedCommunities) {
-//   console.log(`${community.join("|")}`);
-// }
+function write() {
+  // console.log(edges);
+  // edges = edges.filter((e) => e.weight > 1);
 
-// Optionally write the clusters to a file
-// fs.writeFileSync("clusters.json", JSON.stringify(clusters, null, 2));
+  let nodeString = "nodedef>name INTEGER,guid VARCHAR,artist VARCHAR,label VARCHAR,";
+  nodeString +=
+    "danceability DOUBLE,energy DOUBLE,key DOUBLE,loudness DOUBLE,mode DOUBLE,speechiness DOUBLE,acousticness DOUBLE,instrumentalness DOUBLE,liveness DOUBLE,valence DOUBLE,tempo DOUBLE\n";
+
+  for (const item of features) {
+    nodeString += `${item.index},${item.id},"${item.artist}","${item.name}",${item.danceability},${item.energy},${item.key},${item.loudness},${item.mode},${item.speechiness},${item.acousticness},${item.instrumentalness},${item.liveness},${item.valence},${item.tempo}\n`;
+  }
+  writeToFile("scripts/nodes_big_new.gdf", nodeString);
+
+  let edgeString = "edgedef>source INTEGER,target INTEGER,weight DOUBLE\n";
+  for (const edge of edges) {
+    edgeString += `${edge.from},${edge.to},${edge.weight}\n`;
+  }
+  writeToFile("scripts/nodes_big_new.gdf", edgeString, true);
+  console.log("edges written to file");
+  console.log("edges length: ", edges.length);
+}
+
+// recalibrate();
+connect();
+normaliseEdges();
+write();

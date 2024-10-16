@@ -109,41 +109,6 @@ function findClosest10(i: number, array: Feature[]) {
   return result;
 }
 
-function correctMusicalBPM(inputBPM: number) {
-  // Define a valid BPM range for music
-  const minBPM = 30;
-  const maxBPM = 300;
-
-  const potentialValues = [];
-
-  // Check input value
-  if (inputBPM >= minBPM && inputBPM <= maxBPM) {
-    potentialValues.push(inputBPM);
-  }
-
-  // Check half of input value
-  const halfValue = inputBPM / 2;
-  if (halfValue >= minBPM && halfValue <= maxBPM) {
-    potentialValues.push(halfValue);
-  }
-
-  // Check double of input value
-  const doubleValue = inputBPM * 2;
-  if (doubleValue >= minBPM && doubleValue <= maxBPM) {
-    potentialValues.push(doubleValue);
-  }
-
-  // If no valid values found, return null
-  if (potentialValues.length === 0) {
-    return null; // or throw new Error("No valid BPM found");
-  }
-
-  // Return the value closest to 120 BPM (a common moderate tempo)
-  return potentialValues.reduce((closest, current) =>
-    Math.abs(current - 120) < Math.abs(closest - 110) ? current : closest
-  );
-}
-
 import data from "./features.json";
 const features = data as Feature[];
 
@@ -154,8 +119,10 @@ const features = data as Feature[];
 //   console.log(`${name}|${inputBPM}|${corrected}`);
 // }
 
-const i = features.findIndex((f) => f.name === "When I Was Your Man");
-console.log(i);
-console.log(`Looking at: ${features[i].name}`);
-const top20 = findClosest10(i, features);
-console.log(JSON.stringify(top20));
+function main() {
+  const i = features.findIndex((f) => f.name === "When I Was Your Man");
+  console.log(i);
+  console.log(`Looking at: ${features[i].name}`);
+  const top20 = findClosest10(i, features);
+  console.log(JSON.stringify(top20));
+}
