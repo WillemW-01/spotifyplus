@@ -1,5 +1,19 @@
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
+scripts/*.csv
+scripts/apple-music/*.csv
+scripts/apple-music/*.json
+scripts/apple-music/*.txt
+scripts/distances/*.json
+scripts/features/*.csv
+scripts/graph-output/*.gdf
+scripts/features/*.gdf
+scripts/features/*.json
+scripts/features/*.gephi
+scripts/*.gdf
+scripts/*.json
+scripts/*.json
+
 # dependencies
 node_modules/
 
