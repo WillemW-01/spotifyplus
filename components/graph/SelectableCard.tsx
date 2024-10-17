@@ -16,7 +16,7 @@ export default function SelectableCard({
   width,
 }: SelectableCardProps) {
   return (
-    <TouchableOpacity onPress={onPress} style={{ width: width }} activeOpacity={0.5}>
+    <TouchableOpacity onPress={onPress} style={{ width: width }} activeOpacity={0.7}>
       <Card
         title={title}
         subtitle={subtitle ?? ""}
@@ -27,11 +27,12 @@ export default function SelectableCard({
       <View
         style={{
           position: "absolute",
-          top: 5,
-          right: 5,
-          width: 30,
-          height: 30,
-          backgroundColor: selected ? Colors.dark.backgroundAlt : Colors.dark.grey,
+          top: 0,
+          right: 0,
+          width: width,
+          height: width,
+          opacity: selected ? 0 : 0.5,
+          backgroundColor: selected ? null : Colors.dark.grey,
           borderRadius: 8,
         }}
       />

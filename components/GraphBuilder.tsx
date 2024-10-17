@@ -245,14 +245,17 @@ export default function GraphBuilder({
           </GridBox>
         </View>
       </ScrollView>
-      <TouchableOpacity
-        activeOpacity={0.5}
-        style={styles.buildButton}
-        onPress={() => setVisible(true)}
-      >
-        <Text style={{ color: "white", fontSize: 25 }}>Build</Text>
-        <Ionicons name="build" color="white" size={30} />
-      </TouchableOpacity>
+      {selectedArtists.length > 0 ||
+        (selectedPlaylists.length > 0 && (
+          <TouchableOpacity
+            activeOpacity={0.5}
+            style={styles.buildButton}
+            onPress={() => setVisible(true)}
+          >
+            <Text style={{ color: "white", fontSize: 25 }}>Build</Text>
+            <Ionicons name="build" color="white" size={30} />
+          </TouchableOpacity>
+        ))}
     </BrandGradient>
   );
 }
