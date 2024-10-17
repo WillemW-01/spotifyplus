@@ -16,11 +16,14 @@ export default function SelectableCard({
   width,
 }: SelectableCardProps) {
   return (
-    <TouchableOpacity
-      onPress={() => console.log("Card Pressed")}
-      style={{ width: width }}
-    >
-      <Card title={title} subtitle={subtitle ?? ""} imageUri={imageUri} width={width} />
+    <TouchableOpacity onPress={onPress} style={{ width: width }} activeOpacity={0.5}>
+      <Card
+        title={title}
+        subtitle={subtitle ?? ""}
+        imageUri={imageUri}
+        width={width}
+        disabled
+      />
       <View
         style={{
           position: "absolute",

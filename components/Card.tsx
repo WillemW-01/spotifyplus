@@ -12,6 +12,7 @@ export interface CardProps {
   imageUri?: string;
   onPress?: () => void;
   width?: number;
+  disabled?: boolean;
 }
 
 export default function Card({
@@ -20,6 +21,7 @@ export default function Card({
   imageUri,
   onPress,
   width,
+  disabled,
 }: CardProps) {
   const theme = useColorScheme() ?? "dark";
   const calcWidth = width ? width : 50;
@@ -29,6 +31,7 @@ export default function Card({
       style={[styles.container, { maxWidth: calcWidth, maxHeight: calcWidth + 40 }]}
       onPress={onPress}
       activeOpacity={0.5}
+      disabled={disabled}
     >
       {imageUri ? (
         <Image

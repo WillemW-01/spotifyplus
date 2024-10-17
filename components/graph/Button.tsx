@@ -1,5 +1,7 @@
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { type IconProps } from "@expo/vector-icons/build/createIconSet";
 import { Colors } from "@/constants/Colors";
-import React from "react";
+import React, { type ComponentProps } from "react";
 import {
   TouchableOpacity,
   StyleProp,
@@ -8,13 +10,19 @@ import {
   StyleSheet,
   Text,
 } from "react-native";
+import { IoniconType } from "@/interfaces/ionicon";
 
 interface ButtonProps {
   onPress: () => void;
-  title: string;
+  title?: string;
   selected?: boolean;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
+  activeOpacity?: number;
+  iconProps?: {
+    name: IoniconType;
+    size: number;
+  };
 }
 
 export default function Button({
@@ -23,11 +31,13 @@ export default function Button({
   selected = false,
   style,
   textStyle,
+  activeOpacity,
+  iconProps,
 }: ButtonProps) {
   return (
     <TouchableOpacity
       onPress={onPress}
-      activeOpacity={0.5}
+      activeOpacity={activeOpacity ?? 0.7}
       style={[
         {
           ...styles.button,
@@ -36,7 +46,8 @@ export default function Button({
         style,
       ]}
     >
-      <Text style={[textStyle, { color: "white" }]}>{title}</Text>
+      {title && <Text style={[textStyle, { color: "white" }]}>{title}</Text>}
+      {iconProps && <Ionicons name={iconProps.name} size={iconProps.size} />}
     </TouchableOpacity>
   );
 }

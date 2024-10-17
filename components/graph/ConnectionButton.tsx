@@ -24,6 +24,7 @@ export default function ConnectionButton({
         selected={selected}
         style={{ width: "100%", borderBottomRightRadius: 0 }}
         textStyle={{ fontSize: 25 }}
+        activeOpacity={0.7}
       />
       <View
         style={{
