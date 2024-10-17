@@ -67,12 +67,14 @@ export default function GraphBuilder({
   const [timeFrame, setTimeFrame] = useState<TimeFrame>("short_term");
 
   const { listPlayLists } = usePlayLists();
-  const { getTopArtists } = useUser();
+  const { getTopArtistsAll } = useUser();
 
   const toggleFoundation = () => {
     setFoundation((prev) => {
       const newValue = prev === "playlist" ? "artist" : "playlist";
       setConnection(CONNECTION_TYPES[newValue][0]);
+      setSelectedPlaylists([]);
+      setSelectedArtists([]);
       return newValue;
     });
   };
@@ -112,7 +114,7 @@ export default function GraphBuilder({
   const loadArtists = async (timeFrame: "short_term" | "medium_term" | "long_term") => {
     setTimeFrame(timeFrame);
     console.log("Loading artists with timeframe ", timeFrame);
-    const response = await getTopArtists(timeFrame);
+    const response = await getTopArtistsAll(timeFrame);
     response.sort((a, b) => (a.popularity > b.popularity ? -1 : 1));
     setArtists(response);
   };
@@ -245,17 +247,16 @@ export default function GraphBuilder({
           </GridBox>
         </View>
       </ScrollView>
-      {selectedArtists.length > 0 ||
-        (selectedPlaylists.length > 0 && (
-          <TouchableOpacity
-            activeOpacity={0.5}
-            style={styles.buildButton}
-            onPress={() => setVisible(true)}
-          >
-            <Text style={{ color: "white", fontSize: 25 }}>Build</Text>
-            <Ionicons name="build" color="white" size={30} />
-          </TouchableOpacity>
-        ))}
+      {(selectedArtists.length > 0 || selectedPlaylists.length > 0) && (
+        <TouchableOpacity
+          activeOpacity={0.5}
+          style={styles.buildButton}
+          onPress={() => setVisible(true)}
+        >
+          <Text style={{ color: "white", fontSize: 25 }}>Build</Text>
+          <Ionicons name="build" color="white" size={30} />
+        </TouchableOpacity>
+      )}
     </BrandGradient>
   );
 }
