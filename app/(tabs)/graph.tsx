@@ -28,11 +28,8 @@ const getPhysicsOptions = (
 };
 
 export default function Graph() {
-  console.log("Graph loaded");
-
   const [key, setKey] = useState(0);
   const [selectedNode, setSelectedNode] = useState<number>(-1);
-  const visNetworkRef = useRef<VisNetworkRef>(null);
   const [graphReady, setGraphReady] = useState(false);
   const [hasChosen, setHasChosen] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -41,6 +38,8 @@ export default function Graph() {
 
   const [force, setForce] = useState<keyof typeof PHYSICS>("barnesHut");
   const [resolverObj, setResolverObj] = useState<SettingsObjectType>(resolvers.barnesHut);
+
+  const visNetworkRef = useRef<VisNetworkRef>(null);
 
   const { graphData, loading, artists, buildGraphArtists, buildGraphPlaylist, tracks } =
     useGraphData();

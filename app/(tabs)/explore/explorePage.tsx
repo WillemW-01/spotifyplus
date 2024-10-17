@@ -1,6 +1,6 @@
 import ThemedText from "@/components/ThemedText";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   RefreshControl,
@@ -68,7 +68,24 @@ function Section({ name, cards, loading }: SectionProps) {
   const iconColor = Colors[theme]["light"];
 
   const to = (name: keyof Routes) => {
-    router.navigate(`/explore/${name}`);
+    console.log("Name: ", name);
+    if (name == "genres") {
+      const newGenres = JSON.stringify(
+        cards.map((c) => {
+          return {
+            title: c.title,
+            amount: Number(c.subtitle.split(" | ")[0]),
+          };
+        })
+      );
+      console.log(cards.map((c) => c.title));
+      router.navigate({
+        pathname: `/explore/${name}`,
+        params: { genres: newGenres },
+      });
+    } else {
+      router.navigate(`/explore/${name}`);
+    }
   };
 
   return (
@@ -228,6 +245,7 @@ export default function Explore() {
           onPress: () => fetchRecommendationsGenre(item[0]),
         };
       }) as Genre[];
+      console.log("Had set genres");
       setGenres(sortedGenres);
     }
   };

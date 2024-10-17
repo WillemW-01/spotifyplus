@@ -55,7 +55,6 @@ export default function GraphBuilder({
   onPlaylist,
   setHasChosen,
 }: ModalProps) {
-  const [secondVisible, setSecondVisible] = useState(false);
   const [playlists, setPlayLists] = useState<SimplifiedPlayList[]>([]);
   const [artists, setArtists] = useState<TopArtist[]>([]);
   const [foundation, setFoundation] = useState<Foundation>("playlist");
@@ -117,6 +116,23 @@ export default function GraphBuilder({
     const response = await getTopArtistsAll(timeFrame);
     response.sort((a, b) => (a.popularity > b.popularity ? -1 : 1));
     setArtists(response);
+  };
+
+  const buildFunction = (foundation: Foundation) => {
+    switch (foundation) {
+      case "artist":
+        onArtist();
+        break;
+      case "playlist":
+        onPlaylist(selectedPlaylists[0].id);
+        break;
+    }
+  };
+
+  const buildGraph = () => {
+    setVisible(false);
+    setHasChosen(true);
+    onArtist && onPlaylist && buildFunction(foundation);
   };
 
   // const onPlayListSecond = (playlistId: string) => {
@@ -251,7 +267,7 @@ export default function GraphBuilder({
         <TouchableOpacity
           activeOpacity={0.5}
           style={styles.buildButton}
-          onPress={() => setVisible(true)}
+          onPress={buildGraph}
         >
           <Text style={{ color: "white", fontSize: 25 }}>Build</Text>
           <Ionicons name="build" color="white" size={30} />
