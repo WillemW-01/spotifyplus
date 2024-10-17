@@ -5,20 +5,19 @@ import {
   View,
   StyleSheet,
   ScrollView,
-  StyleProp,
-  ViewStyle,
-  TextStyle,
   TextInput,
 } from "react-native";
 import { ModalBaseProps } from "react-native";
-import BrandGradient from "./BrandGradient";
+import BrandGradient from "@/components/BrandGradient";
 import { usePlayLists } from "@/hooks/usePlayList";
 import { SimplifiedPlayList } from "@/interfaces/playlists";
 import { Colors } from "@/constants/Colors";
-import ThemedText from "./ThemedText";
-import Card, { CardProps } from "./Card";
+import ThemedText from "@/components/ThemedText";
+import Card, { CardProps } from "@/components/Card";
 import { Ionicons } from "@expo/vector-icons";
 import Button from "@/components/graph/Button";
+import ConnectionButton from "@/components/graph/ConnectionButton";
+import SelectableCard from "@/components/graph/SelectableCard";
 
 interface ModalProps extends ModalBaseProps {
   visible: boolean;
@@ -28,68 +27,17 @@ interface ModalProps extends ModalBaseProps {
   setHasChosen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-interface ConnectionProps {
+interface SectionProps {
   title: string;
-  body: string;
-  onPress: () => void;
-  selected: boolean;
+  children: React.ReactNode;
 }
 
-function ConnectionButton({ title, body, onPress, selected }: ConnectionProps) {
+function Section({ title, children }: SectionProps) {
   return (
-    <View style={{ width: "100%", alignItems: "flex-end" }}>
-      <Button
-        title={title}
-        onPress={onPress}
-        selected={selected}
-        style={{ width: "100%", borderBottomRightRadius: 0 }}
-        textStyle={{ fontSize: 25 }}
-      />
-      <View
-        style={{
-          width: "90%",
-          backgroundColor: Colors.dark.lightMedium,
-          borderBottomRightRadius: 10,
-          borderBottomLeftRadius: 10,
-          padding: 10,
-        }}
-      >
-        <Text style={{ fontSize: 18 }}>{body}</Text>
-      </View>
+    <View style={{ alignItems: "flex-start", width: "100%", gap: 15 }}>
+      <Text style={styles.textStyle}>{title}</Text>
+      {children}
     </View>
-  );
-}
-
-interface SelectableCardProps extends CardProps {
-  selected?: boolean;
-}
-
-function SelectableCard({
-  selected,
-  title,
-  subtitle,
-  imageUri,
-  onPress,
-  width,
-}: SelectableCardProps) {
-  return (
-    <TouchableOpacity
-      onPress={() => console.log("Card Pressed")}
-      style={{ width: width }}
-    >
-      <Card title={title} subtitle={subtitle ?? ""} imageUri={imageUri} width={width} />
-      <View
-        style={{
-          position: "absolute",
-          top: 5,
-          right: 5,
-          width: 30,
-          height: 30,
-          backgroundColor: selected ? Colors.dark.backgroundAlt : Colors.dark.grey,
-          borderRadius: 8,
-        }}
-      />
-    </TouchableOpacity>
   );
 }
 
@@ -132,47 +80,27 @@ export default function GraphBuilder({
     <BrandGradient style={{ alignItems: "center" }}>
       <ThemedText text="Graph Builder" type="title" style={{ marginBottom: 15 }} />
       <ScrollView
-        style={{ ...styles.centeredView }}
-        contentContainerStyle={{ alignItems: "center", gap: 25, paddingBottom: 80 }}
+        style={styles.centeredView}
+        contentContainerStyle={styles.scrollContent}
       >
-        <View style={{ alignItems: "flex-start", width: "100%", gap: 15 }}>
-          <Text style={styles.textStyle}>Foundation:</Text>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-around",
-              width: "100%",
-              paddingHorizontal: 20,
-              gap: 20,
-            }}
-          >
+        <Section title="Foundation:">
+          <View style={styles.foundationButtonContainer}>
             <Button
               title="Playlist"
               onPress={() => {}}
-              style={{
-                height: 60,
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
+              style={styles.foundationButton}
               selected
               textStyle={{ fontSize: 25 }}
             />
             <Button
               title="Top Artists"
               onPress={() => {}}
-              style={{
-                height: 60,
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
+              style={styles.foundationButton}
               textStyle={{ fontSize: 25 }}
             />
           </View>
-        </View>
-        <View style={{ width: "100%", alignItems: "flex-start", gap: 15 }}>
-          <Text style={styles.textStyle}>Connection:</Text>
+        </Section>
+        <Section title="Connection:">
           <ConnectionButton
             title="Song Features"
             body="This is my body text"
@@ -191,35 +119,16 @@ export default function GraphBuilder({
             selected={false}
             onPress={() => {}}
           />
-        </View>
-        <View
-          style={{
-            width: "100%",
-            alignItems: "flex-start",
-            gap: 15,
-          }}
-        >
+        </Section>
+        <View style={styles.section}>
           <View style={{ flexDirection: "row", gap: 10 }}>
             <Text style={styles.textStyle}>Playlist(s):</Text>
             <TextInput
               placeholder="search"
-              style={{
-                ...styles.textStyle,
-                borderBottomWidth: 1,
-                borderColor: "white",
-                flex: 1,
-                textAlign: "left",
-              }}
+              style={[styles.textStyle, styles.playlistInput]}
             />
           </View>
-          <View
-            style={{
-              flexDirection: "row",
-              flexWrap: "wrap",
-              justifyContent: "space-around",
-              width: "100%",
-            }}
-          >
+          <View style={styles.cardContainer}>
             <SelectableCard width={100} selected />
             <SelectableCard width={100} />
             <SelectableCard width={100} />
@@ -232,17 +141,7 @@ export default function GraphBuilder({
       </ScrollView>
       <TouchableOpacity
         activeOpacity={0.5}
-        style={{
-          backgroundColor: Colors.dark.background,
-          flexDirection: "row",
-          justifyContent: "space-around",
-          alignItems: "center",
-          borderRadius: 12,
-          padding: 15,
-          gap: 10,
-          position: "absolute",
-          bottom: 10,
-        }}
+        style={styles.buildButton}
         onPress={() => setVisible(true)}
       >
         <Text style={{ color: "white", fontSize: 25 }}>Build</Text>
@@ -251,6 +150,60 @@ export default function GraphBuilder({
     </BrandGradient>
   );
 }
+
+const styles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    paddingHorizontal: 15,
+  },
+  scrollContent: { alignItems: "center", gap: 25, paddingBottom: 80 },
+  foundationButtonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "100%",
+    paddingHorizontal: 20,
+    gap: 20,
+  },
+  foundationButton: {
+    height: 60,
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  section: {
+    width: "100%",
+    alignItems: "flex-start",
+    gap: 15,
+  },
+  playlistInput: {
+    borderBottomWidth: 1,
+    borderColor: "white",
+    flex: 1,
+    textAlign: "left",
+  },
+  cardContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-around",
+    width: "100%",
+  },
+  buildButton: {
+    backgroundColor: Colors.dark.background,
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    borderRadius: 12,
+    padding: 15,
+    gap: 10,
+    position: "absolute",
+    bottom: 10,
+  },
+  textStyle: {
+    color: "white",
+    textAlign: "center",
+    fontSize: 28,
+  },
+});
 
 /**
  * 
@@ -336,63 +289,3 @@ export default function GraphBuilder({
         </View>
       </Modal>
  */
-
-const styles = StyleSheet.create({
-  centeredView: {
-    flex: 1,
-    paddingHorizontal: 15,
-  },
-  modalView: {
-    width: "80%",
-    backgroundColor: "white",
-    padding: 20,
-    borderRadius: 20,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-    gap: 20,
-  },
-  choiceButton: {
-    flex: 1,
-    height: 200,
-    backgroundColor: "#e9495f",
-    borderRadius: 12,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  button: {
-    borderRadius: 12,
-    padding: 10,
-    elevation: 2,
-  },
-  buttonOpen: {
-    backgroundColor: "#e9495f",
-  },
-  buttonClose: {
-    backgroundColor: "#2c1e48",
-  },
-  textStyle: {
-    color: "white",
-    textAlign: "center",
-    fontSize: 28,
-  },
-  modalText: {
-    textAlign: "center",
-    fontSize: 25,
-  },
-  listItem: {
-    width: "100%",
-    backgroundColor: "#2c1e4850",
-    flexDirection: "row",
-    gap: 10,
-    alignItems: "center",
-    borderRadius: 10,
-    paddingRight: 10,
-  },
-});
