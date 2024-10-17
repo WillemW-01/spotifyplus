@@ -15,7 +15,8 @@ import { useAuth } from "@/hooks/AuthContext";
 import { usePlayback } from "@/hooks/usePlayback";
 import { usePlayLists } from "@/hooks/usePlayList";
 import { useTracks } from "@/hooks/useTracks";
-import MoodCustomizer from "@/components/MoodCustomizer";
+
+import MoodCustomizer from "@/components/mood/MoodCustomizer";
 
 import data from "@/scripts/features.json";
 

@@ -5,11 +5,11 @@ import VisNetwork, { VisNetworkRef } from "react-native-vis-network";
 import { PHYSICS, resolvers, SettingsObjectType } from "@/constants/resolverObjects";
 
 import BrandGradient from "@/components/BrandGradient";
-import GraphButtonPlay from "@/components/GraphButtonPlay";
+import GraphButtonPlay from "@/components/graph/GraphButtonPlay";
 import GraphBuilder from "@/components/GraphBuilder";
 import LoadingCircle from "@/components/LoadingCircle";
-import SettingsView from "@/components/SettingsView";
-import GraphControls from "@/components/ZoomControls";
+import SettingsView from "@/components/graph/SettingsView";
+import GraphControls from "@/components/graph/GraphControls";
 
 import { useArtist } from "@/hooks/useArtist";
 import { Edge, useGraphData } from "@/hooks/useGraphData";

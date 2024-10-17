@@ -32,10 +32,10 @@ export default function GridBox({
         extraStyle,
       ]}
     >
-      {children.map((child, i) => (
+      {children.map((child, i) =>
         // Use React.cloneElement to pass original props to the child
-        <>{React.cloneElement(child, { ...child.props, width: itemWidth })}</>
-      ))}
+        React.cloneElement(child, { ...child.props, width: itemWidth, key: i })
+      )}
     </View>
   );
 }

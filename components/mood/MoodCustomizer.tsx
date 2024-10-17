@@ -6,9 +6,9 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-nati
 import { Colors } from "@/constants/Colors";
 import { PREDICATES, PRESETS, TrackFeatures } from "@/constants/sliderPresets";
 
-import MoodButton from "@/components/MoodButton";
-import MoodSlider from "@/components/MoodSlider";
-import ThemedText from "./ThemedText";
+import MoodButton from "@/components/mood/MoodButton";
+import MoodSlider from "@/components/mood/MoodSlider";
+import ThemedText from "@/components/ThemedText";
 
 import data from "@/scripts/features.json";
 
