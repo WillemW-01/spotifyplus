@@ -33,10 +33,11 @@ app.post("/all", (req, res) => {
   try {
     console.log("Received request!");
     const { content } = req.body; // Get data from the request body
+    const formattedContent = String(content).slice(1, String(content).length - 1) + ",\n";
     // const file = String(fileName).replaceAll(" ", "_").toLowerCase();
     console.log(`Writing to all`);
     // Write the data to a file
-    fs.appendFile(`./scripts/features/features_all.json`, content, (err) => {
+    fs.appendFile(`./scripts/features/features_all.json`, formattedContent, (err) => {
       if (err) {
         console.log("Error: ", err);
         return res.status(500).send("Error writing to file");
