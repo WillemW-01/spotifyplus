@@ -78,6 +78,10 @@ export interface Track {
   is_local: boolean;
 }
 
+export interface SeveralTracksResponse {
+  tracks: Track[];
+}
+
 export interface PlayHistoryObject {
   played_at: string;
   context: Context | null;

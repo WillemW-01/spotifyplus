@@ -18,7 +18,10 @@ import { usePlayback } from "@/hooks/usePlayback";
 import { useTracks } from "@/hooks/useTracks";
 import { useArtist } from "@/hooks/useArtist";
 import { useLastFm } from "@/hooks/useLastFM";
-import { TrackFeatureResponse } from "@/interfaces/tracks";
+import { Track, TrackFeatureResponse } from "@/interfaces/tracks";
+
+import data from "@/scripts/features/features_yadah.json";
+import { TrackFeature } from "@/scripts/featureConnector";
 
 export default function Debug() {
   const {
@@ -32,7 +35,13 @@ export default function Debug() {
     shouldShuffle,
   } = usePlayback();
   const { clearToken, authorized } = useAuth();
-  const { getTrack, getRecent, getTracksNames, getSeveralTrackFeatures } = useTracks();
+  const {
+    getTrack,
+    getSeveralTracks,
+    getRecent,
+    getTracksNames,
+    getSeveralTrackFeatures,
+  } = useTracks();
   const { listPlayLists, getPlayListItemsIds } = usePlayLists();
   const { getArtistGenres } = useArtist();
   const { getTrackTopTags, getArtistTopTags } = useLastFm();
@@ -83,8 +92,26 @@ export default function Debug() {
     }
   }
 
+  async function writeToAll(toWrite: string) {
+    try {
+      const response = await fetch("http://192.168.2.93:3000/all", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: toWrite,
+        }),
+      });
+      if (!response.ok) {
+        console.error(`Error: ${response.status}`);
+      }
+    } catch (error) {
+      console.log("errro at writeToAll: ", error);
+    }
+  }
+
   const getInfoAllTracks = async (trackIds: string[]) => {
-    console.log(`Getting features of ${trackIds.length} tracks`);
     try {
       for (let i = 0; i < trackIds.length; i += 80) {
         const localMax = Math.min(i + 80, trackIds.length);
@@ -140,20 +167,53 @@ export default function Debug() {
     );
   }
 
-  // async function matchSongIdsToNames() {
-  //   for (let i = 0; i < features.length; i++) {
-  //     console.log(`Matching name of ${features[i].id} (${i} / ${features.length})`);
-  //     if (!features[i]?.artist || !features[i]?.name) {
-  //       const response = await getTrack(features[i].id);
-  //       features[i].name = response.name;
-  //       features[i].artist = response.artists[0].name;
-  //     }
-  //     if (i % 200 == 0 && i != 0) {
-  //       console.log(JSON.stringify(features));
-  //     }
-  //   }
-  //   console.log(JSON.stringify(features));
-  // }
+  async function matchSongIdsToNames() {
+    const jump = 50;
+    const features = data as TrackFeatureResponse[];
+    try {
+      for (let i = 0; i < features.length; i += jump) {
+        const localFeatures = [] as TrackFeature[];
+        const localMax = Math.min(i + jump, features.length);
+        console.log(`Getting ${i} - ${localMax} / ${features.length}`);
+        const ids = features.slice(i, localMax).map((f) => f.id);
+        const tracksResponse = await getSeveralTracks(ids);
+        const newTracks = tracksResponse.map((t, i) => {
+          const { album, name, popularity, preview_url } = t;
+          const customArtists = t.artists.map((a) => ({
+            genres: a.genres,
+            id: a.id,
+            name: a.name,
+            images: a.images,
+          }));
+          const newObj = {
+            index: i,
+            name,
+            album: {
+              name: album.name,
+              id: album.id,
+              artists: album.artists.map((a) => ({
+                genres: a.genres,
+                id: a.id,
+                name: a.name,
+                images: a.images,
+              })),
+            },
+            artists: customArtists,
+            popularity,
+            preview_url,
+            ...features[i],
+            playlist: "yadah",
+          };
+          return newObj;
+        });
+        console.log(newTracks[0]);
+        localFeatures.push(...newTracks);
+        writeToAll(JSON.stringify(localFeatures));
+      }
+    } catch (error) {
+      console.log("Error at matching: ", error);
+    }
+  }
 
   const toTabs = () => {
     router.navigate("/(tabs)/");
@@ -197,7 +257,7 @@ export default function Debug() {
         />
 
         <Button title="Test LastFM" onPress={testLastFM} />
-        {/* <Button title="Match song names" onPress={matchSongIdsToNames} /> */}
+        <Button title="Match song names" onPress={matchSongIdsToNames} />
 
         <Text>Should shuffle: {String(shouldShuffle)}</Text>
 

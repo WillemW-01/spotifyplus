@@ -1,5 +1,6 @@
 import fs from "fs";
 import data from "./features/features_all.json";
+import { Album, Artist, Track, TrackFeatureResponse } from "@/interfaces/tracks";
 
 interface Feature {
   index: number;
@@ -18,6 +19,33 @@ interface Feature {
   valence: number;
   tempo: number;
   type: string;
+}
+export interface Image {
+  url: string;
+  height: number;
+  width: number;
+}
+
+export interface CustomArtist {
+  name: string;
+  genres: string[];
+  images: Image[];
+}
+
+export interface CustomAlbum {
+  name: string;
+  id: string;
+  artists: CustomArtist[];
+}
+
+export interface TrackFeature extends TrackFeatureResponse {
+  index: number;
+  album: CustomAlbum;
+  artists: CustomArtist[];
+  name: string;
+  popularity: number;
+  preview_url: string;
+  playlist: string;
 }
 
 interface Edge {

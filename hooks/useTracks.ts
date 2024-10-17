@@ -1,4 +1,9 @@
-import { PlayHistoryObject, Track, TrackFeatureResponse } from "@/interfaces/tracks";
+import {
+  PlayHistoryObject,
+  SeveralTracksResponse,
+  Track,
+  TrackFeatureResponse,
+} from "@/interfaces/tracks";
 
 import { useRequestBuilder } from "./useRequestBuilder";
 import { TrackFeatures, VARIANCE } from "@/constants/sliderPresets";
@@ -22,6 +27,13 @@ export function useTracks() {
     const response = await buildGet(url);
     const data = await response.json();
     return data as Track;
+  };
+
+  const getSeveralTracks = async (ids: string[]) => {
+    const url = `https://api.spotify.com/v1/tracks?ids=${ids.join(",")}`;
+    const response = await buildGet(url);
+    const data = (await response.json()) as SeveralTracksResponse;
+    return data.tracks as Track[];
   };
 
   const isPlayHistoryObject = (
@@ -103,6 +115,7 @@ export function useTracks() {
 
   return {
     getTrack,
+    getSeveralTracks,
     getRecent,
     getTracksNames,
     getTrackFeatures,
