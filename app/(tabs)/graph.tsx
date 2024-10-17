@@ -6,7 +6,7 @@ import { PHYSICS, resolvers, SettingsObjectType } from "@/constants/resolverObje
 
 import BrandGradient from "@/components/BrandGradient";
 import GraphButtonPlay from "@/components/GraphButtonPlay";
-import GraphModal from "@/components/GraphModal";
+import GraphBuilder from "@/components/GraphBuilder";
 import LoadingCircle from "@/components/LoadingCircle";
 import SettingsView from "@/components/SettingsView";
 import GraphControls from "@/components/ZoomControls";
@@ -169,7 +169,7 @@ export default function Graph() {
 
   if (!hasChosen) {
     return (
-      <GraphModal
+      <GraphBuilder
         visible={modalVisible}
         setVisible={setModalVisible}
         onArtist={() => buildGraphArtists()}

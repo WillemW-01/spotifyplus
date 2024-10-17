@@ -26,7 +26,7 @@ export default function Card({
 
   return (
     <TouchableOpacity
-      style={[styles.container, { maxWidth: calcWidth, height: calcWidth + 40 }]}
+      style={[styles.container, { maxWidth: calcWidth, maxHeight: calcWidth + 40 }]}
       onPress={onPress}
       activeOpacity={0.5}
     >
@@ -49,9 +49,9 @@ export default function Card({
           }}
         />
       )}
-      <View style={{ flexDirection: "column", alignItems: "center" }}>
+      <View style={{ flexDirection: "column", alignItems: "center", maxHeight: 40 }}>
         <ThemedText type="cardTitle" text={title} />
-        <ThemedText type="cardSubtitle" text={subtitle} />
+        {subtitle && <ThemedText type="cardSubtitle" text={subtitle} />}
       </View>
     </TouchableOpacity>
   );
