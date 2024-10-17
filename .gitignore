@@ -13,6 +13,7 @@ scripts/features/*.gephi
 scripts/*.gdf
 scripts/*.json
 scripts/*.json
+scripts/features/*.tsv
 
 # dependencies
 node_modules/
