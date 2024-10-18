@@ -7,6 +7,8 @@ import { Artist, useArtist } from "./useArtist";
 import { usePlayLists } from "./usePlayList";
 import { PlayListObject } from "@/interfaces/playlists";
 import { Track } from "@/interfaces/tracks";
+import { TimeFrame } from "@/components/GraphBuilder";
+import { CONNECTION_TYPES, ConnectionType } from "@/constants/graphConnections";
 
 export interface Edge {
   from: number;
@@ -21,12 +23,18 @@ export interface Node {
   group?: string;
 }
 
-const DEBUG = true;
+export interface BuildGraphArtistsProps {
+  timeFrame?: TimeFrame;
+  artists?: TopArtist[];
+  connectionTypes?: ConnectionType[];
+}
+
+const DEBUG = false;
 
 export function useGraphData() {
   const [graphData, setGraphData] = useState<Data>({ nodes: [], edges: [] });
   const [loading, setLoading] = useState(false);
-  const artists = useRef<PackedArtist[]>([]);
+  const artistsLocal = useRef<PackedArtist[]>([]);
   const tracks = useRef<PackedPlaylistObject[] | FlatArtist[]>([]);
 
   const { getTopArtistsAll } = useUser();
@@ -122,7 +130,6 @@ export function useGraphData() {
     relatedArtists: Artist[],
     cumulatedEdges: Edge[]
   ) => {
-    console.log(`Getting related artists for ${artistFrom.title}`);
     if (relatedArtists.some((relatedArtist) => relatedArtist.id === artistTo.guid)) {
       const connected = alreadyConnected(artistFrom, artistTo, cumulatedEdges);
       if (connected >= 0) {
@@ -137,19 +144,31 @@ export function useGraphData() {
     }
   };
 
-  const connectArtists = async (artists: PackedArtist[]): Promise<Edge[]> => {
+  const connectArtists = async (
+    artists: PackedArtist[],
+    connectionTypes: ConnectionType[]
+  ): Promise<Edge[]> => {
     const tempEdges = [] as Edge[];
+    const toConnect = connectionTypes.map((c) => c.name) as ConnectionType["name"][];
+    console.log("Connecting artists!");
 
     for (let i = 0; i < artists.length; i++) {
+      console.log(`Getting related artists for ${artists[i].title}`);
       const relatedArtists = await getRelatedArtists(artists[i].guid);
       for (let j = 0; j < artists.length; j++) {
         if (i !== j) {
-          connectMutalGenres(artists[i], artists[j], tempEdges);
-          connectedRelatedArtists(artists[i], artists[j], relatedArtists, tempEdges);
+          if (toConnect.includes("Album Genres")) {
+            console.log("Connecting by album genres");
+            connectMutalGenres(artists[i], artists[j], tempEdges);
+          }
+          if (toConnect.includes("Related Artists")) {
+            console.log("Connecting by related artists");
+            connectedRelatedArtists(artists[i], artists[j], relatedArtists, tempEdges);
+          }
         }
       }
     }
-
+    console.log(toConnect);
     return tempEdges;
   };
 
@@ -163,61 +182,79 @@ export function useGraphData() {
         artists[i].genres = artists[i].genres.concat(...genres);
       }
     },
-    [artists]
+    [artistsLocal]
   );
 
-  const buildGraphArtists = useCallback(async () => {
-    setLoading(true);
-    try {
-      if (DEBUG) {
-        console.log("Using saved nodes and edges");
-        artists.current = savedArtists;
-        const tempNodes = savedArtists.map((item) => {
-          return {
-            id: item.id,
-            label: item.title,
-            shape: "dot",
-          };
-        });
-        setGraphData({
-          nodes: tempNodes,
-          edges: savedEdges,
-        });
-        console.log("Done connecting!");
-        return;
-      }
+  const buildGraphArtists = useCallback(
+    async ({ timeFrame, artists, connectionTypes }: BuildGraphArtistsProps) => {
+      setLoading(true);
+      try {
+        if (DEBUG) {
+          console.log("Using saved nodes and edges");
+          artistsLocal.current = savedArtists;
+          // const tempNodes = savedArtists.map((item) => {
+          //   return {
+          //     id: item.id,
+          //     label: item.title,
+          //     shape: "dot",
+          //   };
+          // });
+          // setGraphData({
+          //   nodes: tempNodes,
+          //   edges: savedEdges,
+          // });
+          // console.log("Done connecting!");
+          // return;
+          const tempEdges = await connectArtists(savedArtists, connectionTypes);
+          console.log(savedArtists.length);
+          const tempNodes = savedArtists.map((item) => {
+            return {
+              id: item.id,
+              label: item.title,
+              shape: "dot",
+            };
+          });
 
-      const items = await getTopArtistsAll();
-      console.log("Got artists!");
-      if (items) {
-        console.log("Artsts came back");
-        // await buildArtistGenreMap(items);
-        // console.log(artists);
-        const formattedArtists = packArtists(items);
-        artists.current = formattedArtists;
-        console.log(`Formatted artists: ${JSON.stringify(formattedArtists)}`);
-        console.log("artists length: ", artists.current.length);
-        const tempEdges = await connectArtists(formattedArtists);
-        const tempNodes = formattedArtists.map((item) => {
-          return {
-            id: item.id,
-            label: item.title,
-            shape: "dot",
-          };
-        });
+          setGraphData({
+            nodes: tempNodes,
+            edges: tempEdges,
+          });
+          console.log("Done connecting!");
+          return;
+        }
 
-        setGraphData({
-          nodes: tempNodes,
-          edges: tempEdges,
-        });
-        console.log("Done connecting!");
+        const items = !artists ? await getTopArtistsAll(timeFrame) : artists;
+        console.log(`Got ${items.length} artists`);
+        if (items) {
+          console.log("Artsts came back");
+          // await buildArtistGenreMap(items);
+          const formattedArtists = packArtists(items);
+          artistsLocal.current = formattedArtists;
+          console.log(`Formatted artists: ${JSON.stringify(formattedArtists)}`);
+          console.log("artists length: ", artistsLocal.current.length);
+          const tempEdges = await connectArtists(formattedArtists, connectionTypes);
+          const tempNodes = formattedArtists.map((item) => {
+            return {
+              id: item.id,
+              label: item.title,
+              shape: "dot",
+            };
+          });
+
+          setGraphData({
+            nodes: tempNodes,
+            edges: tempEdges,
+          });
+          console.log("Done connecting!");
+        }
+      } catch (error) {
+        console.log("Failed to fetch artists: ", error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.log("Failed to fetch artists: ", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [getTopArtistsAll, packArtists, connectArtists]);
+    },
+    [getTopArtistsAll, packArtists, connectArtists]
+  );
 
   const getArtistNeighbours = useCallback(
     (nodeId: number, degree = 1) => getNeighbours(nodeId, degree, graphData.edges),
@@ -318,7 +355,7 @@ export function useGraphData() {
 
   return {
     graphData,
-    artists: artists.current,
+    artists: artistsLocal.current,
     tracks: tracks.current,
     loading,
     buildGraphArtists,

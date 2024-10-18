@@ -22,11 +22,12 @@ import { useUser } from "@/hooks/useUser";
 import { TopArtist } from "@/interfaces/topItems";
 import { SelectButtons } from "./graph/SelectButtons";
 import { Connection, CONNECTION_TYPES } from "@/constants/graphConnections";
+import { BuildGraphArtistsProps } from "@/hooks/useGraphData";
 
 interface ModalProps extends ModalBaseProps {
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  onArtist?: () => void;
+  onArtist?: ({ timeFrame, artists }: BuildGraphArtistsProps) => void;
   onPlaylist?: (playlistId: string) => void;
   setHasChosen: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -45,7 +46,7 @@ function Section({ title, children }: SectionProps) {
   );
 }
 
-type TimeFrame = "short_term" | "medium_term" | "long_term";
+export type TimeFrame = "short_term" | "medium_term" | "long_term";
 export type Foundation = "artist" | "playlist";
 
 export default function GraphBuilder({
@@ -58,9 +59,7 @@ export default function GraphBuilder({
   const [playlists, setPlayLists] = useState<SimplifiedPlayList[]>([]);
   const [artists, setArtists] = useState<TopArtist[]>([]);
   const [foundation, setFoundation] = useState<Foundation>("playlist");
-  const [connection, setConnection] = useState<Connection>(
-    CONNECTION_TYPES[foundation][0]
-  );
+  const [connections, setConnections] = useState<Connection[]>([]);
   const [selectedPlaylists, setSelectedPlaylists] = useState<SimplifiedPlayList[]>([]);
   const [selectedArtists, setSelectedArtists] = useState<TopArtist[]>([]);
   const [timeFrame, setTimeFrame] = useState<TimeFrame>("short_term");
@@ -68,10 +67,25 @@ export default function GraphBuilder({
   const { listPlayLists } = usePlayLists();
   const { getTopArtistsAll } = useUser();
 
+  const updateConnections = (newConnection: Connection) => {
+    setConnections((prev) => {
+      console.log(prev);
+      const temp = [...prev];
+      if (!temp.includes(newConnection)) {
+        console.log(`Adding ${newConnection.name}`);
+        temp.push(newConnection);
+      } else {
+        console.log(`Removing ${newConnection.name}`);
+        temp.splice(temp.indexOf(newConnection), 1);
+      }
+      return temp;
+    });
+  };
+
   const toggleFoundation = () => {
     setFoundation((prev) => {
       const newValue = prev === "playlist" ? "artist" : "playlist";
-      setConnection(CONNECTION_TYPES[newValue][0]);
+      updateConnections(CONNECTION_TYPES[newValue][0]);
       setSelectedPlaylists([]);
       setSelectedArtists([]);
       return newValue;
@@ -121,7 +135,13 @@ export default function GraphBuilder({
   const buildFunction = (foundation: Foundation) => {
     switch (foundation) {
       case "artist":
-        onArtist();
+        onArtist({
+          timeFrame,
+          artists: selectedArtists,
+          connectionTypes: connections.filter((c) =>
+            CONNECTION_TYPES["artist"].map((a) => a.name).includes(c.name)
+          ),
+        });
         break;
       case "playlist":
         onPlaylist(selectedPlaylists[0].id);
@@ -190,8 +210,8 @@ export default function GraphBuilder({
               key={i}
               title={c.name}
               body={c.description}
-              selected={connection.name == c.name}
-              onPress={() => setConnection(c)}
+              selected={connections.map((c) => c.name).includes(c.name)}
+              onPress={() => updateConnections(c)}
             />
           ))}
         </Section>

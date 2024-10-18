@@ -1,9 +1,9 @@
 export interface Connection {
-  name: string;
+  name: keyof Connection;
   description: string;
 }
 
-export const CONNECTION_TYPES: { [key: string]: Connection[] } = {
+export const CONNECTION_TYPES = {
   playlist: [
     {
       name: "Song Features",
@@ -31,4 +31,6 @@ export const CONNECTION_TYPES: { [key: string]: Connection[] } = {
       description: "Artists are connected to other artists Spotify normally recommends",
     },
   ],
-};
+} as const;
+
+export type ConnectionType = (typeof CONNECTION_TYPES)["artist"][number];

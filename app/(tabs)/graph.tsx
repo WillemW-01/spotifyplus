@@ -6,13 +6,13 @@ import { PHYSICS, resolvers, SettingsObjectType } from "@/constants/resolverObje
 
 import BrandGradient from "@/components/BrandGradient";
 import GraphButtonPlay from "@/components/graph/GraphButtonPlay";
-import GraphBuilder from "@/components/GraphBuilder";
+import GraphBuilder, { TimeFrame } from "@/components/GraphBuilder";
 import LoadingCircle from "@/components/LoadingCircle";
 import SettingsView from "@/components/graph/SettingsView";
 import GraphControls from "@/components/graph/GraphControls";
 
 import { useArtist } from "@/hooks/useArtist";
-import { Edge, useGraphData } from "@/hooks/useGraphData";
+import { BuildGraphArtistsProps, Edge, useGraphData } from "@/hooks/useGraphData";
 import { usePlayback } from "@/hooks/usePlayback";
 
 import { getNeighbours } from "@/utils/graphUtils";
@@ -171,7 +171,9 @@ export default function Graph() {
       <GraphBuilder
         visible={modalVisible}
         setVisible={setModalVisible}
-        onArtist={() => buildGraphArtists()}
+        onArtist={({ timeFrame, artists }: BuildGraphArtistsProps) =>
+          buildGraphArtists({ timeFrame, artists })
+        }
         onPlaylist={(playlistId: string) =>
           buildGraphPlaylist(playlistId).then(() => {
             setGraphReady(true);

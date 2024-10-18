@@ -1,6 +1,7 @@
 import { TopArtist, TopItemsResponse, TopTrack } from "@/interfaces/topItems";
 
 import { useRequestBuilder } from "./useRequestBuilder";
+import { TimeFrame } from "@/components/GraphBuilder";
 
 export function useUser() {
   const { buildGet } = useRequestBuilder();
@@ -17,7 +18,7 @@ export function useUser() {
 
   interface GetAllTopProps {
     itemType: "artists" | "tracks";
-    timeRange?: "short_term" | "medium_term" | "long_term";
+    timeRange?: TimeFrame;
   }
 
   const getTopItems = async ({
@@ -52,7 +53,7 @@ export function useUser() {
   }: GetAllTopProps): Promise<TopTrack[] | TopArtist[] | null> => {
     const url = `https://api.spotify.com/v1/me/top/${itemType}`;
     const limit = 50;
-    let total = 51;
+    let total = 51; // just because we don't know how many there are
     const items = [] as TopTrack[] | TopArtist[];
 
     for (let offset = 0; offset < total; offset += limit) {
@@ -68,7 +69,7 @@ export function useUser() {
   };
 
   const getTopArtists = async (
-    timeRange?: "short_term" | "medium_term" | "long_term",
+    timeRange?: TimeFrame,
     limit?: number,
     offset?: number
   ): Promise<TopArtist[] | null> => {
@@ -83,7 +84,7 @@ export function useUser() {
   };
 
   const getTopArtistsAll = async (
-    timeRange: "short_term" | "medium_term" | "long_term" = "short_term"
+    timeRange: TimeFrame = "short_term"
   ): Promise<TopArtist[] | null> => {
     const artists = (await getAllTopItems({
       itemType: "artists",
@@ -93,11 +94,7 @@ export function useUser() {
     return artists;
   };
 
-  const getTopTracks = async (
-    timeRange?: "short_term" | "medium_term" | "long_term",
-    limit?: number,
-    offset?: number
-  ) => {
+  const getTopTracks = async (timeRange?: TimeFrame, limit?: number, offset?: number) => {
     const tracks = (await getTopItems({
       itemType: "tracks",
       timeRange,
