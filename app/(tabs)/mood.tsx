@@ -18,7 +18,8 @@ import { useTracks } from "@/hooks/useTracks";
 
 import MoodCustomizer from "@/components/mood/MoodCustomizer";
 
-import data from "@/scripts/features.json";
+import data from "@/scripts/features/features_main_jam.json";
+import { TrackFeature } from "@/scripts/features/interfaces";
 
 interface Feature {
   index: number;
@@ -78,36 +79,36 @@ export default function Mood() {
   };
 
   const onPlay = async (mood?: keyof typeof PREDICATES) => {
-    // if (currPlayList.current) {
-    //   // const tracks = await getPlayListItemsIds(currPlayList.current.id);
-    //   // const tracks = savedTracks;
-    //   const tracks = data as Feature[];
-    //   if (!tracks) return;
-    //   console.log("Getting tracks with sliders: ", sliderValues);
-    //   console.log("Before filtering: ", tracks.length);
-    //   let filteredTracks = [] as string[];
-    //   if (mood) {
-    //     filteredTracks = tracks.filter(PREDICATES[mood]).map((t) => t.id);
-    //   } else {
-    //     const batchSize = 10;
-    //     for (let i = 0; i < tracks.length; i += batchSize) {
-    //       const batch = tracks.slice(i, i + batchSize);
-    //       console.log("Should be checking ids: ", batch);
-    //       const batchPromises = batch.map(async (t) => ({
-    //         track: t,
-    //         fits: await fitsInPreset(sliderValues, t),
-    //       }));
-    //       const batchResults = await Promise.all(batchPromises);
-    //       filteredTracks.push(...batchResults.filter((r) => r.fits).map((r) => r.track));
-    //       // Add a delay between batches to further reduce the risk of rate limiting
-    //       if (i + batchSize < tracks.length) {
-    //         await new Promise((resolve) => setTimeout(resolve, 1000)); // 1 second delay
-    //       }
-    //     }
-    //   }
-    //   console.log(`After: ${filteredTracks.length}`);
-    //   playTracks(filteredTracks);
-    // }
+    if (currPlayList.current) {
+      // const tracks = await getPlayListItemsIds(currPlayList.current.id);
+      // const tracks = savedTracks;
+      const tracks = data as TrackFeature[];
+      if (!tracks) return;
+      console.log("Getting tracks with sliders: ", sliderValues);
+      console.log("Before filtering: ", tracks.length);
+      let filteredTracks = [] as string[];
+      if (mood) {
+        filteredTracks = tracks.filter(PREDICATES[mood]).map((t) => t.id);
+      } else {
+        const batchSize = 10;
+        for (let i = 0; i < tracks.length; i += batchSize) {
+          const batch = tracks.slice(i, i + batchSize);
+          console.log("Should be checking ids: ", batch);
+          const batchPromises = batch.map(async (t) => ({
+            track: t,
+            fits: await fitsInPreset(sliderValues, t),
+          }));
+          const batchResults = await Promise.all(batchPromises);
+          filteredTracks.push(...batchResults.filter((r) => r.fits).map((r) => r.track));
+          // Add a delay between batches to further reduce the risk of rate limiting
+          if (i + batchSize < tracks.length) {
+            await new Promise((resolve) => setTimeout(resolve, 1000)); // 1 second delay
+          }
+        }
+      }
+      console.log(`After: ${filteredTracks.length}`);
+      playTracks(filteredTracks);
+    }
   };
 
   useEffect(() => {

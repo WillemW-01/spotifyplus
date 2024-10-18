@@ -2,9 +2,10 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
 import { Colors } from "@/constants/Colors";
+import { PRESETS } from "@/constants/sliderPresets";
 
 interface Props {
-  label: string;
+  label: keyof typeof PRESETS;
   onPress?: () => void;
 }
 

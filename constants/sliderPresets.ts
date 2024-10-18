@@ -122,7 +122,7 @@ export const PRESETS = {
     valence: 0.5,
     tempo: 0.5,
   },
-} as { [key: string]: TrackFeatures };
+} as const;
 
 export const PREDICATES = {
   mellow: (song: TrackFeatures) => song.energy < 0.5,

@@ -8,9 +8,6 @@ import { PREDICATES, PRESETS, TrackFeatures } from "@/constants/sliderPresets";
 
 import MoodButton from "@/components/mood/MoodButton";
 import MoodSlider from "@/components/mood/MoodSlider";
-import ThemedText from "@/components/ThemedText";
-
-import data from "@/scripts/features.json";
 
 interface Props {
   bottomSheetRef: React.RefObject<BottomSheet>;
@@ -25,7 +22,7 @@ export default function MoodCustomizer({
   bottomSheetRef,
   onPlay,
   resetSliders,
-  setSlidersTo,
+  // setSlidersTo,
   sliderValues,
   updateValue,
 }: Props) {
@@ -41,18 +38,11 @@ export default function MoodCustomizer({
     }
   }
 
-  // function onMoodPress(mood: keyof typeof PREDICATES & keyof typeof PRESETS) {
-  //   const features = data as Feature[];
-  //   const result = features.filter(PREDICATES[mood]);
-  //   console.log(`Result: ${JSON.stringify(result.map((v) => v.name))}`);
-
-  // }
-
   return (
     <BottomSheet
       ref={bottomSheetRef}
       snapPoints={["40%", "90%"]}
-      index={0}
+      index={-1}
       backgroundStyle={{
         backgroundColor: Colors.light.brand,
       }}
@@ -77,7 +67,7 @@ export default function MoodCustomizer({
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.moodButtonContainer}>
-            {Object.keys(PRESETS).map((mood) => {
+            {Object.keys(PRESETS).map((mood: keyof typeof PRESETS) => {
               return (
                 mood != "default" && (
                   <MoodButton key={mood} label={mood} onPress={() => onPlay(mood)} />
@@ -90,18 +80,11 @@ export default function MoodCustomizer({
               <Text style={{ fontSize: 20 }}>{showMore ? "Hide" : "Advanced"}</Text>
             </TouchableOpacity>
             {showMore && (
-              <View
-                style={{
-                  justifyContent: "flex-end",
-                  alignItems: "center",
-                  flex: 1,
-                  flexDirection: "row",
-                }}
-              >
+              <View style={styles.playButtonContainer}>
                 <TouchableOpacity onPress={resetSliders} style={{ marginRight: 15 }}>
                   <Ionicons name="refresh-outline" size={30} color="black" />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={onPlay} style={styles.playButton}>
+                <TouchableOpacity onPress={() => onPlay()} style={styles.playButton}>
                   <Ionicons name="play" size={30} color={Colors.light.background} />
                 </TouchableOpacity>
               </View>
@@ -143,6 +126,12 @@ const styles = StyleSheet.create({
   contentContainer: { flexDirection: "row", alignItems: "center", gap: 20 },
   header: { flexDirection: "row", flex: 1, gap: 20, alignItems: "center" },
   title: { color: "black", fontSize: 30 },
+  playButtonContainer: {
+    justifyContent: "flex-end",
+    alignItems: "center",
+    flex: 1,
+    flexDirection: "row",
+  },
   playButton: {
     width: 80,
     height: 40,
