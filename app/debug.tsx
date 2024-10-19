@@ -21,7 +21,9 @@ import { useLastFm } from "@/hooks/useLastFM";
 import { Track, TrackFeatureResponse } from "@/interfaces/tracks";
 
 // import data from "@/scripts/features/features_workout_4_jesus.json";
-import { TrackFeature } from "@/scripts/features/interfaces";
+import { TrackFeature } from "@/interfaces/tracks";
+import { useSQLiteContext } from "expo-sqlite";
+import { useDb } from "@/hooks/useDb";
 
 export default function Debug() {
   const {
@@ -45,6 +47,10 @@ export default function Debug() {
   const { listPlayLists, getPlayListItemsIds } = usePlayLists();
   const { getArtistGenres } = useArtist();
   const { getTrackTopTags, getArtistTopTags } = useLastFm();
+
+  const { statement1, statement2 } = useDb();
+  const { name } = useDb();
+  console.log(`Db name: ${name}`);
 
   const [recent, setRecent] = useState<string[]>([]);
   const [playLists, setPlayLists] = useState<SimplifiedPlayList[]>([]);
@@ -151,6 +157,23 @@ export default function Debug() {
 
     const response = await listPlayLists();
     console.log(response ? `Response came back: ${response.length}` : `Error`);
+  };
+
+  const testStatement = async () => {
+    if (statement1 && statement1.current) {
+      console.log("Statement exists");
+      await statement1.current.executeAsync("user1", "email@gmail.com");
+    } else {
+      console.log("Statement not existing");
+    }
+  };
+
+  const queryDb = async () => {
+    if (statement2 && statement2.current) {
+      const res = await statement2.current.executeAsync();
+      const users = await res.getAllAsync();
+      console.log(JSON.stringify(users));
+    }
   };
 
   interface PlayListProps {
@@ -267,6 +290,8 @@ export default function Debug() {
         <Button title="Test LastFM" onPress={testLastFM} />
 
         <Button title="Test token expiration" onPress={testToken} />
+        <Button title="Test db statement" onPress={testStatement} />
+        <Button title="Get users" onPress={queryDb} />
         {/* <Button title="Match song names" onPress={matchSongIdsToNames} /> */}
 
         <Text>Should shuffle: {String(shouldShuffle)}</Text>

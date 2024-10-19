@@ -1,6 +1,6 @@
 import fs from "fs";
 import data from "./features/features_all.json";
-import { TrackFeature } from "./features/interfaces";
+import { TrackFeature } from "@/interfaces/tracks";
 
 const features = data as TrackFeature[];
 

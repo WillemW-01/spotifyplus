@@ -3,6 +3,7 @@ import { SplashScreen, Stack } from "expo-router";
 import React, { useEffect } from "react";
 import { StatusBar, useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { SQLiteProvider, useSQLiteContext, type SQLiteDatabase } from "expo-sqlite";
 
 import { Colors } from "@/constants/Colors";
 
@@ -31,21 +32,30 @@ export default function RootLayout() {
   }
 
   return (
-    <AuthProvider>
-      <GlobalProvider>
-        <SafeAreaView
-          edges={["top"]}
-          style={{ flex: 1, backgroundColor: Colors[theme]["background"] }}
-        >
-          <StatusBar barStyle="light-content" />
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="index" />
-            <Stack.Screen name="debug" />
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-        </SafeAreaView>
-      </GlobalProvider>
-    </AuthProvider>
+    <SQLiteProvider
+      databaseName="songs.sqlite"
+      assetSource={{ assetId: require("@/assets/db/songs.sqlite"), forceOverwrite: true }}
+      options={{
+        useNewConnection: true,
+        enableChangeListener: true,
+      }}
+    >
+      <AuthProvider>
+        <GlobalProvider>
+          <SafeAreaView
+            edges={["top"]}
+            style={{ flex: 1, backgroundColor: Colors[theme]["background"] }}
+          >
+            <StatusBar barStyle="light-content" />
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="index" />
+              <Stack.Screen name="debug" />
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="+not-found" />
+            </Stack>
+          </SafeAreaView>
+        </GlobalProvider>
+      </AuthProvider>
+    </SQLiteProvider>
   );
 }

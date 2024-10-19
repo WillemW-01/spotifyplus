@@ -1,5 +1,6 @@
 import fs from "fs";
-import { Edge, TrackFeature } from "./features/interfaces";
+import { Edge } from "./features/interfaces";
+import { TrackFeature } from "@/interfaces/tracks";
 
 function writeToFile(fileName: string, toWrite: string, append = false) {
   if (append) {

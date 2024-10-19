@@ -19,7 +19,7 @@ import { useTracks } from "@/hooks/useTracks";
 import MoodCustomizer from "@/components/mood/MoodCustomizer";
 
 import data from "@/scripts/features/features_main_jam.json";
-import { TrackFeature } from "@/scripts/features/interfaces";
+import { TrackFeature } from "@/interfaces/tracks";
 
 interface Feature {
   index: number;

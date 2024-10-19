@@ -1,3 +1,5 @@
+import { CustomAlbum, CustomArtist } from "@/scripts/features/interfaces";
+
 export interface RecentlyPlayed {
   href: string;
   limit: number;
@@ -107,4 +109,13 @@ export interface TrackFeatureResponse {
   type: string;
   uri: string;
   valence: number;
+}
+export interface TrackFeature extends TrackFeatureResponse {
+  index: number;
+  album: CustomAlbum;
+  artists: CustomArtist[];
+  name: string;
+  popularity: number;
+  preview_url: string;
+  playlist: string;
 }

@@ -1,4 +1,5 @@
-import { Edge, Feature, ResultObj, TrackFeature } from "./features/interfaces";
+import { Edge, Feature, ResultObj } from "./features/interfaces";
+import { TrackFeature } from "@/interfaces/tracks";
 import { normalise } from "./normalise";
 
 const MAX_NEIGHBOURS = 3;

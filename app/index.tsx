@@ -5,10 +5,14 @@ import { Dimensions, StyleSheet, Text, TouchableOpacity } from "react-native";
 import BrandGradient from "@/components/BrandGradient";
 import { useAuth } from "@/hooks/AuthContext";
 import { useLogger } from "@/hooks/useLogger";
+// import { useDb } from "@/hooks/useDb";
 
 export default function App() {
   const { request, promptAsync, authorized } = useAuth();
   const { addLog } = useLogger();
+
+  // const { name } = useDb();
+  // console.log(name);
 
   const handleLogin = () => {
     addLog("Login button pressed", "index");
