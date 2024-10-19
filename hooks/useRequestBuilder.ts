@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useAuth } from "./AuthContext";
 
 interface Error {
@@ -54,7 +55,12 @@ export function useRequestBuilder(usingSpotify = true) {
   };
 
   const checkForRefresh = async () => {
-    if (token && refreshToken && (await shouldRefresh())) {
+    const mustRefresh = await shouldRefresh();
+    console.log(
+      `[checkRefresh] ${Boolean(token)} && ${Boolean(refreshToken)} && ${mustRefresh}`
+    );
+    if (token && refreshToken && mustRefresh) {
+      console.log("Should be updating access token");
       await refreshAccessToken(refreshToken);
     }
   };

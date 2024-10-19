@@ -31,6 +31,7 @@ const keys = {
 };
 
 const THRESHOLD = 3600 / 60; // threshold time of 60 minutes ~ 1 hour
+// const THRESHOLD = 1; // threshold time of 60 minutes ~ 1 hour
 
 const uri = makeRedirectUri();
 console.log("[AuthContext] Redirect URI: ", uri);
@@ -167,7 +168,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 
     // returns if the dif is more than 60 minutes / 3600 seconds
-    return diff / 60000 > THRESHOLD;
+    return diff / 60000 > 1;
   };
 
   const getAuthRequest = async (requestBody: string) => {
@@ -206,7 +207,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const refreshAccessToken = async (token: string) => {
-    addLog(`Got: ${token.slice(0, 20)} at refreshAccessToken`, "refreshAccessToken", 2);
+    addLog(`Got: ${token.slice(0, 20)} at refreshAccessToken`, "refreshAccessToken");
     try {
       if (isRefreshing.current) {
         console.log("Already getting new access token. Ignoring.");
@@ -232,7 +233,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const accessToken = tokenData.access_token;
 
       addLog(`Access token: ${accessToken.slice(0, 20)}...`, "refreshAccessToken", 1);
-      await setToken(accessToken);
+      await setToken(accessToken, token);
+
+      isRefreshing.current = false;
     } catch (error: unknown) {
       addLog("Error when getting new token: ", "refreshAccessToken", 0, "warning");
     }

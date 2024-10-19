@@ -34,7 +34,7 @@ export default function Debug() {
     toggleShuffle,
     shouldShuffle,
   } = usePlayback();
-  const { clearToken, authorized } = useAuth();
+  const { clearToken, authorized, shouldRefresh } = useAuth();
   const {
     getTrack,
     getSeveralTracks,
@@ -143,6 +143,14 @@ export default function Debug() {
     // const results = await getTrackTopTags("Dans in Afrikaans", "Kurt Darren");
     const results = await getArtistTopTags("Kurt Darren");
     console.log("results: ", JSON.stringify(results));
+  };
+
+  const testToken = async () => {
+    const isExpired = await shouldRefresh();
+    console.log(`Is expired: ${isExpired}`);
+
+    const response = await listPlayLists();
+    console.log(response ? `Response came back: ${response.length}` : `Error`);
   };
 
   interface PlayListProps {
@@ -257,6 +265,8 @@ export default function Debug() {
         />
 
         <Button title="Test LastFM" onPress={testLastFM} />
+
+        <Button title="Test token expiration" onPress={testToken} />
         {/* <Button title="Match song names" onPress={matchSongIdsToNames} /> */}
 
         <Text>Should shuffle: {String(shouldShuffle)}</Text>
