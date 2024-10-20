@@ -4,17 +4,25 @@ import React, { useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import { Colors } from "@/constants/Colors";
-import { PREDICATES, PRESETS, TrackFeatures } from "@/constants/sliderPresets";
+import {
+  PREDICATES,
+  PRESETS,
+  TrackFeatures,
+  PresetItem,
+  Preset,
+} from "@/constants/sliderPresets";
 
 import MoodButton from "@/components/mood/MoodButton";
 import MoodSlider from "@/components/mood/MoodSlider";
+import Button from "../Button";
+import GridBox from "../GridBox";
 
 interface Props {
   bottomSheetRef: React.RefObject<BottomSheet>;
-  onPlay: (mood?: keyof typeof PREDICATES) => void;
+  onPlay: (mood?: keyof typeof PRESETS) => void;
   resetSliders: () => void;
   setSlidersTo: (mood: keyof typeof PRESETS) => void;
-  sliderValues: TrackFeatures;
+  sliderValues: Preset;
   updateValue: (featureName: keyof TrackFeatures, value: number) => void;
 }
 
@@ -22,7 +30,7 @@ export default function MoodCustomizer({
   bottomSheetRef,
   onPlay,
   resetSliders,
-  // setSlidersTo,
+  setSlidersTo,
   sliderValues,
   updateValue,
 }: Props) {
@@ -90,17 +98,37 @@ export default function MoodCustomizer({
               </View>
             )}
           </View>
-          {showMore &&
-            Object.entries(sliderValues).map(([k, v]) => {
-              return (
-                <MoodSlider
-                  key={k}
-                  label={k as keyof TrackFeatures}
-                  setValue={updateValue}
-                  value={v}
-                />
-              );
-            })}
+          {showMore && (
+            <>
+              <View>
+                <Text style={styles.title}>Presets:</Text>
+                <GridBox cols={3} gap={20}>
+                  {Object.keys(PRESETS).map((mood: keyof typeof PRESETS, i) => {
+                    return (
+                      <Button
+                        key={i}
+                        title={mood as string}
+                        color="dark"
+                        height={40}
+                        onPress={() => setSlidersTo(mood)}
+                      />
+                    );
+                  })}
+                </GridBox>
+              </View>
+              {Object.entries(sliderValues).map(([k, v], i) => {
+                return (
+                  <MoodSlider
+                    key={k}
+                    label={k as keyof TrackFeatures}
+                    setValue={updateValue}
+                    value={v.value}
+                    useNew={false}
+                  />
+                );
+              })}
+            </>
+          )}
         </ScrollView>
       </BottomSheetView>
     </BottomSheet>

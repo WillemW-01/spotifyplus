@@ -210,8 +210,7 @@ export function usePlayback() {
   };
 
   const openSpotify = async () => {
-    const url = "https://open.spotify.com/";
-    await Linking.openURL(url);
+    Linking.openURL("spotify://open");
   };
 
   const isSpotifyRunning = async () => {

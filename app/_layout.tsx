@@ -1,9 +1,10 @@
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import React, { useEffect } from "react";
-import { StatusBar, useColorScheme } from "react-native";
+import { Alert, StatusBar, useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SQLiteProvider, useSQLiteContext, type SQLiteDatabase } from "expo-sqlite";
+const dbId = require("@/assets/db/library.sqlite");
 
 import { Colors } from "@/constants/Colors";
 
@@ -31,11 +32,15 @@ export default function RootLayout() {
     return null;
   }
 
+  if (!dbId) {
+    Alert.alert("No db", `No database is present: ${dbId}`);
+  }
+
   return (
     <SQLiteProvider
       databaseName="library.sqlite"
       assetSource={{
-        assetId: require("@/assets/db/library.sqlite"),
+        assetId: dbId,
         // forceOverwrite: true,
       }}
       options={{

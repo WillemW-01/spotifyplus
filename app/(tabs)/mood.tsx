@@ -11,7 +11,13 @@ import {
 import BottomSheet from "@gorhom/bottom-sheet";
 
 import { Colors } from "@/constants/Colors";
-import { PREDICATES, PRESETS, TrackFeatures } from "@/constants/sliderPresets";
+import {
+  PREDICATES,
+  Preset,
+  PresetItem,
+  PRESETS,
+  TrackFeatures,
+} from "@/constants/sliderPresets";
 
 import { SimplifiedPlayList } from "@/interfaces/playlists";
 
@@ -77,7 +83,7 @@ export default function Mood() {
   const [playlists, setPlaylists] = useState<SimplifiedPlayList[]>([]);
   const [localPlaylists, setLocalPlaylists] = useState<CustomPlaylist[]>([]);
   const [outOfDate, setOutOfDate] = useState<LocalState[]>([]);
-  const [sliderValues, setSliderValues] = useState<TrackFeatures>(PRESETS.default);
+  const [sliderValues, setSliderValues] = useState<Preset>(PRESETS.default);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const currPlayList = useRef<SimplifiedPlayList | null>(null);
@@ -96,10 +102,12 @@ export default function Mood() {
   const { getPlaylists, insertNewSongs, getPlaylistSongs } = useDb();
 
   const updateValue = (featureName: keyof TrackFeatures, value: number) => {
-    setSliderValues((prev) => ({
-      ...prev,
-      [featureName]: value,
-    }));
+    setSliderValues((prev) => {
+      return {
+        ...prev,
+        [featureName]: { value: value, stdDev: prev[featureName] },
+      };
+    });
   };
 
   const resetSliders = () => {
@@ -207,7 +215,7 @@ export default function Mood() {
     });
   };
 
-  const onPlay = async (mood?: keyof typeof PREDICATES) => {
+  const onPlay = async (mood?: keyof typeof PRESETS) => {
     if (currPlayList.current) {
       const tracks = await getPlaylistSongs(currPlayList.current.id); // local
       if (!tracks) return;
@@ -216,29 +224,27 @@ export default function Mood() {
       let filteredTracks = [] as string[];
       if (mood) {
         filteredTracks = tracks.filter(PREDICATES[mood]).map((t) => t.id);
-        console.log(`After: ${filteredTracks.length}`);
-        playTracks(filteredTracks);
       } else {
-        // const batchSize = 10;
-        // for (let i = 0; i < tracks.length; i += batchSize) {
-        //   const batch = tracks.slice(i, i + batchSize);
-        //   console.log("Should be checking ids: ", batch);
-        //   const batchPromises = batch.map(async (t) => ({
-        //     track: t,
-        //     fits: await fitsInPreset(sliderValues, t),
-        //   }));
-        //   const batchResults = await Promise.all(batchPromises);
-        //   filteredTracks.push(...batchResults.filter((r) => r.fits).map((r) => r.track));
-        //   // Add a delay between batches to further reduce the risk of rate limiting
-        //   if (i + batchSize < tracks.length) {
-        //     await new Promise((resolve) => setTimeout(resolve, 1000)); // 1 second delay
-        //   }
-        // }
-        Alert.alert(
-          "Mood Slider",
-          "This function unfortunately doesn't work at the moment"
-        );
+        const batchSize = 100;
+        for (let i = 0; i < tracks.length; i += batchSize) {
+          const batch = tracks.slice(i, i + batchSize);
+          console.log("Should be checking ids: ", batch.map((b) => b.id).join(","));
+          const batchPromises = batch.map(async (t) => ({
+            trackId: t.id,
+            fits: await fitsInPreset(sliderValues, t),
+          }));
+          const batchResults = await Promise.all(batchPromises);
+          filteredTracks.push(
+            ...batchResults.filter((r) => r.fits).map((r) => r.trackId)
+          );
+        }
+        // Alert.alert(
+        //   "Mood Slider",
+        //   "This function unfortunately doesn't work at the moment"
+        // );
       }
+      console.log(`After: ${filteredTracks.length}`);
+      filteredTracks.length > 0 && playTracks(filteredTracks);
     }
   };
 

@@ -16,48 +16,55 @@ export interface Parameter {
   step: number;
 }
 
+export interface PresetItem {
+  value: number;
+  stdDev: number;
+}
+
+export type Preset = { [key in keyof TrackFeatures]: PresetItem };
+
 export const VARIANCE = 0.2;
 
 export const PARAMETERS = {
   danceability: {
     min: 0,
     max: 100,
-    step: 50,
+    step: 5,
   },
   energy: {
     min: 0,
     max: 100,
-    step: 50,
+    step: 5,
   },
   loudness: {
-    min: 0,
-    max: 100,
-    step: 50,
+    min: -60,
+    max: 0,
+    step: 5,
   },
   speechiness: {
     min: 0,
     max: 100,
-    step: 50,
+    step: 5,
   },
   acousticness: {
     min: 0,
     max: 100,
-    step: 50,
+    step: 5,
   },
   instrumentalness: {
     min: 0,
     max: 100,
-    step: 50,
+    step: 5,
   },
   liveness: {
     min: 0,
     max: 100,
-    step: 50,
+    step: 5,
   },
   valence: {
     min: 0,
     max: 100,
-    step: 50,
+    step: 5,
   },
   tempo: {
     min: 60,
@@ -66,61 +73,74 @@ export const PARAMETERS = {
   },
 } as { [key: string]: Parameter };
 
-export const PRESETS = {
+export const PRESETS: {
+  readonly [presetName: string]: Preset;
+} = {
   default: {
-    danceability: 0.5,
-    energy: 0.5,
-    loudness: 0.5,
-    speechiness: 0.5,
-    acousticness: 0.5,
-    instrumentalness: 0.5,
-    liveness: 0.5,
-    valence: 0.5,
-    tempo: 1.2,
+    danceability: { value: 0.556, stdDev: 0.124 },
+    energy: { value: 0.688, stdDev: 0.144 },
+    loudness: { value: -6.722, stdDev: 2.237 },
+    speechiness: { value: 0.05, stdDev: 0.039 },
+    acousticness: { value: 0.104, stdDev: 0.116 },
+    instrumentalness: { value: 0.013, stdDev: 0.078 },
+    liveness: { value: 0.159, stdDev: 0.099 },
+    valence: { value: 0.388, stdDev: 0.169 },
+    tempo: { value: 124.6, stdDev: 24.916 },
   },
   mellow: {
-    danceability: 0.5,
-    energy: 0.5,
-    loudness: 0.5,
-    speechiness: 0.5,
-    acousticness: 0.5,
-    instrumentalness: 0.5,
-    liveness: 0.5,
-    valence: 0.5,
-    tempo: 0.5,
+    danceability: { value: 0.5, stdDev: 0.0 },
+    energy: { value: 0.5, stdDev: 0.0 },
+    loudness: { value: 0.5, stdDev: 0.0 },
+    speechiness: { value: 0.5, stdDev: 0.0 },
+    acousticness: { value: 0.5, stdDev: 0.0 },
+    instrumentalness: { value: 0.5, stdDev: 0.0 },
+    liveness: { value: 0.5, stdDev: 0.0 },
+    valence: { value: 0.5, stdDev: 0.0 },
+    tempo: { value: 0.5, stdDev: 0.0 },
   },
   upbeat: {
-    danceability: 0.9,
-    energy: 0.9,
-    loudness: 0.9,
-    speechiness: 0.9,
-    acousticness: 0.9,
-    instrumentalness: 0.9,
-    liveness: 0.9,
-    valence: 0.9,
-    tempo: 0.9,
+    danceability: { value: 0.556, stdDev: 0.371 },
+    energy: { value: 0.688, stdDev: 0.424 },
+    loudness: { value: -6.722, stdDev: 8.659 },
+    speechiness: { value: 0.05, stdDev: 0.178 },
+    acousticness: { value: 0.104, stdDev: 0.489 },
+    instrumentalness: { value: 0.013, stdDev: 0.477 },
+    liveness: { value: 0.159, stdDev: 0.274 },
+    valence: { value: 0.388, stdDev: 0.463 },
+    tempo: { value: 124.605, stdDev: 75.925 },
   },
   sad: {
-    danceability: 0.1,
-    energy: 0.1,
-    loudness: 0.1,
-    speechiness: 0.1,
-    acousticness: 0.1,
-    instrumentalness: 0.1,
-    liveness: 0.1,
-    valence: 0.1,
-    tempo: 0.1,
+    danceability: { value: 0.1, stdDev: 0.0 },
+    energy: { value: 0.1, stdDev: 0.0 },
+    loudness: { value: 0.1, stdDev: 0.0 },
+    speechiness: { value: 0.1, stdDev: 0.0 },
+    acousticness: { value: 0.1, stdDev: 0.0 },
+    instrumentalness: { value: 0.1, stdDev: 0.0 },
+    liveness: { value: 0.1, stdDev: 0.0 },
+    valence: { value: 0.1, stdDev: 0.0 },
+    tempo: { value: 0.1, stdDev: 0.0 },
   },
   acoustic: {
-    danceability: 0.5,
-    energy: 0.5,
-    loudness: 0.5,
-    speechiness: 0.5,
-    acousticness: 0.5,
-    instrumentalness: 0.5,
-    liveness: 0.5,
-    valence: 0.5,
-    tempo: 0.5,
+    danceability: { value: 0.5, stdDev: 0.5 },
+    energy: { value: 0.5, stdDev: 0.5 },
+    loudness: { value: -30, stdDev: 30 },
+    speechiness: { value: 0.5, stdDev: 0.5 },
+    acousticness: { value: 0.85, stdDev: 0.15 },
+    instrumentalness: { value: 0.5, stdDev: 0.5 },
+    liveness: { value: 0.5, stdDev: 0.5 },
+    valence: { value: 0.5, stdDev: 0.5 },
+    tempo: { value: 120, stdDev: 60 },
+  },
+  "praise-like": {
+    danceability: { value: 0.459, stdDev: 0.284 },
+    energy: { value: 0.741, stdDev: 0.363 },
+    loudness: { value: -6.48, stdDev: 5.108 },
+    speechiness: { value: 0.057, stdDev: 0.104 },
+    acousticness: { value: 0.061, stdDev: 0.237 },
+    instrumentalness: { value: 0.001, stdDev: 0.007 },
+    liveness: { value: 0.752, stdDev: 0.28 },
+    valence: { value: 0.261, stdDev: 0.239 },
+    tempo: { value: 132.856, stdDev: 49.277 },
   },
 } as const;
 
@@ -129,6 +149,7 @@ export const PREDICATES = {
   upbeat: (song: TrackFeatures) => song.valence > 0.5 && song.energy > 0.4,
   sad: (song: TrackFeatures) => song.energy < 0.5 && song.valence < 0.4,
   acoustic: (song: TrackFeatures) => song.acousticness > 0.5,
+  "praise-like": (song: TrackFeatures) => song.energy == 0.7,
 };
 
 export const DESCRIPTIONS = {

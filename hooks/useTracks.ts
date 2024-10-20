@@ -2,11 +2,12 @@ import {
   PlayHistoryObject,
   SeveralTracksResponse,
   Track,
+  TrackFeature,
   TrackFeatureResponse,
 } from "@/interfaces/tracks";
 
 import { useRequestBuilder } from "./useRequestBuilder";
-import { TrackFeatures, VARIANCE } from "@/constants/sliderPresets";
+import { Preset, TrackFeatures, VARIANCE } from "@/constants/sliderPresets";
 
 export function useTracks() {
   const { buildGet } = useRequestBuilder();
@@ -79,35 +80,44 @@ export function useTracks() {
     return data.audio_features as TrackFeatureResponse[];
   };
 
-  const packFeatures = (features: TrackFeatureResponse) => {
+  const packFeatures = (features: TrackFeature) => {
     return {
       danceability: features.danceability,
-      energy: features.danceability,
-      loudness: features.danceability,
-      speechiness: features.danceability,
-      acousticness: features.danceability,
-      instrumentalness: features.danceability,
-      liveness: features.danceability,
-      valence: features.danceability,
-      tempo: features.danceability,
+      energy: features.energy,
+      loudness: features.loudness,
+      speechiness: features.speechiness,
+      acousticness: features.acousticness,
+      instrumentalness: features.instrumentalness,
+      liveness: features.liveness,
+      valence: features.valence,
+      tempo: features.tempo,
     };
   };
 
-  const isInRange = (value: number, target: number, variance: number) => {
-    const isIn = value >= target - variance && value <= target + variance;
-    // console.log(`${target - variance} vs ${value} vs ${target + variance}: ${isIn}`);
+  const round = (num: number) => Number(num.toFixed(3));
+
+  const getBounds = (target: number, stdDev: number, double: boolean) => {
+    const diff = double ? 2 * stdDev : stdDev;
+    return { lower: round(target - diff), upper: round(target + diff) };
+  };
+
+  const isInRange = (value: number, target: number, stdDev: number) => {
+    const bounds = getBounds(target, stdDev);
+    const isIn = value >= bounds.lower && value <= bounds.upper;
+
+    console.log(`${bounds.lower} <= ${value} <= ${bounds.upper} = ${isIn}`);
     return isIn;
   };
 
-  const fitsInPreset = async (sliderValues: TrackFeatures, trackId: string) => {
-    const response = await getTrackFeatures(trackId);
-    console.log(`${trackId}: ${JSON.stringify(response)}`);
-    const features = packFeatures(response);
+  const fitsInPreset = async (sliderValues: Preset, track: TrackFeature) => {
+    // const response = await getTrackFeatures(trackId);
+    // console.log(`${trackId}: ${JSON.stringify(response)}`);
+    const features = packFeatures(track);
     let isSuitable = true;
     const keys = Object.keys(sliderValues) as (keyof TrackFeatures)[];
     for (const key of keys) {
-      if (!isInRange(features[key], sliderValues[key], VARIANCE)) {
-        // console.log(`Feature ${key} is not in range`);
+      if (!isInRange(features[key], sliderValues[key].value, sliderValues[key].stdDev)) {
+        console.log(`Feature ${key} is not in range`);
         isSuitable = false;
         break;
       }
