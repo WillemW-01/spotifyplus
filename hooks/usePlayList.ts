@@ -69,9 +69,11 @@ export function usePlayLists() {
     for (let i = 0; i < allIds.length; i += jump) {
       const localMax = Math.min(i + jump, allIds.length);
       const ids = allIds.slice(i, localMax);
+      console.log(`Getting ${i} - ${localMax} / ${allIds.length}`);
       const features = await getSeveralTrackFeatures(ids);
-      console.log(`Getting ${i} - ${localMax} / ${features.length}`);
+      console.log(`Got a response of ${features.length} features}`);
       const tracksResponse = await getSeveralTracks(ids);
+      console.log(`Got a response of ${tracksResponse.length} track info`);
       const newTracks = tracksResponse.map((t, j) => {
         const { album, name, popularity, preview_url } = t;
         const customArtists = t.artists.map((a) => ({
@@ -97,7 +99,11 @@ export function usePlayLists() {
           popularity,
           preview_url,
           ...features[i + j],
-          playlist: { name: playlist.name, id: playlist.id },
+          playlist: {
+            name: playlist.name,
+            id: playlist.id,
+            snapshot: playlist.snapshot_id,
+          },
         };
         return newObj;
       });

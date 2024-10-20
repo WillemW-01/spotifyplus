@@ -47,7 +47,7 @@ export default function Debug() {
     getTracksNames,
     getSeveralTrackFeatures,
   } = useTracks();
-  const { listPlayLists, getPlayListItemsIds } = usePlayLists();
+  const { listPlayLists, getPlayListItemsIds, fetchPlaylistFeatures } = usePlayLists();
   const { getArtistGenres } = useArtist();
   const { getTrackTopTags, getArtistTopTags } = useLastFm();
 
@@ -67,7 +67,7 @@ export default function Debug() {
   const [recent, setRecent] = useState<string[]>([]);
   const [playLists, setPlayLists] = useState<SimplifiedPlayList[]>([]);
   const [ids, setIds] = useState<string[] | null>([]);
-  const [selectedPlaylist, setSelectedPlaylist] = useState("");
+  const [selectedPlaylist, setSelectedPlaylist] = useState<SimplifiedPlayList>(null);
 
   const playSong = () => {
     playTracks(["0TVFCP4LM2CTn4uOhdQP4k", "5HD4hzwB33Jyr4vhQqLQit"]);
@@ -89,7 +89,7 @@ export default function Debug() {
   const getSongIds = async (playlist: SimplifiedPlayList) => {
     // console.log(`Getting ids of ${playlist.name}: ${JSON.stringify(playlist)}`);
     const ids = await getPlayListItemsIds(playlist.id);
-    setSelectedPlaylist(playlist.name);
+    setSelectedPlaylist(playlist);
     console.log(ids);
     setIds(ids);
   };
@@ -129,16 +129,28 @@ export default function Debug() {
     }
   }
 
-  const getInfoAllTracks = async (trackIds: string[]) => {
+  const getPlaylistFeatures = async () => {
     try {
-      for (let i = 0; i < trackIds.length; i += 80) {
-        const localMax = Math.min(i + 80, trackIds.length);
-        console.log(`Getting ${i} - ${localMax} / ${trackIds.length}`);
-        const info = await getSeveralTrackFeatures(trackIds.slice(i, localMax));
-        await new Promise((resolve) => setTimeout(resolve, 1000)); // 1 second delay
-        writeToFile(selectedPlaylist, JSON.stringify(info));
+      if (selectedPlaylist) {
+        const result = await fetchPlaylistFeatures(selectedPlaylist);
+        if (result) {
+          console.log(
+            `Sucessfully got all ${result.length} tracks. E.g.: ${JSON.stringify(
+              result[0]
+            )}`
+          );
+
+          console.log(
+            `Statements exist on ${name} database. Inserting test sample: ${result.map(
+              (s) => s.name
+            )}`
+          );
+          const res = await insertNewSongs(result);
+          console.log(JSON.stringify(res));
+        }
+      } else {
+        console.log("no playlist selected");
       }
-      console.log("Sucessfully got all features");
     } catch (error) {
       console.log("Error at debug: ", error);
     }
@@ -200,8 +212,7 @@ export default function Debug() {
   const clear = async () => {
     if (statementsReady()) {
       console.log("Clearing db");
-      const res = await clearDb();
-      console.log(`Clear result: `, JSON.stringify(res));
+      await clearDb();
     }
   };
 
@@ -255,9 +266,7 @@ export default function Debug() {
         <Button title="List playlists" onPress={getPlayLists} disabled={!authorized} />
         <Button
           title="Get song features"
-          onPress={() => {
-            ids && getInfoAllTracks(ids);
-          }}
+          onPress={getPlaylistFeatures}
           disabled={!authorized}
         />
         <Button title="Clear tokens" onPress={clearTokens} />

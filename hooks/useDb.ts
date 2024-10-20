@@ -21,6 +21,7 @@ interface DatabaseOperations {
   getSong(songId: string): Promise<TrackFeature>;
   getAllSongs(): Promise<TrackFeature[]>;
   insertNewSongs(songs: TrackFeature[]): Promise<SQLiteExecuteAsyncResult<unknown>[]>;
+  getPlaylists: () => Promise<CustomPlaylist[]>;
   clearDb(): Promise<void>;
 }
 
@@ -40,13 +41,14 @@ const STATEMENT_TEMPLATES = {
     "INSERT  OR IGNORE INTO playlist_tracks (playlist_id, track_id) VALUES ($playlist_id, $track_id)",
   retrieveSongFeatures: "SELECT * FROM tracks WHERE id = $id",
   retrieveAlbum: "SELECT * FROM albums WHERE id = $id",
-  retrieveAlbumArtists:
+  joinAlbumArtists:
     "SELECT artists.id, artists.name FROM album_artists JOIN artists ON album_artists.artist_id = artists.id WHERE album_artists.album_id = $album_id",
-  retrieveArtists:
+  joinArtistsTracks:
     "SELECT artists.id, artists.name FROM track_artists JOIN artists ON track_artists.artist_id = artists.id WHERE track_artists.track_id = $track_id",
-  retrievePlaylists:
+  joinPlaylistTracks:
     "SELECT * FROM playlist_tracks JOIN playlists ON playlist_tracks.playlist_id = playlists.id WHERE playlist_tracks.track_id = $track_id",
   retrieveAllSongs: "SELECT id FROM tracks",
+  retrievePlaylists: "SELECT * FROM playlists",
   clearArtists: "DELETE FROM artists",
   clearAlbums: "DELETE FROM albums",
   clearTracks: "DELETE FROM tracks",
@@ -191,6 +193,7 @@ export function useDb(): DatabaseOperations {
   }
 
   async function insertTrackFeatures(song: TrackFeature) {
+    console.log(`Trying to insert features: ${JSON.stringify(song)}`);
     return await statements.current.intoTracks.executeAsync({
       $id: song.id,
       $name: song.name,
@@ -295,12 +298,18 @@ export function useDb(): DatabaseOperations {
     const allIds = (await resultOf(statements.current.retrieveAllSongs)) as {
       id: string;
     }[];
-    console.log(`Ids: ${JSON.stringify(allIds)}`);
     for (const id of allIds) {
       const song = await getSong(id.id);
       allSongs.push(song);
     }
     return allSongs;
+  }
+
+  async function getPlaylists() {
+    const playlists = (await resultOf(
+      statements.current.retrievePlaylists
+    )) as CustomPlaylist[];
+    return playlists;
   }
 
   async function clearDb() {
@@ -345,6 +354,7 @@ export function useDb(): DatabaseOperations {
     statementsReady,
     getSong,
     getAllSongs,
+    getPlaylists,
     clearDb,
   };
 }

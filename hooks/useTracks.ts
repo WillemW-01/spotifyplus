@@ -65,15 +65,18 @@ export function useTracks() {
   };
 
   const getSeveralTrackFeatures = async (trackIds: string[]) => {
+    console.log(`Getting features for ids: ${trackIds.join(",")}`);
     const url = `https://api.spotify.com/v1/audio-features?ids=${trackIds.join(",")}`;
     const response = await buildGet(url);
+
+    console.log(response.status);
 
     if (!response.ok) {
       console.log("Didn't fetch features okay! ", response.status);
     }
 
     const data = await response.json();
-    return data as TrackFeatureResponse[];
+    return data.audio_features as TrackFeatureResponse[];
   };
 
   const packFeatures = (features: TrackFeatureResponse) => {
