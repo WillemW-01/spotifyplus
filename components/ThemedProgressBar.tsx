@@ -33,6 +33,7 @@ export default function ThemedProgressBar({
         height={height}
         width={width ?? null}
         useNativeDriver={true}
+        animationType="timing"
       />
       {showValue && (
         <Text

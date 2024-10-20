@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
+  Alert,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -92,7 +93,7 @@ export default function Mood() {
   } = usePlayLists();
   const theme = useColorScheme() ?? "dark";
   const { fitsInPreset } = useTracks();
-  const { getPlaylists, insertNewSongs } = useDb();
+  const { getPlaylists, insertNewSongs, getPlaylistSongs } = useDb();
 
   const updateValue = (featureName: keyof TrackFeatures, value: number) => {
     setSliderValues((prev) => ({
@@ -190,42 +191,54 @@ export default function Mood() {
   const reOrderPlaylists = async (criteria: SortCritera, ascending = false) => {
     setPlaylists((prev) => {
       const temp = [...prev];
+      const tempOutOfDate = [...outOfDate];
+
       const order = ascending ? 1 : -1;
-      temp.sort((a, b) => order * SORT_PREDICATES[criteria](a, b));
-      return temp;
+
+      const indices = temp.map((_, i) => i);
+
+      indices.sort((i, j) => order * SORT_PREDICATES[criteria](temp[i], temp[j]));
+
+      const sortedPlaylists = indices.map((i) => temp[i]);
+      const sortedOtherArray = indices.map((i) => tempOutOfDate[i]);
+
+      setOutOfDate(sortedOtherArray);
+      return sortedPlaylists;
     });
   };
 
   const onPlay = async (mood?: keyof typeof PREDICATES) => {
     if (currPlayList.current) {
-      // const tracks = await getPlayListItemsIds(currPlayList.current.id);
-      // const tracks = savedTracks;
-      // const tracks = data as TrackFeature[];
-      // if (!tracks) return;
-      // console.log("Getting tracks with sliders: ", sliderValues);
-      // console.log("Before filtering: ", tracks.length);
-      // let filteredTracks = [] as string[];
-      // if (mood) {
-      //   filteredTracks = tracks.filter(PREDICATES[mood]).map((t) => t.id);
-      // } else {
-      //   const batchSize = 10;
-      //   for (let i = 0; i < tracks.length; i += batchSize) {
-      //     const batch = tracks.slice(i, i + batchSize);
-      //     console.log("Should be checking ids: ", batch);
-      //     const batchPromises = batch.map(async (t) => ({
-      //       track: t,
-      //       fits: await fitsInPreset(sliderValues, t),
-      //     }));
-      //     const batchResults = await Promise.all(batchPromises);
-      //     filteredTracks.push(...batchResults.filter((r) => r.fits).map((r) => r.track));
-      //     // Add a delay between batches to further reduce the risk of rate limiting
-      //     if (i + batchSize < tracks.length) {
-      //       await new Promise((resolve) => setTimeout(resolve, 1000)); // 1 second delay
-      //     }
-      //   }
-      // }
-      // console.log(`After: ${filteredTracks.length}`);
-      // playTracks(filteredTracks);
+      const tracks = await getPlaylistSongs(currPlayList.current.id); // local
+      if (!tracks) return;
+      console.log("Getting tracks with sliders: ", sliderValues);
+      console.log("Before filtering: ", tracks.length);
+      let filteredTracks = [] as string[];
+      if (mood) {
+        filteredTracks = tracks.filter(PREDICATES[mood]).map((t) => t.id);
+        console.log(`After: ${filteredTracks.length}`);
+        playTracks(filteredTracks);
+      } else {
+        // const batchSize = 10;
+        // for (let i = 0; i < tracks.length; i += batchSize) {
+        //   const batch = tracks.slice(i, i + batchSize);
+        //   console.log("Should be checking ids: ", batch);
+        //   const batchPromises = batch.map(async (t) => ({
+        //     track: t,
+        //     fits: await fitsInPreset(sliderValues, t),
+        //   }));
+        //   const batchResults = await Promise.all(batchPromises);
+        //   filteredTracks.push(...batchResults.filter((r) => r.fits).map((r) => r.track));
+        //   // Add a delay between batches to further reduce the risk of rate limiting
+        //   if (i + batchSize < tracks.length) {
+        //     await new Promise((resolve) => setTimeout(resolve, 1000)); // 1 second delay
+        //   }
+        // }
+        Alert.alert(
+          "Mood Slider",
+          "This function unfortunately doesn't work at the moment"
+        );
+      }
     }
   };
 

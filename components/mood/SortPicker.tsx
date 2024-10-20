@@ -20,7 +20,7 @@ interface DataItem {
   value: SortCritera;
 }
 
-const DEFAULT_SORT_DIRECTION = false;
+const DEFAULT_SORT_DIRECTION = true;
 const DEFAULT_SORT = { label: "Alphabetical", value: "alpha" } as DataItem;
 const data = [DEFAULT_SORT, { label: "Size", value: "size" }] as DataItem[];
 

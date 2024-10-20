@@ -57,7 +57,7 @@ export default function Debug() {
     name,
     insertNewSongs,
     getSong,
-    getAllSongs,
+    getPlaylistSongs,
     clearDb,
   } = useDb();
 
@@ -204,7 +204,7 @@ export default function Debug() {
   const queryDb = async () => {
     if (statementsReady()) {
       console.log(`Statements exist on ${name} database. Fetching all songs`);
-      const songs = (await getAllSongs()) as TrackFeature[];
+      const songs = (await getPlaylistSongs(selectedPlaylist.id)) as TrackFeature[];
       console.log(`Came back: ${JSON.stringify(songs)}`);
     }
   };

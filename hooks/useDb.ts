@@ -20,6 +20,7 @@ interface DatabaseOperations {
   statementsReady: () => boolean;
   getSong(songId: string): Promise<TrackFeature>;
   getAllSongs(): Promise<TrackFeature[]>;
+  getPlaylistSongs(playlistId: string): Promise<TrackFeature[]>;
   insertNewSongs(songs: TrackFeature[]): Promise<SQLiteExecuteAsyncResult<unknown>[]>;
   getPlaylists: () => Promise<CustomPlaylist[]>;
   clearDb(): Promise<void>;
@@ -49,6 +50,8 @@ const STATEMENT_TEMPLATES = {
     "SELECT * FROM playlist_tracks JOIN playlists ON playlist_tracks.playlist_id = playlists.id WHERE playlist_tracks.track_id = $track_id",
   retrieveAllSongs: "SELECT id FROM tracks",
   retrievePlaylists: "SELECT * FROM playlists",
+  retrievePlaylistSongs:
+    "SELECT playlist_tracks.track_id as id FROM playlist_tracks JOIN playlists ON playlist_tracks.playlist_id = playlists.id WHERE playlists.id = $playlist_id",
   clearArtists: "DELETE FROM artists",
   clearAlbums: "DELETE FROM albums",
   clearTracks: "DELETE FROM tracks",
@@ -103,7 +106,6 @@ export function useDb(): DatabaseOperations {
       await insertTrackArtist(song.id, artist.id);
     }
     const res = await insertTrackFeatures(song);
-    console.log(res);
     return res;
   }
 
@@ -296,13 +298,17 @@ export function useDb(): DatabaseOperations {
     }
   }
 
-  async function getAllSongs() {
+  async function getPlaylistSongs(playlistId: string) {
+    const ids = (await resultOf(statements.current.retrievePlaylistSongs, {
+      $playlist_id: playlistId,
+    })) as { id: string }[];
+    return getSongs(ids.map((i) => i.id));
+  }
+
+  async function getSongs(ids: string[]) {
     const allSongs = [] as TrackFeature[];
-    const allIds = (await resultOf(statements.current.retrieveAllSongs)) as {
-      id: string;
-    }[];
-    for (const id of allIds) {
-      const song = await getSong(id.id);
+    for (const id of ids) {
+      const song = await getSong(id);
       allSongs.push(song);
     }
     return allSongs;
@@ -365,7 +371,7 @@ export function useDb(): DatabaseOperations {
     insertNewSong,
     statementsReady,
     getSong,
-    getAllSongs,
+    getPlaylistSongs,
     getPlaylists,
     clearDb,
   };

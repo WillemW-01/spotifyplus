@@ -83,6 +83,12 @@ export function usePlayLists() {
           return null;
         }
 
+        if (!features[j]) {
+          console.log(`${t.name} at ${j} doesn't have features attached to it`);
+        }
+
+        console.log(`Currently pointing at ${i + j}`);
+
         const { album, name, popularity, preview_url } = t;
         const customArtists = t.artists.map((a) => ({
           genres: a.genres,
@@ -107,19 +113,22 @@ export function usePlayLists() {
           artists: customArtists,
           popularity,
           preview_url,
-          ...features[i + j],
+          ...features[j],
           playlist: {
             name: playlist.name,
             id: playlist.id,
             snapshot: playlist.snapshot_id,
           },
         };
+        console.log(`Allids.length = ${allIds.length}`);
+        if ((i + j) % 5 == 0 && progressCallback)
+          progressCallback((i + j) / allIds.length);
         return newObj;
       });
       console.log(newTracks[0]);
       localFeatures.push(...newTracks);
-      progressCallback && progressCallback(localMax / allIds.length);
     }
+    progressCallback && progressCallback(1);
     return localFeatures;
   };
 
