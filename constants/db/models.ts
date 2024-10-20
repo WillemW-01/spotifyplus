@@ -43,8 +43,9 @@ export interface DbTrackArtist {
 }
 
 export interface DbPlaylist {
-  id: string;
   name: string;
+  id: string;
+  snapshot: string;
 }
 
 export interface DbPlaylistTrack {

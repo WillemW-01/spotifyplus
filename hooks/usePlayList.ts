@@ -1,9 +1,18 @@
-import { PlayListItems, PlayListObject, PlayListResponse } from "@/interfaces/playlists";
+import {
+  PlayListItems,
+  PlayListObject,
+  PlayListResponse,
+  SimplifiedPlayList,
+} from "@/interfaces/playlists";
 
 import { useRequestBuilder } from "./useRequestBuilder";
+import { useTracks } from "./useTracks";
+import { TrackFeature } from "@/interfaces/tracks";
 
 export function usePlayLists() {
   const { buildGet } = useRequestBuilder();
+
+  const { getSeveralTrackFeatures, getSeveralTracks } = useTracks();
 
   const listPlayLists = async (limit?: number) => {
     let url = `https://api.spotify.com/v1/me/playlists`;
@@ -53,10 +62,56 @@ export function usePlayLists() {
     }
   };
 
+  const fetchPlaylistFeatures = async (playlist: SimplifiedPlayList) => {
+    const allIds = await getPlayListItemsIds(playlist.id);
+    const jump = 50;
+    const localFeatures = [] as TrackFeature[];
+    for (let i = 0; i < allIds.length; i += jump) {
+      const localMax = Math.min(i + jump, allIds.length);
+      const ids = allIds.slice(i, localMax);
+      const features = await getSeveralTrackFeatures(ids);
+      console.log(`Getting ${i} - ${localMax} / ${features.length}`);
+      const tracksResponse = await getSeveralTracks(ids);
+      const newTracks = tracksResponse.map((t, j) => {
+        const { album, name, popularity, preview_url } = t;
+        const customArtists = t.artists.map((a) => ({
+          genres: a.genres,
+          id: a.id,
+          name: a.name,
+          images: a.images,
+        }));
+        const newObj = {
+          index: i + j,
+          name,
+          album: {
+            name: album.name,
+            id: album.id,
+            artists: album.artists.map((a) => ({
+              genres: a.genres,
+              id: a.id,
+              name: a.name,
+              images: a.images,
+            })),
+          },
+          artists: customArtists,
+          popularity,
+          preview_url,
+          ...features[i + j],
+          playlist: { name: playlist.name, id: playlist.id },
+        };
+        return newObj;
+      });
+      console.log(newTracks[0]);
+      localFeatures.push(...newTracks);
+    }
+    return localFeatures;
+  };
+
   return {
     listPlayLists,
     getPlayListItemsPage,
     getPlayListItemsAll,
     getPlayListItemsIds,
+    fetchPlaylistFeatures,
   };
 }

@@ -115,10 +115,7 @@ export interface TrackFeature extends TrackFeatureResponse {
   name: string;
   popularity: number;
   preview_url: string;
-  playlist: {
-    name: string;
-    id: string;
-  };
+  playlist: CustomPlaylist;
 }
 
 export interface CustomArtist {
@@ -135,6 +132,7 @@ export interface CustomAlbum {
 export interface CustomPlaylist {
   name: string;
   id: string;
+  snapshot: string;
 }
 
 /**

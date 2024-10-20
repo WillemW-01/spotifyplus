@@ -227,54 +227,6 @@ export default function Debug() {
     );
   }
 
-  // async function matchSongIdsToNames() {
-  //   const jump = 50;
-  //   const features = data as TrackFeatureResponse[];
-  //   try {
-  //     for (let i = 0; i < features.length; i += jump) {
-  //       const localFeatures = [] as TrackFeature[];
-  //       const localMax = Math.min(i + jump, features.length);
-  //       console.log(`Getting ${i} - ${localMax} / ${features.length}`);
-  //       const ids = features.slice(i, localMax).map((f) => f.id);
-  //       const tracksResponse = await getSeveralTracks(ids);
-  //       const newTracks = tracksResponse.map((t, j) => {
-  //         const { album, name, popularity, preview_url } = t;
-  //         const customArtists = t.artists.map((a) => ({
-  //           genres: a.genres,
-  //           id: a.id,
-  //           name: a.name,
-  //           images: a.images,
-  //         }));
-  //         const newObj = {
-  //           index: i + j,
-  //           name,
-  //           album: {
-  //             name: album.name,
-  //             id: album.id,
-  //             artists: album.artists.map((a) => ({
-  //               genres: a.genres,
-  //               id: a.id,
-  //               name: a.name,
-  //               images: a.images,
-  //             })),
-  //           },
-  //           artists: customArtists,
-  //           popularity,
-  //           preview_url,
-  //           ...features[i + j],
-  //           playlist: "workout_4_jesus",
-  //         };
-  //         return newObj;
-  //       });
-  //       console.log(newTracks[0]);
-  //       localFeatures.push(...newTracks);
-  //       writeToAll(JSON.stringify(localFeatures));
-  //     }
-  //   } catch (error) {
-  //     console.log("Error at matching: ", error);
-  //   }
-  // }
-
   const toTabs = () => {
     router.navigate("/(tabs)/");
   };

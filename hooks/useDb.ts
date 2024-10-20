@@ -34,7 +34,8 @@ const STATEMENT_TEMPLATES = {
     "INSERT  OR IGNORE INTO album_artists (album_id, artist_id) VALUES ($album_id, $artist_id)",
   intoTrackArtists:
     "INSERT  OR IGNORE INTO track_artists (track_id, artist_id) VALUES ($track_id, $artist_id)",
-  intoPlaylists: "INSERT OR IGNORE INTO playlists (id, 'name') VALUES ($id, $name)",
+  intoPlaylists:
+    "INSERT OR IGNORE INTO playlists (id, 'name', snapshot) VALUES ($id, $name, $snapshot)",
   intoPlaylistTracks:
     "INSERT  OR IGNORE INTO playlist_tracks (playlist_id, track_id) VALUES ($playlist_id, $track_id)",
   retrieveSongFeatures: "SELECT * FROM tracks WHERE id = $id",
@@ -166,12 +167,12 @@ export function useDb(): DatabaseOperations {
           $album_id: albumId,
           $artist_id: artistId,
         });
-        console.log(`[dbInsert]\tInserted album ${albumId} <=> (${artistId})`);
+        console.log(`[dbInsert]\tInserted album ${albumId} <=> ${artistId}`);
       } catch (error) {
-        console.error(`Error inserting album ${albumId} <=> (${artistId}):`, error);
+        console.error(`Error inserting album ${albumId} <=> ${artistId}:`, error);
       }
     } else {
-      console.log(`[dbInsert]\t${albumId} <=> (${albumId}) already exists`);
+      console.log(`[dbInsert]\t${albumId} <=> ${albumId} already exists`);
     }
   }
 
@@ -179,7 +180,11 @@ export function useDb(): DatabaseOperations {
     await statements.current.intoTrackArtists.executeAsync(songId, artistId);
   }
   async function insertPlaylist(playlist: CustomPlaylist) {
-    await statements.current.intoPlaylists.executeAsync(playlist.id, playlist.name);
+    await statements.current.intoPlaylists.executeAsync(
+      playlist.id,
+      playlist.name,
+      playlist.snapshot
+    );
   }
   async function insertPlaylistTrack(playlistId, trackId) {
     await statements.current.intoPlaylistTracks.executeAsync(playlistId, trackId);
@@ -272,7 +277,11 @@ export function useDb(): DatabaseOperations {
         analysis_url: track.analysis_url,
         duration_ms: track.duration_ms,
         time_signature: track.time_signature,
-        playlist: { id: playlists[0].id, name: playlists[0].name },
+        playlist: {
+          id: playlists[0].id,
+          name: playlists[0].name,
+          snapshot: playlists[0].snapshot,
+        },
       };
 
       return result;

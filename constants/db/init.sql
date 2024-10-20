@@ -52,7 +52,8 @@ CREATE TABLE track_artists (
 
 CREATE TABLE playlists (
     id TEXT PRIMARY KEY,
-    name TEXT NOT NULL
+    name TEXT NOT NULL,
+    snapshot TEXT
 );
 
 CREATE TABLE playlist_tracks (
