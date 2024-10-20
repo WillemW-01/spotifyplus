@@ -19,7 +19,10 @@ import { useTracks } from "@/hooks/useTracks";
 import MoodCustomizer from "@/components/mood/MoodCustomizer";
 
 import data from "@/scripts/features/features_main_jam.json";
-import { TrackFeature } from "@/interfaces/tracks";
+import { CustomPlaylist, TrackFeature } from "@/interfaces/tracks";
+import { useDb } from "@/hooks/useDb";
+import SelectableCard from "@/components/graph/SelectableCard";
+import SyncedCard from "@/components/mood/SyncedCard";
 
 interface Feature {
   index: number;
@@ -45,8 +48,12 @@ interface Feature {
   time_signature: number;
 }
 
+export type LocalState = "online" | "unsynced" | "synced";
+
 export default function Mood() {
   const [playlists, setPlaylists] = useState<SimplifiedPlayList[]>([]);
+  const [localPlaylists, setLocalPlaylists] = useState<CustomPlaylist[]>([]);
+  const [outOfDate, setOutOfDate] = useState<LocalState[]>([]);
   const [sliderValues, setSliderValues] = useState<TrackFeatures>(PRESETS.default);
 
   const currPlayList = useRef<SimplifiedPlayList | null>(null);
@@ -57,6 +64,7 @@ export default function Mood() {
   const { listPlayLists, getPlayListItemsIds, getPlayListItemsAll } = usePlayLists();
   const theme = useColorScheme() ?? "dark";
   const { fitsInPreset } = useTracks();
+  const { getPlaylists } = useDb();
 
   const updateValue = (featureName: keyof TrackFeatures, value: number) => {
     setSliderValues((prev) => ({
@@ -75,7 +83,48 @@ export default function Mood() {
 
   const fetchPlaylists = async () => {
     const response = await listPlayLists();
+    const dbResponse = await getPlaylists();
+    console.log(`Response from db: ${JSON.stringify(dbResponse)}`);
+    const states: LocalState[] = response.map((r, i) => {
+      const online: CustomPlaylist = {
+        name: r.name,
+        id: r.id,
+        snapshot: r.snapshot_id,
+      };
+
+      const index = dbResponse.findIndex((l) => l.id === online.id);
+      console.log(`${online.name} in dbResponse at index: ${index}`);
+      if (index >= 0) {
+        const local = dbResponse[index];
+        if (local.snapshot != online.snapshot) {
+          console.log(
+            `${online.name} is out of date! ${local.snapshot} vs ${online.snapshot}`
+          );
+          return "unsynced";
+        } else {
+          console.log(
+            `${online.name} is synced (${online.snapshot} == ${local.snapshot})`
+          );
+          return "synced";
+        }
+      } else {
+        console.log(`${online.name} is not available locally`);
+        return "online";
+      }
+    });
+
+    // const toTrack = [];
+    // for (let i = 0; i < response.length; i++) {
+    //   if (response[i].snapshot_id != dbResponse[i].snapshot) {
+    //     console.log(`${response[i].name} is out of date!`);
+    //     toTrack.push(true);
+    //   } else {
+    //     toTrack.push(false);
+    //   }
+    // }
+
     setPlaylists(response);
+    setOutOfDate(states);
   };
 
   const onPlay = async (mood?: keyof typeof PREDICATES) => {
@@ -134,7 +183,7 @@ export default function Mood() {
         {playlists &&
           playlists.map((item, index) => {
             return (
-              <Card
+              <SyncedCard
                 key={index}
                 title={item.name}
                 subtitle={item.owner.display_name}
@@ -144,6 +193,7 @@ export default function Mood() {
                   bottomSheetRef.current?.snapToIndex(0);
                 }}
                 width={90}
+                synced={outOfDate[index]}
               />
             );
           })}

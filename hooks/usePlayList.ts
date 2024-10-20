@@ -102,7 +102,7 @@ export function usePlayLists() {
           playlist: {
             name: playlist.name,
             id: playlist.id,
-            snapshot: playlist.snapshot_id,
+            snapshot: playlist.snapshot_id + "E",
           },
         };
         return newObj;
