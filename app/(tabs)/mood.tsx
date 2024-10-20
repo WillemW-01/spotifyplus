@@ -1,5 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ScrollView, StyleSheet, Text, useColorScheme } from "react-native";
+import {
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  useColorScheme,
+  View,
+} from "react-native";
 import BottomSheet from "@gorhom/bottom-sheet";
 
 import { Colors } from "@/constants/Colors";
@@ -23,6 +30,8 @@ import { CustomPlaylist, TrackFeature } from "@/interfaces/tracks";
 import { useDb } from "@/hooks/useDb";
 import SelectableCard from "@/components/graph/SelectableCard";
 import SyncedCard from "@/components/mood/SyncedCard";
+import Button from "@/components/Button";
+import SortPicker from "@/components/mood/SortPicker";
 
 interface Feature {
   index: number;
@@ -49,22 +58,41 @@ interface Feature {
 }
 
 export type LocalState = "online" | "unsynced" | "synced";
+export type SortCritera = "alpha" | "size";
+
+const SORT_PREDICATES: {
+  // eslint-disable-next-line no-unused-vars
+  [K in SortCritera]: (a: SimplifiedPlayList, b: SimplifiedPlayList) => -1 | 1;
+} = {
+  alpha: (a, b) => {
+    return b.name > a.name ? 1 : -1;
+  },
+  size: (a, b) => {
+    return b.tracks.total > a.tracks.total ? 1 : -1;
+  },
+};
 
 export default function Mood() {
   const [playlists, setPlaylists] = useState<SimplifiedPlayList[]>([]);
   const [localPlaylists, setLocalPlaylists] = useState<CustomPlaylist[]>([]);
   const [outOfDate, setOutOfDate] = useState<LocalState[]>([]);
   const [sliderValues, setSliderValues] = useState<TrackFeatures>(PRESETS.default);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const currPlayList = useRef<SimplifiedPlayList | null>(null);
   const bottomSheetRef = useRef<BottomSheet>(null);
 
   const { authorized } = useAuth();
   const { playTracks } = usePlayback();
-  const { listPlayLists, getPlayListItemsIds, getPlayListItemsAll } = usePlayLists();
+  const {
+    listPlayLists,
+    getPlayListItemsIds,
+    getPlayListItemsAll,
+    fetchPlaylistFeatures,
+  } = usePlayLists();
   const theme = useColorScheme() ?? "dark";
   const { fitsInPreset } = useTracks();
-  const { getPlaylists } = useDb();
+  const { getPlaylists, insertNewSongs } = useDb();
 
   const updateValue = (featureName: keyof TrackFeatures, value: number) => {
     setSliderValues((prev) => ({
@@ -131,6 +159,23 @@ export default function Mood() {
     }
   };
 
+  const fetchSinglePlaylist = async (
+    playlist: SimplifiedPlayList,
+    progressCallback?: React.Dispatch<React.SetStateAction<number>>
+  ) => {
+    try {
+      const trackFeatures = await fetchPlaylistFeatures(playlist, progressCallback);
+      const response = await insertNewSongs(trackFeatures);
+      if (!response) {
+        console.log(`Something went wrong with inserting new songs:`, response);
+      }
+
+      await checkStatusOutside(playlist);
+    } catch (error) {
+      console.log(`An error occured with inserting new songs:`, error);
+    }
+  };
+
   const fetchPlaylists = async () => {
     const response = await listPlayLists();
     const dbResponse = await getPlaylists();
@@ -142,41 +187,56 @@ export default function Mood() {
     setOutOfDate(states);
   };
 
+  const reOrderPlaylists = async (criteria: SortCritera, ascending = false) => {
+    setPlaylists((prev) => {
+      const temp = [...prev];
+      const order = ascending ? 1 : -1;
+      temp.sort((a, b) => order * SORT_PREDICATES[criteria](a, b));
+      return temp;
+    });
+  };
+
   const onPlay = async (mood?: keyof typeof PREDICATES) => {
     if (currPlayList.current) {
       // const tracks = await getPlayListItemsIds(currPlayList.current.id);
       // const tracks = savedTracks;
-      const tracks = data as TrackFeature[];
-      if (!tracks) return;
-      console.log("Getting tracks with sliders: ", sliderValues);
-      console.log("Before filtering: ", tracks.length);
-      let filteredTracks = [] as string[];
-      if (mood) {
-        filteredTracks = tracks.filter(PREDICATES[mood]).map((t) => t.id);
-      } else {
-        const batchSize = 10;
-        for (let i = 0; i < tracks.length; i += batchSize) {
-          const batch = tracks.slice(i, i + batchSize);
-          console.log("Should be checking ids: ", batch);
-          const batchPromises = batch.map(async (t) => ({
-            track: t,
-            fits: await fitsInPreset(sliderValues, t),
-          }));
-          const batchResults = await Promise.all(batchPromises);
-          filteredTracks.push(...batchResults.filter((r) => r.fits).map((r) => r.track));
-          // Add a delay between batches to further reduce the risk of rate limiting
-          if (i + batchSize < tracks.length) {
-            await new Promise((resolve) => setTimeout(resolve, 1000)); // 1 second delay
-          }
-        }
-      }
-      console.log(`After: ${filteredTracks.length}`);
-      playTracks(filteredTracks);
+      // const tracks = data as TrackFeature[];
+      // if (!tracks) return;
+      // console.log("Getting tracks with sliders: ", sliderValues);
+      // console.log("Before filtering: ", tracks.length);
+      // let filteredTracks = [] as string[];
+      // if (mood) {
+      //   filteredTracks = tracks.filter(PREDICATES[mood]).map((t) => t.id);
+      // } else {
+      //   const batchSize = 10;
+      //   for (let i = 0; i < tracks.length; i += batchSize) {
+      //     const batch = tracks.slice(i, i + batchSize);
+      //     console.log("Should be checking ids: ", batch);
+      //     const batchPromises = batch.map(async (t) => ({
+      //       track: t,
+      //       fits: await fitsInPreset(sliderValues, t),
+      //     }));
+      //     const batchResults = await Promise.all(batchPromises);
+      //     filteredTracks.push(...batchResults.filter((r) => r.fits).map((r) => r.track));
+      //     // Add a delay between batches to further reduce the risk of rate limiting
+      //     if (i + batchSize < tracks.length) {
+      //       await new Promise((resolve) => setTimeout(resolve, 1000)); // 1 second delay
+      //     }
+      //   }
+      // }
+      // console.log(`After: ${filteredTracks.length}`);
+      // playTracks(filteredTracks);
     }
   };
 
   useEffect(() => {
-    if (authorized) {
+    const everythingEmpty =
+      playlists.length == 0 &&
+      localPlaylists.length == 0 &&
+      outOfDate.length == 0 &&
+      isRefreshing == false &&
+      !currPlayList.current;
+    if (authorized && everythingEmpty) {
       fetchPlaylists();
     }
   }, []);
@@ -187,13 +247,42 @@ export default function Mood() {
     }
   }, [sliderValues]);
 
+  const refresh = async () => {
+    setIsRefreshing(true);
+    setPlaylists([]);
+    setLocalPlaylists([]);
+    setOutOfDate([]);
+    setSliderValues(PRESETS.default);
+    currPlayList.current = null;
+
+    await fetchPlaylists();
+    setIsRefreshing(false);
+  };
+
   return (
     <BrandGradient style={{ flex: 1, alignItems: "center", gap: 30 }}>
       <Text style={{ fontSize: 35, color: Colors[theme]["light"] }}>Mood</Text>
-      <ThemedText text="Pick a playlist:" type="subtitle" />
+      <View
+        style={{
+          flexDirection: "row",
+          width: "100%",
+          justifyContent: "center",
+          paddingHorizontal: 15,
+          alignItems: "center",
+        }}
+      >
+        <ThemedText text="Pick a playlist:" type="subtitle" style={{ flex: 1 }} />
+        {/* <Button title="sort" onPress={() => reOrderPlaylists("size", true)} />
+         */}
+        <SortPicker
+          reOrderPlaylists={reOrderPlaylists}
+          style={{ position: "absolute", right: 0 }}
+        />
+      </View>
       <ScrollView
         contentContainerStyle={styles.playListScrollContainer}
         style={{ flex: 1, width: "100%" }}
+        refreshControl={<RefreshControl refreshing={false} onRefresh={refresh} />}
       >
         {playlists &&
           playlists.map((item, index) => {
@@ -210,7 +299,7 @@ export default function Mood() {
                 width={90}
                 synced={outOfDate[index]}
                 playlist={item}
-                checkStatus={checkStatusOutside}
+                downloadPlaylist={fetchSinglePlaylist}
               />
             );
           })}

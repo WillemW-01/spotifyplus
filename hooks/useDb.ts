@@ -36,7 +36,7 @@ const STATEMENT_TEMPLATES = {
   intoTrackArtists:
     "INSERT  OR IGNORE INTO track_artists (track_id, artist_id) VALUES ($track_id, $artist_id)",
   intoPlaylists:
-    "INSERT OR IGNORE INTO playlists (id, 'name', snapshot) VALUES ($id, $name, $snapshot)",
+    "INSERT OR REPLACE INTO playlists (id, 'name', snapshot) VALUES ($id, $name, $snapshot)",
   intoPlaylistTracks:
     "INSERT  OR IGNORE INTO playlist_tracks (playlist_id, track_id) VALUES ($playlist_id, $track_id)",
   retrieveSongFeatures: "SELECT * FROM tracks WHERE id = $id",
@@ -193,7 +193,6 @@ export function useDb(): DatabaseOperations {
   }
 
   async function insertTrackFeatures(song: TrackFeature) {
-    console.log(`Trying to insert features: ${JSON.stringify(song)}`);
     return await statements.current.intoTracks.executeAsync({
       $id: song.id,
       $name: song.name,
@@ -222,6 +221,10 @@ export function useDb(): DatabaseOperations {
 
   async function getSong(songId: string) {
     try {
+      if (!songId) {
+        addLog(`Requested song with no id (id = null)`, `getSong`);
+        return;
+      }
       console.log(`Fetching song with id ${songId}`);
       const tracks = (await resultOf(statements.current.retrieveSongFeatures, {
         $id: songId,

@@ -168,7 +168,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 
     // returns if the dif is more than 60 minutes / 3600 seconds
-    return diff / 60000 > 1;
+    return diff / 60000 > THRESHOLD;
   };
 
   const getAuthRequest = async (requestBody: string) => {

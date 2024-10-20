@@ -36,7 +36,7 @@ export default function RootLayout() {
       databaseName="library.sqlite"
       assetSource={{
         assetId: require("@/assets/db/library.sqlite"),
-        forceOverwrite: true,
+        // forceOverwrite: true,
       }}
       options={{
         useNewConnection: true,

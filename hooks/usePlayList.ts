@@ -78,6 +78,11 @@ export function usePlayLists() {
       const tracksResponse = await getSeveralTracks(ids);
       console.log(`Got a response of ${tracksResponse.length} track info`);
       const newTracks = tracksResponse.map((t, j) => {
+        if (!t.id) {
+          console.error(`${t.name} doesn't have an id: ${t.id}`);
+          return null;
+        }
+
         const { album, name, popularity, preview_url } = t;
         const customArtists = t.artists.map((a) => ({
           genres: a.genres,
@@ -88,6 +93,7 @@ export function usePlayLists() {
         const newObj = {
           index: i + j,
           name,
+          id: t.id,
           album: {
             name: album.name,
             id: album.id,
@@ -112,7 +118,7 @@ export function usePlayLists() {
       });
       console.log(newTracks[0]);
       localFeatures.push(...newTracks);
-      progressCallback && progressCallback(i / allIds.length);
+      progressCallback && progressCallback(localMax / allIds.length);
     }
     return localFeatures;
   };

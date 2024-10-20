@@ -1,5 +1,5 @@
 import { Colors } from "@/constants/Colors";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, View, Text, StyleSheet } from "react-native";
 import { SimplifiedPlayList } from "@/interfaces/playlists";
 import ThemedProgressBar from "../ThemedProgressBar";
@@ -10,13 +10,20 @@ interface Props {
   show: boolean;
   setShow: React.Dispatch<React.SetStateAction<boolean>>;
   playlist: SimplifiedPlayList;
-  checkStatus?: (
+  downloadPlaylist: (
+    // eslint-disable-next-line no-unused-vars
     playlist: SimplifiedPlayList,
-    dbResponse?: CustomPlaylist[]
-  ) => Promise<"online" | "unsynced" | "synced">;
+    // eslint-disable-next-line no-unused-vars
+    progressCallback?: React.Dispatch<React.SetStateAction<number>>
+  ) => Promise<void>;
 }
 
-export default function OnlineChecker({ show, setShow, playlist, checkStatus }: Props) {
+export default function OnlineChecker({
+  show,
+  setShow,
+  playlist,
+  downloadPlaylist,
+}: Props) {
   const [progress, setProgress] = useState<number | null>(null);
   const step = 0.1;
 
@@ -29,22 +36,17 @@ export default function OnlineChecker({ show, setShow, playlist, checkStatus }: 
   const onDownload = async () => {
     console.log("Fetching features of playlist: ", playlist.name);
     setProgress(0);
-    const intervalId = setInterval(() => {
-      setProgress((prevProgress) => {
-        const newProgress = prevProgress + step;
-
-        if (newProgress >= 1) {
-          console.log("Closing interval");
-          clearInterval(intervalId);
-          console.log(`Check status is passed: ${checkStatus}`);
-          checkStatus && checkStatus(playlist);
-          return 1;
-        }
-
-        return newProgress;
-      });
-    }, 50);
+    await downloadPlaylist(playlist, setProgress);
   };
+
+  useEffect(() => {
+    if (progress) {
+      console.log(`Progress called: ${progress}`);
+      if (progress >= 1) {
+        console.log(`Progress is done: ${progress}`);
+      }
+    }
+  }, [progress]);
 
   return (
     <View
@@ -91,6 +93,7 @@ export default function OnlineChecker({ show, setShow, playlist, checkStatus }: 
                   onPress={onClose}
                   paddingHorizontal={40}
                   height={40}
+                  disabled={progress < 1}
                 />
               </View>
             )}
