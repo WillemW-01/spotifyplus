@@ -1,5 +1,3 @@
-import { CustomAlbum, CustomArtist } from "@/scripts/features/interfaces";
-
 export interface RecentlyPlayed {
   href: string;
   limit: number;
@@ -117,5 +115,59 @@ export interface TrackFeature extends TrackFeatureResponse {
   name: string;
   popularity: number;
   preview_url: string;
-  playlist: string;
+  playlist: {
+    name: string;
+    id: string;
+  };
 }
+
+export interface CustomArtist {
+  id: string;
+  name: string;
+}
+
+export interface CustomAlbum {
+  name: string;
+  id: string;
+  artists: CustomArtist[];
+}
+
+export interface CustomPlaylist {
+  name: string;
+  id: string;
+}
+
+/**
+ * [
+  {
+    "index": 0,
+    "name": "Fly Away With Me",
+    "album": {
+      "name": "Fly Away With Me",
+      "id": "0zyfjcblb35vFRjZ3KKXMR",
+      "artists": [{ "id": "7z2avKuuiMAT4XZJFv8Rvh", "name": "Tom Walker" }]
+    },
+    "artists": [{ "id": "7z2avKuuiMAT4XZJFv8Rvh", "name": "Tom Walker" }],
+    "popularity": 44,
+    "preview_url": "https://p.scdn.co/mp3-preview/c949637fd7daab492d5e5106ca224abc184ae69b?cid=c5ef878ae61046f0a713956f9dbd9377",
+    "danceability": 0.421,
+    "energy": 0.499,
+    "key": 5,
+    "loudness": -8.869,
+    "mode": 1,
+    "speechiness": 0.173,
+    "acousticness": 0.61,
+    "instrumentalness": 0,
+    "liveness": 0.0875,
+    "valence": 0.297,
+    "tempo": 78.621,
+    "type": "audio_features",
+    "id": "05u81UgU27g8uL5twJ7ABz",
+    "uri": "spotify:track:05u81UgU27g8uL5twJ7ABz",
+    "track_href": "https://api.spotify.com/v1/tracks/05u81UgU27g8uL5twJ7ABz",
+    "analysis_url": "https://api.spotify.com/v1/audio-analysis/05u81UgU27g8uL5twJ7ABz",
+    "duration_ms": 211733,
+    "time_signature": 4,
+    "playlist": { "name": "main_jam", "id": "5VijMFqhgsYh3k0ewtdzVH" }
+  },
+ */

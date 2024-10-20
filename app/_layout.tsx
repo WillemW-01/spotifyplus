@@ -33,12 +33,14 @@ export default function RootLayout() {
 
   return (
     <SQLiteProvider
-      databaseName="songs.sqlite"
-      assetSource={{ assetId: require("@/assets/db/songs.sqlite"), forceOverwrite: true }}
-      options={{
-        useNewConnection: true,
-        enableChangeListener: true,
-      }}
+      databaseName="library.sqlite"
+      assetSource={{ assetId: require("@/assets/db/library.sqlite") }}
+      options={
+        {
+          // useNewConnection: true,
+          // enableChangeListener: true,
+        }
+      }
     >
       <AuthProvider>
         <GlobalProvider>

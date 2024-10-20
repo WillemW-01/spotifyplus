@@ -1,80 +1,64 @@
+CREATE TABLE artists (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL
+);
+
 CREATE TABLE albums (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL
 );
 
-CREATE TABLE artists (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL
+CREATE TABLE tracks (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    popularity INTEGER,
+    preview_url TEXT,
+    danceability REAL,
+    energy REAL,
+    key INTEGER,
+    loudness REAL,
+    mode INTEGER,
+    speechiness REAL,
+    acousticness REAL,
+    instrumentalness REAL,
+    liveness REAL,
+    valence REAL,
+    tempo REAL,
+    type TEXT,
+    uri TEXT,
+    track_href TEXT,
+    analysis_url TEXT,
+    duration_ms INTEGER,
+    time_signature INTEGER,
+    album_id TEXT,
+    FOREIGN KEY (album_id) REFERENCES albums(id)
 );
 
-CREATE TABLE genres (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL UNIQUE
-);
-
-CREATE TABLE images (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    url TEXT NOT NULL,
-    height INTEGER,
-    width INTEGER,
-    artist_id INTEGER,
-    FOREIGN KEY (artist_id) REFERENCES artists(id) ON DELETE CASCADE
-);
-
--- many-to-many relationship between albums and artists
 CREATE TABLE album_artists (
     album_id TEXT,
-    artist_id INTEGER,
+    artist_id TEXT,
     PRIMARY KEY (album_id, artist_id),
     FOREIGN KEY (album_id) REFERENCES albums(id),
     FOREIGN KEY (artist_id) REFERENCES artists(id)
 );
 
--- many-to-many relationship between artists and genres
-CREATE TABLE artist_genres (
-    artist_id INTEGER,
-    genre_id INTEGER,
-    PRIMARY KEY (artist_id, genre_id),
-    FOREIGN KEY (artist_id) REFERENCES artists(id),
-    FOREIGN KEY (genre_id) REFERENCES genres(id)
-);
-
-CREATE TABLE track_features (
-    id TEXT PRIMARY KEY,
-    index INTEGER,
-    name TEXT NOT NULL,
-    popularity INTEGER,
-    preview_url TEXT,
-    playlist TEXT,
-
-    acousticness REAL,
-    analysis_url TEXT,
-    danceability REAL,
-    duration_ms INTEGER,
-    energy REAL,
-    instrumentalness REAL,
-    key INTEGER,
-    liveness REAL,
-    loudness REAL,
-    mode INTEGER,
-    speechiness REAL,
-    tempo REAL,
-    time_signature INTEGER,
-    track_href TEXT,
-    type TEXT,
-    uri TEXT,
-    valence REAL,
-    
-    album_id TEXT,
-    FOREIGN KEY (album_id) REFERENCES albums(id)
-);
-
--- Create track_artists table (for many-to-many relationship between tracks and artists)
 CREATE TABLE track_artists (
     track_id TEXT,
-    artist_id INTEGER,
+    artist_id TEXT,
     PRIMARY KEY (track_id, artist_id),
-    FOREIGN KEY (track_id) REFERENCES track_features(id),
+    FOREIGN KEY (track_id) REFERENCES tracks(id),
     FOREIGN KEY (artist_id) REFERENCES artists(id)
+);
+
+CREATE TABLE playlists (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL
+);
+
+CREATE TABLE playlist_tracks (
+    playlist_id TEXT,
+    track_id TEXT,
+    PRIMARY KEY (playlist_id, track_id),
+    FOREIGN KEY (playlist_id) REFERENCES playlists(id),
+    FOREIGN KEY (track_id) REFERENCES tracks(id)
 );
