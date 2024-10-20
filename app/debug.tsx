@@ -25,8 +25,8 @@ import { TrackFeature } from "@/interfaces/tracks";
 import { useSQLiteContext } from "expo-sqlite";
 import { useDb } from "@/hooks/useDb";
 
-import data from "@/scripts/features/test.json";
-const sample = data as TrackFeature[];
+// import data from "@/scripts/features/test.json";
+// const sample = data as TrackFeature[];
 
 export default function Debug() {
   const {
@@ -185,17 +185,17 @@ export default function Debug() {
 
   const testStatement = async () => {
     if (statementsReady()) {
-      try {
-        console.log(
-          `Statements exist on ${name} database. Inserting test sample: ${sample.map(
-            (s) => s.name
-          )}`
-        );
-        const res = await insertNewSongs(sample);
-        console.log(JSON.stringify(res));
-      } catch (error) {
-        console.log(`Error at insert: `, error);
-      }
+      // try {
+      //   console.log(
+      //     `Statements exist on ${name} database. Inserting test sample: ${sample.map(
+      //       (s) => s.name
+      //     )}`
+      //   );
+      //   const res = await insertNewSongs(sample);
+      //   console.log(JSON.stringify(res));
+      // } catch (error) {
+      //   console.log(`Error at insert: `, error);
+      // }
     } else {
       console.log("Statement not existing");
     }
