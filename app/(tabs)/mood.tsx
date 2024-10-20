@@ -81,47 +81,62 @@ export default function Mood() {
     setSliderValues(PRESETS[mood]);
   };
 
+  const checkStatusOutside = async (playlist: SimplifiedPlayList) => {
+    const dbResponse = await getPlaylists();
+    const status = await checkStatus(playlist, dbResponse);
+    console.log(`Status of ${playlist.name} = ${status}`);
+    if (playlists.length > 0 && outOfDate.length > 0) {
+      const index = playlists.findIndex((online) => online.id == playlist.id);
+      setOutOfDate((prev) => {
+        const temp = [...prev];
+        temp[index] = status;
+        console.log(`Setting outofdate[${index}] = ${status}`);
+        return temp;
+      });
+    } else {
+      console.log(
+        `Cant set updated status because playlists and outofdate are not loaded`
+      );
+    }
+  };
+
+  const checkStatus = async (
+    playlist: SimplifiedPlayList,
+    dbResponse?: CustomPlaylist[]
+  ) => {
+    if (!dbResponse) {
+      console.log(`Checking status of ${playlist.name}`);
+      dbResponse = await getPlaylists();
+    }
+    const online: CustomPlaylist = {
+      name: playlist.name,
+      id: playlist.id,
+      snapshot: playlist.snapshot_id,
+    };
+
+    const index = dbResponse.findIndex((local) => local.id === online.id);
+    if (index >= 0) {
+      const local = dbResponse[index];
+      if (local.snapshot != online.snapshot) {
+        console.log(
+          `${online.name} is out of date! ${local.snapshot} vs ${online.snapshot}`
+        );
+        return "unsynced";
+      } else {
+        console.log(`${online.name} is synced (${online.snapshot} == ${local.snapshot})`);
+        return "synced";
+      }
+    } else {
+      return "online";
+    }
+  };
+
   const fetchPlaylists = async () => {
     const response = await listPlayLists();
     const dbResponse = await getPlaylists();
-    console.log(`Response from db: ${JSON.stringify(dbResponse)}`);
-    const states: LocalState[] = response.map((r, i) => {
-      const online: CustomPlaylist = {
-        name: r.name,
-        id: r.id,
-        snapshot: r.snapshot_id,
-      };
-
-      const index = dbResponse.findIndex((l) => l.id === online.id);
-      console.log(`${online.name} in dbResponse at index: ${index}`);
-      if (index >= 0) {
-        const local = dbResponse[index];
-        if (local.snapshot != online.snapshot) {
-          console.log(
-            `${online.name} is out of date! ${local.snapshot} vs ${online.snapshot}`
-          );
-          return "unsynced";
-        } else {
-          console.log(
-            `${online.name} is synced (${online.snapshot} == ${local.snapshot})`
-          );
-          return "synced";
-        }
-      } else {
-        console.log(`${online.name} is not available locally`);
-        return "online";
-      }
-    });
-
-    // const toTrack = [];
-    // for (let i = 0; i < response.length; i++) {
-    //   if (response[i].snapshot_id != dbResponse[i].snapshot) {
-    //     console.log(`${response[i].name} is out of date!`);
-    //     toTrack.push(true);
-    //   } else {
-    //     toTrack.push(false);
-    //   }
-    // }
+    const states: LocalState[] = await Promise.all(
+      response.map((r) => checkStatus(r, dbResponse))
+    );
 
     setPlaylists(response);
     setOutOfDate(states);
@@ -194,6 +209,8 @@ export default function Mood() {
                 }}
                 width={90}
                 synced={outOfDate[index]}
+                playlist={item}
+                checkStatus={checkStatusOutside}
               />
             );
           })}

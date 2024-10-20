@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { LocalState } from "@/app/(tabs)/mood";
 import Card from "@/components/Card";
 import { Ionicons } from "@expo/vector-icons";
-import { View } from "react-native";
+import { ColorValue, TouchableOpacity, View } from "react-native";
+import { IoniconType } from "@/interfaces/ionicon";
+import OnlineChecker from "./OnlineChecker";
+import { SimplifiedPlayList } from "@/interfaces/playlists";
+import { CustomPlaylist } from "@/interfaces/tracks";
 
 interface Props {
   title: string;
@@ -11,25 +15,34 @@ interface Props {
   onPress: () => void;
   width?: number;
   synced: LocalState;
+  playlist: SimplifiedPlayList;
+  // eslint-disable-next-line no-unused-vars
+  checkStatus?: (playlist: SimplifiedPlayList) => Promise<void>;
 }
 
-const colors = {
-  synced: "green",
-  unsynced: "orange",
-  online: "white",
-};
+interface IconStyle {
+  color: ColorValue;
+  name: IoniconType;
+  opacity: number;
+}
 
-const names = {
-  synced: "checkmark-circle",
-  unsynced: "alert-circle",
-  online: "globe",
-};
-
-const opacities = {
-  synced: 0.0,
-  unsynced: 0.5,
-  online: 0.1,
-};
+const iconStyles = {
+  synced: {
+    color: "green",
+    name: "checkmark-circle",
+    opacity: 0.0,
+  },
+  unsynced: {
+    color: "orange",
+    name: "alert-circle",
+    opacity: 0.5,
+  },
+  online: {
+    color: "black",
+    name: "globe",
+    opacity: 0.0,
+  },
+} as { [key: string]: IconStyle };
 
 export default function SyncedCard({
   title,
@@ -38,23 +51,33 @@ export default function SyncedCard({
   onPress,
   width,
   synced,
+  playlist,
+  checkStatus,
 }: Props) {
+  const style = iconStyles[synced] ?? {
+    color: "orange",
+    name: "alert-circle",
+    opacity: 0.5,
+  };
+
+  const [show, setShow] = useState(false);
+
+  const askForDownload = (synced: LocalState) => {
+    if (synced == "online" || synced == "unsynced") {
+      setShow(true);
+    } else {
+      onPress();
+    }
+  };
+
   return (
-    <View>
-      <Card
-        title={title}
-        subtitle={subtitle}
-        imageUri={imageUri}
-        onPress={onPress}
-        width={width ?? 90}
-      />
+    <TouchableOpacity onPress={() => askForDownload(synced)}>
+      <Card title={title} subtitle={subtitle} imageUri={imageUri} width={width ?? 90} />
       <View
         style={{
           position: "absolute",
           top: 0,
           right: 0,
-          backgroundColor: colors[synced],
-          opacity: opacities[synced],
           width: width,
           height: width,
           borderRadius: 12,
@@ -62,12 +85,23 @@ export default function SyncedCard({
           alignItems: "center",
         }}
       ></View>
-      <Ionicons
-        name={names[synced]}
-        color="white"
-        size={25}
-        style={{ position: "absolute", top: 0, right: 0 }}
+      <View
+        style={{
+          position: "absolute",
+          top: 2,
+          right: 2,
+          backgroundColor: style.color,
+          borderRadius: 12,
+        }}
+      >
+        <Ionicons name={style.name} color="white" size={25} />
+      </View>
+      <OnlineChecker
+        show={show}
+        setShow={setShow}
+        playlist={playlist}
+        checkStatus={checkStatus}
       />
-    </View>
+    </TouchableOpacity>
   );
 }

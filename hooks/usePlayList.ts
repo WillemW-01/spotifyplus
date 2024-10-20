@@ -62,7 +62,10 @@ export function usePlayLists() {
     }
   };
 
-  const fetchPlaylistFeatures = async (playlist: SimplifiedPlayList) => {
+  const fetchPlaylistFeatures = async (
+    playlist: SimplifiedPlayList,
+    progressCallback?: React.Dispatch<React.SetStateAction<number>>
+  ) => {
     const allIds = await getPlayListItemsIds(playlist.id);
     const jump = 50;
     const localFeatures = [] as TrackFeature[];
@@ -102,13 +105,14 @@ export function usePlayLists() {
           playlist: {
             name: playlist.name,
             id: playlist.id,
-            snapshot: playlist.snapshot_id + "E",
+            snapshot: playlist.snapshot_id,
           },
         };
         return newObj;
       });
       console.log(newTracks[0]);
       localFeatures.push(...newTracks);
+      progressCallback && progressCallback(i / allIds.length);
     }
     return localFeatures;
   };

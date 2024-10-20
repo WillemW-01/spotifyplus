@@ -129,3 +129,7 @@ not play Spotify directly, but rather control Spotify playback on the device.
 - **Curated Playlists**: Generate playlists based on certain constraints (e.g., energy level), ensuring that there’s a smooth flow and connection between the songs.
 - **Music Discovery**: Allow users to explore the graph to discover songs they may not have come across but are musically similar to what they like.
 - **Music Analysis Tools**: Create visualizations or tools for artists or listeners to understand how different tracks are related in terms of musical composition or production elements.
+
+## Lyircs prompt:
+
+Analyze the following song lyrics in depth, focusing on themes, literary devices, emotional tone, and potential cultural or historical significance. Consider how the lyrics' structure, word choices, and imagery contribute to the overall message of the song. Please explore any metaphors, symbolism, and poetic techniques used by the songwriter, and discuss how these elements enhance the listener's experience. If relevant, also provide insight into the context in which the song was created (social, political, or personal) and how it may influence interpretation. Break down how each verse builds the narrative or evokes specific emotions, and offer your perspective on the broader meaning or takeaway. Here are the lyrics:

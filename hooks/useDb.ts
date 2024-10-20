@@ -233,15 +233,15 @@ export function useDb(): DatabaseOperations {
       })) as DbAlbum[];
       const album = albums[0];
 
-      const albumArtists = (await resultOf(statements.current.retrieveAlbumArtists, {
+      const albumArtists = (await resultOf(statements.current.joinAlbumArtists, {
         $album_id: album.id,
       })) as CustomArtist[];
 
-      const trackArtists = (await resultOf(statements.current.retrieveArtists, {
+      const trackArtists = (await resultOf(statements.current.joinArtistsTracks, {
         $track_id: track.id,
       })) as CustomArtist[];
 
-      const playlists = (await resultOf(statements.current.retrievePlaylists, {
+      const playlists = (await resultOf(statements.current.joinPlaylistTracks, {
         $track_id: track.id,
       })) as DbPlaylist[];
 
@@ -323,7 +323,16 @@ export function useDb(): DatabaseOperations {
   }
 
   async function resultOf(statement: SQLiteStatement, params?: SQLiteBindParams) {
-    return (await statement.executeAsync(params)).getAllAsync();
+    try {
+      return (await statement.executeAsync(params)).getAllAsync();
+    } catch (error) {
+      console.error(
+        `Error getting result of ${JSON.stringify(
+          statement
+        )} with params ${JSON.stringify(params)}: `,
+        error
+      );
+    }
   }
 
   async function prepareStatements() {
