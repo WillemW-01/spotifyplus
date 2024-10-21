@@ -23,9 +23,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     justifyContent: "center",
     alignItems: "center",
-    height: 50,
-    width: "45%",
-    paddingHorizontal: 5,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
   },
   moodButtonText: {
     color: Colors.dark.text,

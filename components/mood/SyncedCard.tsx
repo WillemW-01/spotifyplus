@@ -6,7 +6,7 @@ import { ColorValue, TouchableOpacity, View } from "react-native";
 import { IoniconType } from "@/interfaces/ionicon";
 import OnlineChecker from "./OnlineChecker";
 import { SimplifiedPlayList } from "@/interfaces/playlists";
-import { CustomPlaylist } from "@/interfaces/tracks";
+import { IHandles } from "react-native-modalize/lib/options";
 
 interface Props {
   title: string;
@@ -23,6 +23,7 @@ interface Props {
     // eslint-disable-next-line no-unused-vars
     progressCallback?: React.Dispatch<React.SetStateAction<number>>
   ) => Promise<void>;
+  // modalRef: React.MutableRefObject<IHandles>;
 }
 
 interface IconStyle {
@@ -68,6 +69,7 @@ export default function SyncedCard({
   const [show, setShow] = useState(false);
 
   const askForDownload = (synced: LocalState) => {
+    console.log(`Asking for download with state ${synced}`);
     if (synced == "online" || synced == "unsynced") {
       setShow(true);
     } else {
@@ -76,8 +78,19 @@ export default function SyncedCard({
   };
 
   return (
-    <TouchableOpacity onPress={() => askForDownload(synced)}>
-      <Card title={title} subtitle={subtitle} imageUri={imageUri} width={width ?? 90} />
+    <TouchableOpacity
+      onPress={() => {
+        console.log("Pressing button");
+        askForDownload(synced);
+      }}
+    >
+      <Card
+        title={title}
+        subtitle={subtitle}
+        imageUri={imageUri}
+        width={width ?? 90}
+        onPress={() => askForDownload(synced)}
+      />
       <View
         style={{
           position: "absolute",

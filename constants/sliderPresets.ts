@@ -14,6 +14,7 @@ export interface Parameter {
   min: number;
   max: number;
   step: number;
+  unit?: string;
 }
 
 export interface PresetItem {
@@ -30,46 +31,55 @@ export const PARAMETERS = {
     min: 0,
     max: 100,
     step: 5,
+    unit: "%",
   },
   energy: {
     min: 0,
     max: 100,
     step: 5,
+    unit: "%",
   },
   loudness: {
     min: -60,
     max: 0,
     step: 5,
+    unit: "db",
   },
   speechiness: {
     min: 0,
     max: 100,
     step: 5,
+    unit: "%",
   },
   acousticness: {
     min: 0,
     max: 100,
     step: 5,
+    unit: "%",
   },
   instrumentalness: {
     min: 0,
     max: 100,
     step: 5,
+    unit: "%",
   },
   liveness: {
     min: 0,
     max: 100,
     step: 5,
+    unit: "%",
   },
   valence: {
     min: 0,
     max: 100,
     step: 5,
+    unit: "%",
   },
   tempo: {
     min: 60,
     max: 240,
     step: 1,
+    unit: "bpm",
   },
 } as { [key: string]: Parameter };
 

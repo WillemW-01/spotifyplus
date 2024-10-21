@@ -14,7 +14,7 @@ interface Props {
   min?: number;
   max?: number;
   step?: number;
-  useNew?: boolean;
+  stdDev?: number;
 }
 
 const other = {
@@ -24,7 +24,7 @@ const other = {
 
 const round = (num: number) => Number(num.toFixed(3));
 
-export default function MoodSlider({ label, value, setValue, useNew }: Props) {
+export default function MoodSlider({ label, value, setValue, stdDev }: Props) {
   const isTempoOrLoudness = ["tempo", "loudness"].includes(label);
   const fromSliderDefault = (value: number) =>
     round(isTempoOrLoudness ? value : value / 100);
@@ -39,12 +39,14 @@ export default function MoodSlider({ label, value, setValue, useNew }: Props) {
     setInternalValue(toSliderDefault(value));
   }, [value]);
 
-  const handleValueChange = (newValue: number) => {
-    setInternalValue(round(newValue));
+  const handleValueChange = (newValue: number | number[]) => {
+    const toUse = Array.isArray(newValue) ? newValue[0] : newValue;
+    setInternalValue(round(toUse));
   };
 
-  const handleSlidingComplete = (newValue: number) => {
-    setValue(label, fromSliderDefault(newValue));
+  const handleSlidingComplete = (newValue: number | number[]) => {
+    const toUse = Array.isArray(newValue) ? newValue[0] : newValue;
+    setValue(label, fromSliderDefault(toUse));
   };
 
   return (
@@ -69,36 +71,37 @@ export default function MoodSlider({ label, value, setValue, useNew }: Props) {
         </Modal>
       </View>
       <View style={styles.sliderContainer}>
-        {!useNew ? (
-          <Slider
-            style={{ flex: 1 }}
+        <View style={{ flex: 1 }}>
+          <NewSlider
+            // containerStyle={{ flex: 1 }}
+            disabled={isDisabled}
             onValueChange={handleValueChange}
             onSlidingComplete={handleSlidingComplete}
-            disabled={isDisabled}
+            value={internalValue}
             minimumValue={PARAMETERS ? PARAMETERS[label].min : 0}
             maximumValue={PARAMETERS ? PARAMETERS[label].max : 100}
             step={PARAMETERS ? PARAMETERS[label].step : 5}
-            value={internalValue}
             minimumTrackTintColor={isDisabled ? "#a0a0a0" : Colors.light.background}
-            maximumTrackTintColor={isDisabled ? "#a0a0a0" : Colors.light.lightDark}
-            onTouchEndCapture={() => console.log("Touch end")}
-          />
-        ) : (
-          <NewSlider
-            disabled={isDisabled}
-            containerStyle={{ flex: 1 }}
-            value={[4, 8]}
-            maximumValue={10}
-            minimumValue={1}
-            step={1}
-            thumbTintColor="white"
-            minimumTrackTintColor={isDisabled ? "#a0a0a0" : Colors.light.background}
-            maximumTrackTintColor={isDisabled ? "#a0a0a0" : Colors.light.lightDark}
+            maximumTrackTintColor={isDisabled ? "#a0a0a0" : Colors.light.background}
             thumbStyle={{ width: 28, height: 28, borderRadius: 28 / 2 }}
+            thumbTintColor="white"
           />
-        )}
+          <View
+            style={{
+              position: "absolute",
+              right: 0,
+              top: 28 / 2,
+              backgroundColor: "red",
+              opacity: 0.5,
+              height: 14,
+              width: `${100 * stdDev}%`,
+            }}
+          />
+        </View>
 
-        <Text style={styles.sliderValue}>{internalValue.toFixed(0)}</Text>
+        <Text style={styles.sliderValue}>
+          {internalValue.toFixed(0)} {PARAMETERS[label]?.unit ?? ""}
+        </Text>
         <TouchableOpacity onPress={() => setIsDisabled((prev) => !prev)}>
           <Ionicons
             name={isDisabled ? "add-circle-outline" : "remove-circle-outline"}

@@ -85,9 +85,9 @@ export default function Mood() {
   const [outOfDate, setOutOfDate] = useState<LocalState[]>([]);
   const [sliderValues, setSliderValues] = useState<Preset>(PRESETS.default);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [customerizerVisible, setCustomizerVisible] = useState(false);
 
   const currPlayList = useRef<SimplifiedPlayList | null>(null);
-  const bottomSheetRef = useRef<BottomSheet>(null);
 
   const { authorized } = useAuth();
   const { playTracks } = usePlayback();
@@ -105,7 +105,7 @@ export default function Mood() {
     setSliderValues((prev) => {
       return {
         ...prev,
-        [featureName]: { value: value, stdDev: prev[featureName] },
+        [featureName]: { value: value, stdDev: prev[featureName].stdDev },
       };
     });
   };
@@ -300,7 +300,7 @@ export default function Mood() {
       </View>
       <ScrollView
         contentContainerStyle={styles.playListScrollContainer}
-        style={{ flex: 1, width: "100%" }}
+        style={{ height: "100%", width: "100%" }}
         refreshControl={<RefreshControl refreshing={false} onRefresh={refresh} />}
       >
         {playlists &&
@@ -313,18 +313,23 @@ export default function Mood() {
                 imageUri={item.images[0].url}
                 onPress={() => {
                   currPlayList.current = item;
-                  bottomSheetRef.current?.snapToIndex(0);
+                  // bottomSheetRef.current?.snapToIndex(0);
+                  // setCustomizerVisible(true);
+                  setCustomizerVisible(true);
                 }}
                 width={90}
                 synced={outOfDate[index]}
                 playlist={item}
                 downloadPlaylist={fetchSinglePlaylist}
+                // modalRef={modalRef}
               />
             );
           })}
       </ScrollView>
       <MoodCustomizer
-        bottomSheetRef={bottomSheetRef}
+        // modalRef={modalRef}
+        visible={customerizerVisible}
+        setVisible={setCustomizerVisible}
         onPlay={onPlay}
         resetSliders={resetSliders}
         setSlidersTo={setSlidersTo}
@@ -342,6 +347,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 30,
     width: "100%",
+    flexShrink: 0,
   },
 });
 

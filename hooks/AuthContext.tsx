@@ -20,7 +20,7 @@ interface AuthContextData {
   request: AuthRequest | null;
   promptAsync: () => Promise<AuthSessionResult>;
   // eslint-disable-next-line no-unused-vars
-  refreshAccessToken: (token: string) => Promise<void>;
+  refreshAccessToken: (token: string) => Promise<string>;
   authorized: boolean;
 }
 
@@ -236,6 +236,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await setToken(accessToken, token);
 
       isRefreshing.current = false;
+      return token;
     } catch (error: unknown) {
       addLog("Error when getting new token: ", "refreshAccessToken", 0, "warning");
     }

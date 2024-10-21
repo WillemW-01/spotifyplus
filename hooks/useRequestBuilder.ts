@@ -40,36 +40,39 @@ export function useRequestBuilder(usingSpotify = true) {
     }
   };
 
-  const headers = {
-    GET: {
-      Authorization: `Bearer ${token}`,
-    },
-    PUT: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    POST: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
+  const buildHeader = (method: "GET" | "POST" | "PUT", localToken: string) => {
+    const headers = {
+      GET: {
+        Authorization: `Bearer ${localToken}`,
+      },
+      PUT: {
+        Authorization: `Bearer ${localToken}`,
+        "Content-Type": "application/json",
+      },
+      POST: {
+        Authorization: `Bearer ${localToken}`,
+        "Content-Type": "application/json",
+      },
+    };
+    return headers[method];
   };
 
   const checkForRefresh = async () => {
     const mustRefresh = await shouldRefresh();
-    console.log(
-      `[checkRefresh] ${Boolean(token)} && ${Boolean(refreshToken)} && ${mustRefresh}`
-    );
     if (token && refreshToken && mustRefresh) {
+      console.log(
+        `[checkRefresh] ${Boolean(token)} && ${Boolean(refreshToken)} && ${mustRefresh}`
+      );
       console.log("Should be updating access token");
-      await refreshAccessToken(refreshToken);
-    }
+      return await refreshAccessToken(refreshToken);
+    } else return token;
   };
 
   const build = async (method: "GET" | "POST" | "PUT", url: string, body?: unknown) => {
-    usingSpotify && (await checkForRefresh());
+    const tokenToUse = usingSpotify ? await checkForRefresh() : token;
     const response = await fetch(url, {
       method: method,
-      headers: headers[method],
+      headers: buildHeader(method, tokenToUse),
       body: body ? JSON.stringify(body) : undefined,
     });
     await catchError(response, url);

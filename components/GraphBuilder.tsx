@@ -59,7 +59,9 @@ export default function GraphBuilder({
   const [playlists, setPlayLists] = useState<SimplifiedPlayList[]>([]);
   const [artists, setArtists] = useState<TopArtist[]>([]);
   const [foundation, setFoundation] = useState<Foundation>("playlist");
-  const [connections, setConnections] = useState<Connection[]>([]);
+  const [connections, setConnections] = useState<Connection[]>([
+    CONNECTION_TYPES[foundation][0],
+  ]);
   const [selectedPlaylists, setSelectedPlaylists] = useState<SimplifiedPlayList[]>([]);
   const [selectedArtists, setSelectedArtists] = useState<TopArtist[]>([]);
   const [timeFrame, setTimeFrame] = useState<TimeFrame>("short_term");
@@ -85,7 +87,7 @@ export default function GraphBuilder({
   const toggleFoundation = () => {
     setFoundation((prev) => {
       const newValue = prev === "playlist" ? "artist" : "playlist";
-      updateConnections(CONNECTION_TYPES[newValue][0]);
+      setConnections([CONNECTION_TYPES[newValue][0]]);
       setSelectedPlaylists([]);
       setSelectedArtists([]);
       return newValue;

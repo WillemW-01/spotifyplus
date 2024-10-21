@@ -22,13 +22,13 @@ export const CONNECTION_TYPES = {
   ],
   artist: [
     {
+      name: "Related Artists",
+      description: "Artists are connected to other artists Spotify normally recommends",
+    },
+    {
       name: "Album Genres",
       description:
         "Artists are connected to other artists based on the genres of their albums",
-    },
-    {
-      name: "Related Artists",
-      description: "Artists are connected to other artists Spotify normally recommends",
     },
   ],
 } as const;
