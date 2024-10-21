@@ -6,7 +6,7 @@ export interface Connection {
   type: ConnectionCategory;
 }
 
-export const CONNECTION_TYPES: { [key in ConnectionCategory]: Connection[] } = {
+export const CONNECTION_TYPES: Record<ConnectionCategory, Connection[]> = {
   playlist: [
     {
       name: "Song Features",

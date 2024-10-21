@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Text,
   TouchableOpacity,
@@ -23,6 +23,7 @@ import { TopArtist } from "@/interfaces/topItems";
 import { SelectButtons } from "@/components/graph/SelectButtons";
 import { Connection, CONNECTION_TYPES } from "@/constants/graphConnections";
 import { BuildGraphArtistsProps } from "@/hooks/useGraphData";
+import CardGrid from "./CardList";
 
 interface ModalProps extends ModalBaseProps {
   visible: boolean;
@@ -56,6 +57,7 @@ export default function GraphBuilder({
   onPlaylist,
   setHasChosen,
 }: ModalProps) {
+  const [searchTerm, setSearchTerm] = useState("");
   const [playlists, setPlayLists] = useState<SimplifiedPlayList[]>([]);
   const [artists, setArtists] = useState<TopArtist[]>([]);
   const [foundation, setFoundation] = useState<Foundation>("playlist");
@@ -243,6 +245,10 @@ export default function GraphBuilder({
             <TextInput
               placeholder="search"
               style={[styles.textStyle, styles.playlistInput]}
+              // value={queryRef.current}
+              onChangeText={setSearchTerm}
+              value={searchTerm}
+              clearButtonMode="while-editing"
             />
           </View>
           <SelectButtons
@@ -274,33 +280,16 @@ export default function GraphBuilder({
             </View>
           )}
 
-          <GridBox cols={4} gap={10} rowGap={10}>
-            {foundation == "playlist"
-              ? playlists &&
-                playlists.map((p, i) => {
-                  return (
-                    <SelectableCard
-                      key={i}
-                      selected={selectedPlaylists.includes(p)}
-                      title={p.name}
-                      imageUri={p.images[0].url}
-                      onPress={() => addPlaylist(p)}
-                    />
-                  );
-                })
-              : artists &&
-                artists.map((a, i) => {
-                  return (
-                    <SelectableCard
-                      key={i}
-                      selected={selectedArtists.includes(a)}
-                      title={a.name}
-                      imageUri={a.images[0].url}
-                      onPress={() => addArtist(a)}
-                    />
-                  );
-                })}
-          </GridBox>
+          <CardGrid
+            foundation={foundation}
+            playlists={playlists}
+            artists={artists}
+            selectedPlaylists={selectedPlaylists}
+            selectedArtists={selectedArtists}
+            addArtist={addArtist}
+            addPlaylist={addPlaylist}
+            searchTerm={searchTerm}
+          />
         </View>
       </ScrollView>
       {(selectedArtists.length > 0 || selectedPlaylists.length > 0) && (
