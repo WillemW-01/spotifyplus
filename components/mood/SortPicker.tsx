@@ -34,7 +34,7 @@ export default function SortPicker({ reOrderPlaylists, style }: Props) {
   const animatedStyle = useAnimatedStyle(() => {
     return {
       width: withTiming(width.value, {
-        duration: 500, // Animation duration in ms
+        duration: 350, // Animation duration in ms
       }),
     };
   });
@@ -42,7 +42,7 @@ export default function SortPicker({ reOrderPlaylists, style }: Props) {
   // Toggle the width change
   const toggleExpand = (value: boolean) => {
     setIsFocus(() => {
-      width.value = value ? 120 : 50;
+      width.value = value ? 130 : 50;
       return value;
     });
   };
@@ -66,14 +66,21 @@ export default function SortPicker({ reOrderPlaylists, style }: Props) {
   return (
     <Animated.View style={{ ...styles.container, ...animatedStyle, ...style }}>
       <Dropdown
-        style={[styles.dropdown, { backgroundColor: Colors.dark.brand }]}
-        placeholderStyle={styles.placeholderStyle}
-        selectedTextStyle={styles.selectedTextStyle}
+        style={[
+          styles.dropdown,
+          {
+            backgroundColor: Colors.dark.brand,
+            borderBottomLeftRadius: isFocus ? 0 : 12,
+            borderBottomRightRadius: isFocus ? 0 : 12,
+          },
+        ]}
+        selectedTextStyle={{ opacity: 0 }}
         iconStyle={styles.iconStyle}
+        containerStyle={{ borderBottomRightRadius: 12, borderBottomLeftRadius: 12 }}
         data={data}
         labelField="label"
         valueField="value"
-        placeholder={value ? "" : ""}
+        placeholder={""}
         onFocus={() => toggleExpand(true)}
         onBlur={() => toggleExpand(false)}
         onChange={(item) => {
@@ -81,7 +88,7 @@ export default function SortPicker({ reOrderPlaylists, style }: Props) {
         }}
         renderRightIcon={() => (
           <Ionicons
-            style={styles.icon}
+            style={styles.iconStyle}
             color={isFocus ? "white" : "black"}
             name="swap-vertical"
             size={20}
@@ -99,30 +106,13 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 45,
     padding: 10,
-    borderWidth: 0.5,
     borderRadius: 8,
     paddingHorizontal: 8,
-  },
-  icon: {
-    marginRight: 5,
-  },
-  label: {
-    position: "absolute",
-    backgroundColor: "white",
-    left: 22,
-    top: 8,
-    zIndex: 999,
-    paddingHorizontal: 8,
-    fontSize: 14,
-  },
-  placeholderStyle: {
-    fontSize: 16,
-  },
-  selectedTextStyle: {
-    fontSize: 16,
+    justifyContent: "center",
+    alignItems: "center",
   },
   iconStyle: {
-    width: 20,
-    height: 20,
+    width: 25,
+    height: 25,
   },
 });

@@ -1,9 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
 import React, { useEffect, useState } from "react";
-import { Button, Modal, Text, TouchableOpacity, View, StyleSheet } from "react-native";
+import { Modal, Text, TouchableOpacity, View, StyleSheet } from "react-native";
 import { Slider as NewSlider } from "@miblanchard/react-native-slider";
 
+import Button from "@/components/Button";
 import { Colors } from "@/constants/Colors";
 import { DESCRIPTIONS, PARAMETERS, TrackFeatures } from "@/constants/sliderPresets";
 
@@ -92,7 +93,7 @@ export default function MoodSlider({
     <View style={{ width: "100%" }}>
       <View style={styles.labelContainer}>
         <Text style={{ fontSize: 18 }}>{label.toUpperCase()}</Text>
-        <TouchableOpacity onPress={() => setModalVisible(true)}>
+        <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.infoButton}>
           <Ionicons
             name="information-circle-outline"
             size={20}
@@ -101,7 +102,7 @@ export default function MoodSlider({
         </TouchableOpacity>
 
         <Modal visible={modalVisible} transparent animationType="slide">
-          <TouchableOpacity style={styles.infoButton} activeOpacity={1}>
+          <TouchableOpacity style={styles.infoButtonContainer} activeOpacity={1}>
             <View style={styles.infoButtonContent}>
               <Text style={styles.infoText}>{DESCRIPTIONS[label]}</Text>
               <Button title="Close" onPress={() => setModalVisible(false)} />
@@ -161,9 +162,15 @@ export default function MoodSlider({
 }
 
 const styles = StyleSheet.create({
-  labelContainer: { flexDirection: "row", alignItems: "center", gap: 20 },
-  infoButton: {
+  labelContainer: { flexDirection: "row", alignItems: "center", gap: 10 },
+  infoButtonContainer: {
     flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  infoButton: {
+    width: 60,
+    height: 30,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -172,6 +179,8 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 12,
     width: "80%",
+    alignItems: "center",
+    gap: 10,
   },
   infoText: { fontSize: 18, lineHeight: 28 },
   sliderContainer: {

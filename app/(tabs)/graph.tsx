@@ -6,7 +6,7 @@ import { PHYSICS, resolvers, SettingsObjectType } from "@/constants/resolverObje
 
 import BrandGradient from "@/components/BrandGradient";
 import GraphButtonPlay from "@/components/graph/GraphButtonPlay";
-import GraphBuilder, { TimeFrame } from "@/components/GraphBuilder";
+import GraphBuilder, { TimeFrame } from "@/components/graph/GraphBuilder";
 import LoadingCircle from "@/components/LoadingCircle";
 import SettingsView from "@/components/graph/SettingsView";
 import GraphControls from "@/components/graph/GraphControls";

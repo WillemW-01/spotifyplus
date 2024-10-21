@@ -17,10 +17,10 @@ import { Ionicons } from "@expo/vector-icons";
 import Button from "@/components/graph/Button";
 import ConnectionButton from "@/components/graph/ConnectionButton";
 import SelectableCard from "@/components/graph/SelectableCard";
-import GridBox from "./GridBox";
+import GridBox from "@/components/GridBox";
 import { useUser } from "@/hooks/useUser";
 import { TopArtist } from "@/interfaces/topItems";
-import { SelectButtons } from "./graph/SelectButtons";
+import { SelectButtons } from "@/components/graph/SelectButtons";
 import { Connection, CONNECTION_TYPES } from "@/constants/graphConnections";
 import { BuildGraphArtistsProps } from "@/hooks/useGraphData";
 

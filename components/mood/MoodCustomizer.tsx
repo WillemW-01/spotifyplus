@@ -95,7 +95,7 @@ export default function MoodCustomizer({
         </View>
         <View style={{ flexDirection: "row" }}>
           <TouchableOpacity onPress={toggleAdvanced} style={styles.playButton}>
-            <Text style={{ fontSize: 20 }}>{showMore ? "Hide" : "Advanced"}</Text>
+            <Text style={{ fontSize: 16 }}>{showMore ? "Hide" : "Advanced"}</Text>
           </TouchableOpacity>
           {showMore && (
             <View style={styles.playButtonContainer}>

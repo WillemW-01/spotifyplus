@@ -39,6 +39,7 @@ import SelectableCard from "@/components/graph/SelectableCard";
 import SyncedCard from "@/components/mood/SyncedCard";
 import Button from "@/components/Button";
 import SortPicker from "@/components/mood/SortPicker";
+import DropDown from "@/components/mood/DropDown";
 
 interface Feature {
   index: number;
@@ -293,10 +294,8 @@ export default function Mood() {
         <ThemedText text="Pick a playlist:" type="subtitle" style={{ flex: 1 }} />
         {/* <Button title="sort" onPress={() => reOrderPlaylists("size", true)} />
          */}
-        <SortPicker
-          reOrderPlaylists={reOrderPlaylists}
-          style={{ position: "absolute", right: 0 }}
-        />
+        <SortPicker reOrderPlaylists={reOrderPlaylists} />
+        {/* <DropDown /> */}
       </View>
       <ScrollView
         contentContainerStyle={styles.playListScrollContainer}

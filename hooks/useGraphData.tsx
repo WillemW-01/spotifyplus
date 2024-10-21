@@ -7,7 +7,7 @@ import { Artist, useArtist } from "./useArtist";
 import { usePlayLists } from "./usePlayList";
 import { PlayListObject } from "@/interfaces/playlists";
 import { Track } from "@/interfaces/tracks";
-import { TimeFrame } from "@/components/GraphBuilder";
+import { TimeFrame } from "@/components/graph/GraphBuilder";
 import { CONNECTION_TYPES, ConnectionType } from "@/constants/graphConnections";
 
 export interface Edge {

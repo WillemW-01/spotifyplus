@@ -1,7 +1,7 @@
 import { TopArtist, TopItemsResponse, TopTrack } from "@/interfaces/topItems";
 
 import { useRequestBuilder } from "./useRequestBuilder";
-import { TimeFrame } from "@/components/GraphBuilder";
+import { TimeFrame } from "@/components/graph/GraphBuilder";
 
 export function useUser() {
   const { buildGet } = useRequestBuilder();
