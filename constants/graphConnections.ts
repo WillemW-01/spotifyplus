@@ -1,10 +1,16 @@
 export type ConnectionCategory = "artist" | "playlist";
 
 export interface Connection {
-  name: string;
+  name: ConnectionName;
   description: string;
   type: ConnectionCategory;
 }
+
+export type ConnectionName =
+  | "Song Features"
+  | "Shared Artists"
+  | "Album Genres"
+  | "Related Artists";
 
 export const CONNECTION_TYPES: Record<ConnectionCategory, Connection[]> = {
   playlist: [

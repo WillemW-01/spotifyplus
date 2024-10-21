@@ -17,6 +17,8 @@ import { usePlayback } from "@/hooks/usePlayback";
 
 import { getNeighbours } from "@/utils/graphUtils";
 import { shuffleArray } from "@/utils/miscUtils";
+import useGraphPlaylist, { BuildGraphPlaylistProps } from "@/hooks/useGraphPlaylist";
+import { Colors } from "@/constants/Colors";
 
 const getPhysicsOptions = (
   resolverType: keyof typeof PHYSICS,
@@ -41,8 +43,8 @@ export default function Graph() {
 
   const visNetworkRef = useRef<VisNetworkRef>(null);
 
-  const { graphData, loading, artists, buildGraphArtists, buildGraphPlaylist, tracks } =
-    useGraphData();
+  const { graphData, loading, artists, buildGraphArtists, tracks } = useGraphData();
+  const { buildGraphPlaylist, graphPlaylist } = useGraphPlaylist();
 
   const { getTopTracks } = useArtist();
   const { playTracks } = usePlayback();
@@ -174,9 +176,8 @@ export default function Graph() {
         onArtist={({ timeFrame, artists, connectionTypes }: BuildGraphArtistsProps) =>
           buildGraphArtists({ timeFrame, artists, connectionTypes })
         }
-        onPlaylist={(playlistId: string) =>
-          buildGraphPlaylist(playlistId).then(() => {
-            // setGraphReady(true);
+        onPlaylist={({ playlistIds, connectionTypes }: BuildGraphPlaylistProps) =>
+          buildGraphPlaylist({ playlistIds, connectionTypes }).then(() => {
             setHasChosen(true);
           })
         }
@@ -189,7 +190,7 @@ export default function Graph() {
     <BrandGradient>
       <VisNetwork
         key={key}
-        data={graphData}
+        data={graphPlaylist}
         options={{
           nodes: {
             borderWidthSelected: 4,
@@ -210,7 +211,8 @@ export default function Graph() {
           },
           // layout: { improvedLayout: true },
           groups: {
-            group1: { color: { background: "red", borderWidth: 3 } },
+            song: { color: { background: Colors.dark.background } },
+            artist: { color: { background: Colors.dark.brand, borderWidth: 3 } },
           },
         }}
         onLoad={() => {

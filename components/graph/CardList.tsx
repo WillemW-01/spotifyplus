@@ -54,46 +54,29 @@ export default function CardGrid({
   searchTerm,
 }: Props) {
   console.log(`Search term: ${searchTerm}`);
+
+  const renderFoundation = () => {
+    switch (foundation) {
+      case "playlist":
+        return renderList(
+          playlists,
+          selectedPlaylists.map((p) => p.id),
+          addPlaylist,
+          searchTerm
+        );
+      case "artist":
+        return renderList(
+          artists,
+          selectedArtists.map((a) => a.id),
+          addArtist,
+          searchTerm
+        );
+    }
+  };
+
   return (
     <GridBox cols={4} gap={10} rowGap={10}>
-      {
-        foundation == "playlist"
-          ? // ? playlists &&
-            //   playlists.map((p, i) => {
-            //     return (
-            //       <SelectableCard
-            //         key={i}
-            //         selected={selectedPlaylists.includes(p)}
-            //         title={p.name}
-            //         imageUri={p.images[0].url}
-            //         onPress={() => addPlaylist(p)}
-            //       />
-            //     );
-            //   })
-            renderList(
-              playlists,
-              selectedPlaylists.map((p) => p.id),
-              addPlaylist,
-              searchTerm
-            )
-          : renderList(
-              artists,
-              selectedArtists.map((a) => a.id),
-              addArtist,
-              searchTerm
-            )
-        // artists.map((a, i) => {
-        //   return (
-        //     <SelectableCard
-        //       key={i}
-        //       selected={selectedArtists.includes(a)}
-        //       title={a.name}
-        //       imageUri={a.images[0].url}
-        //       onPress={() => addArtist(a)}
-        //     />
-        //   );
-        // })}
-      }
+      {renderFoundation()}
     </GridBox>
   );
 }

@@ -230,19 +230,15 @@ export default function Mood() {
         for (let i = 0; i < tracks.length; i += batchSize) {
           const batch = tracks.slice(i, i + batchSize);
           console.log("Should be checking ids: ", batch.map((b) => b.id).join(","));
-          const batchPromises = batch.map(async (t) => ({
+          const batchPromises = batch.map((t) => ({
             trackId: t.id,
-            fits: await fitsInPreset(sliderValues, t),
+            fits: fitsInPreset(sliderValues, t),
           }));
           const batchResults = await Promise.all(batchPromises);
           filteredTracks.push(
             ...batchResults.filter((r) => r.fits).map((r) => r.trackId)
           );
         }
-        // Alert.alert(
-        //   "Mood Slider",
-        //   "This function unfortunately doesn't work at the moment"
-        // );
       }
       console.log(`After: ${filteredTracks.length}`);
       filteredTracks.length > 0 && playTracks(filteredTracks);

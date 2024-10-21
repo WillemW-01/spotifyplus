@@ -6,9 +6,14 @@ import { getNeighbours, PackedArtist } from "@/utils/graphUtils";
 import { Artist, useArtist } from "./useArtist";
 import { usePlayLists } from "./usePlayList";
 import { PlayListObject } from "@/interfaces/playlists";
-import { Track } from "@/interfaces/tracks";
+import { Track, TrackFeature } from "@/interfaces/tracks";
 import { TimeFrame } from "@/components/graph/GraphBuilder";
-import { CONNECTION_TYPES, ConnectionType } from "@/constants/graphConnections";
+import {
+  CONNECTION_TYPES,
+  Connection,
+  ConnectionName,
+} from "@/constants/graphConnections";
+import { useDb } from "./useDb";
 
 export interface Edge {
   from: number;
@@ -26,7 +31,12 @@ export interface Node {
 export interface BuildGraphArtistsProps {
   timeFrame?: TimeFrame;
   artists?: TopArtist[];
-  connectionTypes?: ConnectionType[];
+  connectionTypes?: Connection[];
+}
+
+export interface BuildGraphPlaylistProps {
+  playlistIds: string[];
+  connectionTypes?: Connection[];
 }
 
 const DEBUG = false;
@@ -40,6 +50,8 @@ export function useGraphData() {
   const { getTopArtistsAll } = useUser();
   const { getArtistGenres, getRelatedArtists } = useArtist();
   const { getPlayListItemsAll } = usePlayLists();
+
+  const { getPlaylistSongs } = useDb();
 
   const packArtistItem = useCallback(
     (artistItem: TopArtist, index: number) => ({
@@ -146,10 +158,10 @@ export function useGraphData() {
 
   const connectArtists = async (
     artists: PackedArtist[],
-    connectionTypes?: ConnectionType[]
+    connectionTypes?: Connection[]
   ): Promise<Edge[]> => {
     const tempEdges = [] as Edge[];
-    const toConnect: ConnectionType["name"][] = connectionTypes
+    const toConnect: Connection["name"][] = connectionTypes
       ? connectionTypes.map((c) => c.name)
       : [CONNECTION_TYPES.artist[0].name];
     console.log("Connecting artists!");
@@ -313,12 +325,54 @@ export function useGraphData() {
     [getNeighbours, graphData.edges]
   );
 
-  const buildGraphPlaylist = async (playListId: string) => {
+  const hasConnection = (connectionTypes: Connection[], name: ConnectionName) =>
+    connectionTypes.some((c) => c.name === name);
+
+  const connectByDistance = (songs: TrackFeature[]) => {};
+  const connectTracksToArtists2 = (songs: TrackFeature[]) => {};
+  const connectByGenres = (songs: TrackFeature[]) => {};
+
+  const formatNodesPlaylist = (connectionType: Connection, songs: TrackFeature[]) => {
+    switch (connectionType.name) {
+      case "Song Features":
+        return connectByDistance(songs);
+      case "Shared Artists":
+        return connectTracksToArtists2(songs);
+      case "Album Genres":
+        return connectByGenres(songs);
+    }
+  };
+
+  const connectEdgesPlaylist = (connectionType: Connection, songs: TrackFeature[]) => {
+    switch (connectionType.name) {
+      case "Song Features":
+        return connectByDistance(songs);
+      case "Shared Artists":
+        return connectTracksToArtists2(songs);
+      case "Album Genres":
+        return connectByGenres(songs);
+    }
+  };
+
+  const buildGraphPlaylist = async ({
+    playlistIds,
+    connectionTypes,
+  }: BuildGraphPlaylistProps) => {
     setLoading(true);
     try {
-      const response = await getPlayListItemsAll(playListId);
-      console.log(`Got back ${response.length} items!`);
-      const formattedItems = packPlayListItems(response);
+      const requests = playlistIds.map((id) => getPlaylistSongs(id));
+      const allTracks = (await Promise.all(requests)).flat();
+
+      // const shouldDistances = hasConnection(connectionTypes, "Song Features");
+      // const shouldSharedArtists = hasConnection(connectionTypes, "Shared Artists");
+      // const shouldGenres = hasConnection(connectionTypes, "Album Genres");
+
+      // const response = await getPlayListItemsAll(playListId);
+      // console.log(`Got back ${response.length} items!`);
+      // const formattedItems = packPlayListItems(response);
+
+      const nodes = formatNodesPlaylist(connectionTypes[0], allTracks);
+      const edges = connectEdgesPlaylist(connectionTypes[0], allTracks);
 
       const allArtists = getAllArtists(formattedItems);
       tracks.current = formattedItems.concat(...allArtists);

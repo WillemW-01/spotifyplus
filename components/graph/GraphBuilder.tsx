@@ -1,57 +1,48 @@
-import React, { useEffect, useRef, useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import React, { useEffect, useState } from "react";
 import {
+  ModalBaseProps,
+  ScrollView,
+  StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
-  StyleSheet,
-  ScrollView,
-  TextInput,
 } from "react-native";
-import { ModalBaseProps } from "react-native";
+
 import BrandGradient from "@/components/BrandGradient";
-import { usePlayLists } from "@/hooks/usePlayList";
-import { SimplifiedPlayList } from "@/interfaces/playlists";
-import { Colors } from "@/constants/Colors";
 import ThemedText from "@/components/ThemedText";
-import { Ionicons } from "@expo/vector-icons";
 import Button from "@/components/graph/Button";
+import CardGrid from "@/components/graph/CardList";
 import ConnectionButton from "@/components/graph/ConnectionButton";
-import SelectableCard from "@/components/graph/SelectableCard";
-import GridBox from "@/components/GridBox";
-import { useUser } from "@/hooks/useUser";
-import { TopArtist } from "@/interfaces/topItems";
 import { SelectButtons } from "@/components/graph/SelectButtons";
+
+import { Colors } from "@/constants/Colors";
 import { Connection, CONNECTION_TYPES } from "@/constants/graphConnections";
-import { BuildGraphArtistsProps } from "@/hooks/useGraphData";
-import CardGrid from "./CardList";
+
+import { BuildGraphArtistsProps, BuildGraphPlaylistProps } from "@/hooks/useGraphData";
+import { usePlayLists } from "@/hooks/usePlayList";
+import { useUser } from "@/hooks/useUser";
+
+import { SimplifiedPlayList } from "@/interfaces/playlists";
+import { TopArtist } from "@/interfaces/topItems";
+import Section from "./sections/Section";
 
 interface ModalProps extends ModalBaseProps {
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  onArtist?: ({ timeFrame, artists }: BuildGraphArtistsProps) => void;
-  onPlaylist?: (playlistId: string) => void;
+  onArtist?: ({ timeFrame, artists }: BuildGraphArtistsProps) => Promise<void>;
+  onPlaylist?: ({
+    playlistIds,
+    connectionTypes,
+  }: BuildGraphPlaylistProps) => Promise<void>;
   setHasChosen: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-interface SectionProps {
-  title: string;
-  children: React.ReactNode;
-}
-
-function Section({ title, children }: SectionProps) {
-  return (
-    <View style={{ alignItems: "flex-start", width: "100%", gap: 15 }}>
-      <Text style={styles.textStyle}>{title}</Text>
-      {children}
-    </View>
-  );
 }
 
 export type TimeFrame = "short_term" | "medium_term" | "long_term";
 export type Foundation = "artist" | "playlist";
 
 export default function GraphBuilder({
-  visible,
   setVisible,
   onArtist,
   onPlaylist,
@@ -138,9 +129,6 @@ export default function GraphBuilder({
 
   const loadPlaylists = async () => {
     console.log("Loading playlists");
-    // setVisible(false);
-    // setSecondVisible(true);
-
     const response = await listPlayLists();
     response.sort((a, b) => (b.name > a.name ? -1 : 1));
     setPlayLists(response);
@@ -160,13 +148,14 @@ export default function GraphBuilder({
         onArtist({
           timeFrame,
           artists: selectedArtists,
-          connectionTypes: connections.filter((c) =>
-            CONNECTION_TYPES["artist"].map((a) => a.name).includes(c.name)
-          ),
+          connectionTypes: connections.filter((c) => c.type == "artist"),
         });
         break;
       case "playlist":
-        onPlaylist(selectedPlaylists[0].id);
+        onPlaylist({
+          playlistIds: selectedPlaylists.map((p) => p.id),
+          connectionTypes: connections.filter((c) => c.type === "playlist"),
+        });
         break;
     }
   };
@@ -176,19 +165,6 @@ export default function GraphBuilder({
     setHasChosen(true);
     onArtist && onPlaylist && buildFunction(foundation);
   };
-
-  // const onPlayListSecond = (playlistId: string) => {
-  //   setSecondVisible(false);
-  //   onPlaylist && onPlaylist(playlistId);
-  //   setHasChosen(true);
-  // };
-
-  // const onArtistChosen = () => {
-  //   console.log("Selected artists");
-  //   setVisible(false);
-  //   onArtist && onArtist();
-  //   setHasChosen(true);
-  // };
 
   useEffect(() => {
     if (
@@ -369,88 +345,3 @@ const styles = StyleSheet.create({
     fontSize: 28,
   },
 });
-
-/**
- * 
- * 
- *       <Modal
-        animationType="slide"
-        transparent={true}
-        visible={visible}
-        onRequestClose={() => {
-          setVisible((prev) => !prev);
-        }}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>What to use for building for graph?</Text>
-            <View style={{ flexDirection: "row", gap: 20 }}>
-              <TouchableOpacity
-                style={styles.choiceButton}
-                activeOpacity={0.7}
-                onPress={onPlaylistFirst}
-              >
-                <Text style={styles.textStyle}>Playlist</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.choiceButton}
-                activeOpacity={0.7}
-                onPress={onArtistChosen}
-              >
-                <Text style={styles.textStyle}>Top Artists</Text>
-              </TouchableOpacity>
-            </View>
-            <TouchableOpacity
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => setVisible((prev) => !prev)}
-            >
-              <Text style={styles.textStyle}>Close</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={secondVisible}
-        onRequestClose={() => {
-          setSecondVisible((prev) => !prev);
-        }}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <ScrollView
-              style={{ width: "100%", height: "50%" }}
-              contentContainerStyle={{ gap: 10 }}
-            >
-              {playLists.map((p) => (
-                <TouchableOpacity
-                  key={p.id}
-                  style={styles.listItem}
-                  onPress={() => onPlayListSecond(p.id)}
-                >
-                  <Image
-                    source={{ uri: p.images[0].url }}
-                    style={{
-                      width: 50,
-                      height: 50,
-                      borderTopLeftRadius: 10,
-                      borderBottomLeftRadius: 10,
-                    }}
-                  />
-                  <Text style={{ fontSize: 20, flex: 1 }} numberOfLines={2}>
-                    {p.name}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-            <TouchableOpacity
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => setSecondVisible((prev) => !prev)}
-            >
-              <Text style={styles.textStyle}>Close</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
- */

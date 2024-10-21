@@ -236,7 +236,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await setToken(accessToken, token);
 
       isRefreshing.current = false;
-      return token;
+      return accessToken;
     } catch (error: unknown) {
       addLog("Error when getting new token: ", "refreshAccessToken", 0, "warning");
     }
