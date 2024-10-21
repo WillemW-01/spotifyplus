@@ -171,12 +171,12 @@ export default function Graph() {
       <GraphBuilder
         visible={modalVisible}
         setVisible={setModalVisible}
-        onArtist={({ timeFrame, artists }: BuildGraphArtistsProps) =>
-          buildGraphArtists({ timeFrame, artists })
+        onArtist={({ timeFrame, artists, connectionTypes }: BuildGraphArtistsProps) =>
+          buildGraphArtists({ timeFrame, artists, connectionTypes })
         }
         onPlaylist={(playlistId: string) =>
           buildGraphPlaylist(playlistId).then(() => {
-            setGraphReady(true);
+            // setGraphReady(true);
             setHasChosen(true);
           })
         }

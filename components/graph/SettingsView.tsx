@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Text,
   TouchableOpacity,
@@ -20,6 +20,8 @@ interface ModalProps extends ModalBaseProps {
   setResolverObj: React.Dispatch<React.SetStateAction<SettingsObjectType>>;
 }
 
+const PAGES = 2;
+
 export default function SettingsView({
   visible,
   setForce,
@@ -39,11 +41,15 @@ export default function SettingsView({
 
   const scrollToIndex = (index: number) => {
     if (scrollViewRef.current) {
-      const newIndex = (((index + currentIndex) % 3) + 3) % 3;
+      const newIndex = (((index + currentIndex) % PAGES) + PAGES) % PAGES;
       scrollViewRef.current.scrollTo({ x: newIndex * parentWidth, animated: true });
       setCurrentIndex(newIndex);
     }
   };
+
+  useEffect(() => {
+    console.log(`Internal force: ${internalForce}`);
+  }, [internalForce]);
 
   const scrollLeft = () => scrollToIndex(-1);
   const scrollRight = () => scrollToIndex(1);
@@ -56,6 +62,9 @@ export default function SettingsView({
             <Ionicons name="caret-back" size={30} color="#fff" />
           </TouchableOpacity>
           <Text style={styles.modalTitle}>Graph Settings</Text>
+          <TouchableOpacity onPress={() => setForce(internalForce)}>
+            <Ionicons name="checkmark" size={30} color="#fff" />
+          </TouchableOpacity>
           <TouchableOpacity onPress={scrollRight}>
             <Ionicons name="caret-forward" size={30} color="#fff" />
           </TouchableOpacity>

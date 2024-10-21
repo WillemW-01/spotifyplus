@@ -28,8 +28,14 @@ export default function ForcePicker({
           { label: "Hierarchical Repulsion", value: PHYSICS.hierarchicalRepulsion },
         ]}
         style={pickerInput}
-        onDonePress={() => setForce(internalForce)}
-        onClose={() => setForce(internalForce)}
+        onDonePress={() => {
+          console.log("Closing menu");
+          setForce(internalForce);
+        }}
+        onClose={() => {
+          console.log("Closing menu");
+          setForce(internalForce);
+        }}
       />
     </View>
   );

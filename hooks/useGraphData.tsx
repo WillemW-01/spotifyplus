@@ -146,29 +146,31 @@ export function useGraphData() {
 
   const connectArtists = async (
     artists: PackedArtist[],
-    connectionTypes: ConnectionType[]
+    connectionTypes?: ConnectionType[]
   ): Promise<Edge[]> => {
     const tempEdges = [] as Edge[];
-    const toConnect = connectionTypes.map((c) => c.name) as ConnectionType["name"][];
+    const toConnect: ConnectionType["name"][] = connectionTypes
+      ? connectionTypes.map((c) => c.name)
+      : [CONNECTION_TYPES.artist[0].name];
     console.log("Connecting artists!");
+
+    const doAlbumGenres = toConnect.includes("Album Genres");
+    const doRelated = toConnect.includes("Related Artists");
+    console.log(`Do album genres? ${doAlbumGenres}, do related? ${doRelated}`);
 
     for (let i = 0; i < artists.length; i++) {
       console.log(`Getting related artists for ${artists[i].title}`);
-      const relatedArtists = await getRelatedArtists(artists[i].guid);
+      const relatedArtists = doRelated ? await getRelatedArtists(artists[i].guid) : [];
+      doAlbumGenres && console.log("Connecting by album genres");
+      doRelated && console.log("Connecting by related artists");
       for (let j = 0; j < artists.length; j++) {
         if (i !== j) {
-          if (toConnect.includes("Album Genres")) {
-            console.log("Connecting by album genres");
-            connectMutalGenres(artists[i], artists[j], tempEdges);
-          }
-          if (toConnect.includes("Related Artists")) {
-            console.log("Connecting by related artists");
+          doAlbumGenres && connectMutalGenres(artists[i], artists[j], tempEdges);
+          doRelated &&
             connectedRelatedArtists(artists[i], artists[j], relatedArtists, tempEdges);
-          }
         }
       }
     }
-    console.log(toConnect);
     return tempEdges;
   };
 
