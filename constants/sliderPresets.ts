@@ -164,21 +164,21 @@ export const PREDICATES = {
 
 export const DESCRIPTIONS = {
   danceability:
-    "Danceability tells you how good a track is for dancing. It considers elements like tempo and beat strength. A value of 0 means it's not good for dancing, and 100 means it's perfect for dancing.",
+    "Danceability tells you how good a track is for dancing. It considers elements like tempo and beat strength. Most songs sit around the 50 mark, though variance from it is meaningful.",
   energy:
     "Energy measures how intense and active a track feels, from 0 to 100. High-energy tracks feel fast and loud, like death metal. Low-energy tracks feel calm and quiet, like a Bach prelude.",
   loudness:
     "Loudness is how loud a track is, measured in decibels (dB). It's averaged across the whole track and helps compare the loudness of different tracks. Values range from -60 to 0 dB.",
   speechiness:
-    "Speechiness detects spoken words in a track. A value close to 100 means the track is mostly speech, like an audiobook. Values above 0.66 are mostly spoken words, 33 to 66 might mix music and speech, and below 33 is mostly music.",
+    "Speechiness detects spoken words in a track. A value close to 100 means the track is mostly speech, like an audiobook. Values above 66 are mostly spoken words, 33 to 66 might mix music and speech, and below 33 is mostly music.",
   acousticness:
-    "Acousticness tells you how likely a track is acoustic, with values from 0 to 100. A value of 100 means it's definitely acoustic.",
+    "Acousticness tells you how likely a track is acoustic, with values from 0 to 100. Anything above 50 is probably acoustic, and anything above 70 is definitely acoustic.",
   instrumentalness:
-    "Instrumentalness predicts if a track has no vocals. A value close to 100 means it's likely instrumental. Values above 0.5 suggest the track is instrumental, but the higher the value, the more confident we are.",
+    "Instrumentalness predicts if a track has no vocals. A value close to 100 means it's likely instrumental. Values above 50 suggest the track is instrumental, but the higher the value, the more confident we are.",
   liveness:
-    "Liveness indicates if a track was recorded live. Higher values mean there's a greater chance it was performed live. A value above 0.8 strongly suggests it's a live recording.",
+    "Liveness indicates if a track was recorded live. Higher values mean there's a greater chance it was performed live. A value above 80 strongly suggests it's a live recording.",
   valence:
     "Valence measures how positive a track sounds, from 0 to 100. High valence means the track sounds happy and cheerful. Low valence means it sounds sad or angry.",
   tempo:
-    "Tempo is the speed of a track, measured in beats per minute (BPM). It tells you how fast or slow the music is.",
+    "Tempo is the speed of a track, measured in beats per minute (BPM). It tells you how fast or slow the music is. Caution: BPM detection algorithms are very prone to be wrong.",
 };

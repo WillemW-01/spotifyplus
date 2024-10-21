@@ -102,7 +102,7 @@ export function usePlayback() {
   };
 
   const playPlayList = async (playListId: string) => {
-    const canRun = isSpotifyRunning();
+    const canRun = await isSpotifyRunning();
     if (!canRun) return;
 
     const phone = phoneId ?? (await getPhoneId());
@@ -120,7 +120,7 @@ export function usePlayback() {
   };
 
   const playArtist = async (artistId: string) => {
-    const canRun = isSpotifyRunning();
+    const canRun = await isSpotifyRunning();
     if (!canRun) return;
 
     const phone = phoneId ?? (await getPhoneId());
@@ -138,7 +138,7 @@ export function usePlayback() {
 
   const playTracks = async (uris: string[]) => {
     try {
-      const canRun = isSpotifyRunning();
+      const canRun = await isSpotifyRunning();
       if (!canRun) return;
 
       const phone = phoneId ?? (await getPhoneId());
@@ -217,22 +217,28 @@ export function usePlayback() {
     const response = await buildGet("https://api.spotify.com/v1/me/player");
 
     try {
-      await response.json();
-      return true;
+      const data = await response.json();
+      if (data && data.is_playing) {
+        return true;
+      } else {
+        nothingPlayingAlert();
+        return false;
+      }
     } catch (error) {
-      Alert.alert(
-        "Spotify is not playing something",
-        "Click on the button below to open Spotify. Once you've started playing something, come back.",
-        [
-          {
-            text: "Cancel",
-            style: "cancel",
-          },
-          { text: "OK", onPress: openSpotify },
-        ]
-      );
+      nothingPlayingAlert();
       return false;
     }
+  };
+
+  const nothingPlayingAlert = () => {
+    Alert.alert(
+      "Spotify is not playing something.",
+      "Press 'ok' to open spotify and play something, then come back and try your request again.",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "To Spotify", onPress: openSpotify, style: "destructive" },
+      ]
+    );
   };
 
   return {
