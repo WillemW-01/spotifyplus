@@ -17,7 +17,16 @@ export function useRequestBuilder(usingSpotify = true) {
       const error: Error = await response.json();
       console.log(error);
       await catchRateLimit(response, error);
+      catchInvalidToken(response);
       await catchScopeError(response, error, url);
+    }
+  };
+
+  const catchInvalidToken = async (response: Response) => {
+    if (response.status == 401) {
+      console.log(
+        `Token: ${token.slice(0, 20)}, RefreshToken: ${refreshToken.slice(0, 20)}`
+      );
     }
   };
 

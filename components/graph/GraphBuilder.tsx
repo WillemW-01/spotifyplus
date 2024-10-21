@@ -73,15 +73,33 @@ export default function GraphBuilder({
     setConnections((prev) => {
       console.log(prev);
       const temp = [...prev];
-      if (!temp.includes(newConnection)) {
-        console.log(`Adding ${newConnection.name}`);
-        temp.push(newConnection);
-      } else {
-        console.log(`Removing ${newConnection.name}`);
-        temp.splice(temp.indexOf(newConnection), 1);
+      console.log(`type: ${newConnection.type}`);
+      switch (newConnection.type) {
+        case "artist":
+          return handleNewArtistConnection(newConnection, temp);
+        case "playlist":
+          return handleNewPlaylistConnection(newConnection, temp);
       }
-      return temp;
     });
+  };
+
+  const handleNewArtistConnection = (newConnection: Connection, temp: Connection[]) => {
+    if (!temp.includes(newConnection)) {
+      console.log(`Adding ${newConnection.name}`);
+      temp.push(newConnection);
+    } else {
+      console.log(`Removing ${newConnection.name}`);
+      temp.splice(temp.indexOf(newConnection), 1);
+    }
+    return temp;
+  };
+
+  const handleNewPlaylistConnection = (newConnection: Connection, temp: Connection[]) => {
+    if (temp.length > 0) {
+      temp.splice(0);
+    }
+    temp.push(newConnection);
+    return temp;
   };
 
   const toggleFoundation = () => {
