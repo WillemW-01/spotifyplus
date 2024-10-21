@@ -24,7 +24,20 @@ const other = {
 
 const round = (num: number) => Number(num.toFixed(3));
 
-export default function MoodSlider({ label, value, setValue, stdDev }: Props) {
+export default function MoodSlider({
+  label,
+  value,
+  setValue,
+  min,
+  max,
+  step,
+  stdDev,
+}: Props) {
+  const actualMin = PARAMETERS ? PARAMETERS[label].min : 0;
+  const actualMax = PARAMETERS ? PARAMETERS[label].max : 100;
+  const actualStep = PARAMETERS ? PARAMETERS[label].step : 5;
+  const actualUnit = PARAMETERS ? PARAMETERS[label].unit : "";
+
   const isTempoOrLoudness = ["tempo", "loudness"].includes(label);
   const fromSliderDefault = (value: number) =>
     round(isTempoOrLoudness ? value : value / 100);
@@ -34,6 +47,12 @@ export default function MoodSlider({ label, value, setValue, stdDev }: Props) {
   const [internalValue, setInternalValue] = useState(toSliderDefault(value));
   const [modalVisible, setModalVisible] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  const handleLayout = (event) => {
+    const { width } = event.nativeEvent.layout;
+    setContainerWidth(width); // Get container width in pixels
+  };
 
   useEffect(() => {
     setInternalValue(toSliderDefault(value));
@@ -47,6 +66,26 @@ export default function MoodSlider({ label, value, setValue, stdDev }: Props) {
   const handleSlidingComplete = (newValue: number | number[]) => {
     const toUse = Array.isArray(newValue) ? newValue[0] : newValue;
     setValue(label, fromSliderDefault(toUse));
+  };
+
+  const calculateMidPoint = (
+    value: number,
+    min: number,
+    max: number,
+    variance: number
+  ) => {
+    const sliderRange = max - min;
+    const normalizedValue = ((value - min) / sliderRange) * containerWidth;
+    const width = calculateWidth(variance, min, max);
+    return normalizedValue - width / 2;
+  };
+
+  const calculateWidth = (variance: number, min: number, max: number) => {
+    const sliderRange = max - min;
+    const toUse = isTempoOrLoudness ? variance : variance * 100;
+    const widthInPixels = (toUse / sliderRange) * containerWidth;
+
+    return widthInPixels;
   };
 
   return (
@@ -71,31 +110,38 @@ export default function MoodSlider({ label, value, setValue, stdDev }: Props) {
         </Modal>
       </View>
       <View style={styles.sliderContainer}>
-        <View style={{ flex: 1 }}>
+        <View
+          style={{
+            flex: 1,
+            overflow: "hidden",
+          }}
+          onLayout={handleLayout}
+        >
+          <View
+            style={{
+              position: "absolute",
+              top: 28 / 2,
+              backgroundColor: isDisabled ? Colors.dark.brand + "80" : Colors.dark.brand,
+              borderRadius: 12,
+              height: 14,
+              left: calculateMidPoint(internalValue, actualMin, actualMax, stdDev),
+              width: calculateWidth(stdDev, actualMin, actualMax),
+            }}
+          />
           <NewSlider
             // containerStyle={{ flex: 1 }}
             disabled={isDisabled}
             onValueChange={handleValueChange}
             onSlidingComplete={handleSlidingComplete}
             value={internalValue}
-            minimumValue={PARAMETERS ? PARAMETERS[label].min : 0}
-            maximumValue={PARAMETERS ? PARAMETERS[label].max : 100}
-            step={PARAMETERS ? PARAMETERS[label].step : 5}
+            minimumValue={actualMin}
+            maximumValue={actualMax}
+            step={actualStep}
             minimumTrackTintColor={isDisabled ? "#a0a0a0" : Colors.light.background}
             maximumTrackTintColor={isDisabled ? "#a0a0a0" : Colors.light.background}
             thumbStyle={{ width: 28, height: 28, borderRadius: 28 / 2 }}
             thumbTintColor="white"
-          />
-          <View
-            style={{
-              position: "absolute",
-              right: 0,
-              top: 28 / 2,
-              backgroundColor: "red",
-              opacity: 0.5,
-              height: 14,
-              width: `${100 * stdDev}%`,
-            }}
+            animationType="spring"
           />
         </View>
 
