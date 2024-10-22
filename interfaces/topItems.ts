@@ -1,4 +1,5 @@
-import { Artist, Track } from "@/interfaces/tracks";
+import { Artist } from "@/hooks/useArtist";
+import { Track } from "@/interfaces/tracks";
 
 export interface TopArtist extends Artist {
   popularity: number;

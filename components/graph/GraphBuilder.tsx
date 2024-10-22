@@ -221,7 +221,6 @@ export default function GraphBuilder({
             <TextInput
               placeholder="search"
               style={[styles.textStyle, styles.playlistInput]}
-              // value={queryRef.current}
               onChangeText={setSearchTerm}
               value={searchTerm}
               clearButtonMode="while-editing"

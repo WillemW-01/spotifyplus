@@ -1,7 +1,8 @@
-import { Colors } from "@/constants/Colors";
 import React from "react";
 import { TouchableOpacity, View } from "react-native";
-import Card, { CardProps } from "../Card";
+
+import Card, { CardProps } from "@/components/Card";
+import { Colors } from "@/constants/Colors";
 
 interface SelectableCardProps extends CardProps {
   selected?: boolean;

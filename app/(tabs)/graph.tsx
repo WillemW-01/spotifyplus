@@ -66,31 +66,30 @@ export default function Graph() {
   };
 
   const playArtistAndNeighbours = async (nodeId: number, degree = 1 | 2) => {
-    if (selectedNode == -1) {
-      return;
-    }
-    const neighbours = getNeighbours(nodeId, degree, graphData.edges as Edge[]);
-    console.log("Playing neighbours: ", neighbours);
-    if (neighbours.length === 0) {
-      neighbours.push(nodeId);
-    }
-
-    if (artists.length > 0) {
-      const tracks = [] as string[];
-      for (const neighbour of neighbours) {
-        const currArtist = artists[neighbour];
-        const topTracks = await getTopTracks(currArtist.guid);
-        const ids = topTracks.map((t) => t.id);
-        tracks.push(...ids);
-      }
-      console.log("All ids: ", tracks);
-      if (tracks.length > 0) {
-        const shuffledTracks = shuffleArray(tracks);
-        await playTracks(shuffledTracks);
-      }
-    } else {
-      console.log("Artists not loaded");
-    }
+    // if (selectedNode == -1) {
+    //   return;
+    // }
+    // const neighbours = getNeighbours(nodeId, degree, graphData.edges as Edge[]);
+    // console.log("Playing neighbours: ", neighbours);
+    // if (neighbours.length === 0) {
+    //   neighbours.push(nodeId);
+    // }
+    // if (artists.length > 0) {
+    //   const tracks = [] as string[];
+    //   for (const neighbour of neighbours) {
+    //     const currArtist = artists[neighbour];
+    //     const topTracks = await getTopTracks(currArtist.guid);
+    //     const ids = topTracks.map((t) => t.id);
+    //     tracks.push(...ids);
+    //   }
+    //   console.log("All ids: ", tracks);
+    //   if (tracks.length > 0) {
+    //     const shuffledTracks = shuffleArray(tracks);
+    //     await playTracks(shuffledTracks);
+    //   }
+    // } else {
+    //   console.log("Artists not loaded");
+    // }
   };
 
   const resetGraph = async () => {

@@ -8,7 +8,7 @@ import {
 import { useRequestBuilder } from "./useRequestBuilder";
 import { useTracks } from "./useTracks";
 import {
-  Artist,
+  TrackArtist,
   CustomArtist,
   Track,
   TrackFeature,
@@ -68,7 +68,7 @@ export function usePlayLists() {
     }
   };
 
-  const buildCustomArtist = (artists: Artist[]) => {
+  const buildCustomArtist = (artists: TrackArtist[]) => {
     return artists.map((a) => ({
       // genres: a.genres,
       id: a.id,

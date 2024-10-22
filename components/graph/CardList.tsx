@@ -53,8 +53,6 @@ export default function CardGrid({
   addPlaylist,
   searchTerm,
 }: Props) {
-  console.log(`Search term: ${searchTerm}`);
-
   const renderFoundation = () => {
     switch (foundation) {
       case "playlist":

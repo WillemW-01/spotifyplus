@@ -1,22 +1,9 @@
-import { ExternalURLs, Track } from "@/interfaces/tracks";
+import { Track } from "@/interfaces/tracks";
 import { useRequestBuilder } from "./useRequestBuilder";
 import { SimplifiedAlbum } from "@/interfaces/album";
 import { useAlbum } from "./useAlbum";
-import { Image } from "@/interfaces/tracks";
 import { dedup } from "@/utils/miscUtils";
-
-export interface Artist {
-  external_urls: ExternalURLs;
-  followers: { href: string; total: number };
-  genres: string[];
-  href: string;
-  id: string;
-  images: Image[];
-  name: string;
-  popularity: number;
-  type: string;
-  uri: string;
-}
+import { Artist } from "@/interfaces/artist";
 
 export function useArtist() {
   const { buildGet } = useRequestBuilder();
@@ -45,7 +32,7 @@ export function useArtist() {
   };
 
   const relatedArtistGenres = (relatedArtists: Artist[]): string[] => {
-    return dedup(relatedArtists.map((artist) => artist.genres).flat());
+    return dedup(relatedArtists.map((artist) => artist.genres).flat()) as string[];
   };
 
   const getArtistGenres = async (
@@ -69,12 +56,12 @@ export function useArtist() {
     const albumsSimplfied = await getTopAlbums(artistId);
     const albumIds = albumsSimplfied.map((album) => album.id);
     const albums = await getAlbums(albumIds);
-    const albumGenres = dedup(albums.map((album) => album.genres).flat());
+    const albumGenres = dedup(albums.map((album) => album.genres).flat()) as string[];
 
     combinedGenres.push(...albumGenres);
 
     if (depth == 1) {
-      return dedup(combinedGenres);
+      return dedup(combinedGenres) as string[];
     }
 
     // okay, that means we have to use related artists
@@ -82,7 +69,7 @@ export function useArtist() {
     const relatedGenres = relatedArtistGenres(relatedArtists);
     combinedGenres.push(...relatedGenres);
 
-    return dedup(combinedGenres);
+    return dedup(combinedGenres) as string[];
   };
 
   return {
@@ -92,3 +79,4 @@ export function useArtist() {
     getArtistGenres,
   };
 }
+export { Artist };

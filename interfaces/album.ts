@@ -1,4 +1,4 @@
-import { Artist, Track, ExternalURLs, Image } from "./tracks";
+import { TrackArtist, Track, ExternalURLs, Image } from "./tracks";
 
 interface Copyright {
   text: string;
@@ -13,7 +13,7 @@ interface ExternalIDs {
 
 type ReleaseDatePrecision = "year" | "month" | "day";
 
-interface SimplifiedArtist {
+export interface SimplifiedArtist {
   external_urls: ExternalURLs;
   href: string;
   id: string;
@@ -41,7 +41,7 @@ export interface SimplifiedAlbum {
 
 export interface Album {
   album_type: string;
-  artists: Artist[];
+  artists: TrackArtist[];
   available_markets: string[];
   copyrights: Copyright[];
   external_ids: ExternalIDs;
