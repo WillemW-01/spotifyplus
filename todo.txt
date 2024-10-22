@@ -1,0 +1,3 @@
+todo: make the graph progress more applicable
+todo: make cards in graph show when they are downloaded
+t

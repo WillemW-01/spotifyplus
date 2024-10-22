@@ -241,7 +241,11 @@ export default function GraphBuilder({
           {CONNECTION_TYPES[foundation].map((c, i) => (
             <ConnectionButton
               key={i}
-              title={c.name}
+              title={
+                c.name == "Album Genres" && c.type == "playlist"
+                  ? c.name + " (WIP)"
+                  : c.name
+              }
               body={c.description}
               selected={connections.map((c) => c.name).includes(c.name)}
               onPress={() => updateConnections(c)}

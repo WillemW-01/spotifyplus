@@ -41,8 +41,12 @@ export default function ThemedProgressBar({
             textAlign: "center",
             color: "white",
             position: "absolute",
-            top: height / 2 - 6,
-            right: 10,
+            // Calculate vertical centering: (Progress bar height - Text height) / 2
+            top: (height - 12) / 2, // Assuming lineHeight ~ 12
+            left: 0, // Align text horizontally centered
+            right: 0,
+            lineHeight: 16,
+            fontSize: 16,
           }}
         >
           {Math.floor(progress * 100)} %

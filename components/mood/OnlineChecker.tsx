@@ -74,7 +74,7 @@ export default function OnlineChecker({
                   </Text>
                   <Text style={styles.paragraph}>Do you wish to download it?</Text>
                 </>
-              ) : progress == 1 ? (
+              ) : progress >= 1 ? (
                 <Text style={styles.paragraph}>Finished</Text>
               ) : (
                 <Text style={styles.paragraph}>Downloading...</Text>

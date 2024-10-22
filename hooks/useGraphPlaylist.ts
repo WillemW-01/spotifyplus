@@ -10,6 +10,7 @@ import { connect } from "@/scripts/connect";
 import { normaliseEdges } from "@/scripts/normalise";
 
 import { buildNode, isConnected, pushEdge } from "@/utils/graphUtils";
+import { printObj } from "@/utils/miscUtils";
 
 import { useState } from "react";
 import { Alert } from "react-native";
@@ -22,7 +23,7 @@ export default function useGraphPlaylist() {
   const { getPlaylistSongs } = useDb();
   const { addLog, logError } = useLogger();
 
-  const removeDuplicates = (list: CustomArtist[], key: keyof CustomArtist) => {
+  const dedupArtists = (list: CustomArtist[], key: keyof CustomArtist) => {
     return list.reduce((accumulator: CustomArtist[], curr: CustomArtist) => {
       const exists = accumulator.some((item) => curr[key] === item[key]);
       if (!exists) accumulator.push(curr);
@@ -30,17 +31,31 @@ export default function useGraphPlaylist() {
     }, []);
   };
 
+  const dedupSongs = (list: TrackFeature[], key: keyof TrackFeature) =>
+    list.reduce((accumulator: TrackFeature[], curr: TrackFeature) => {
+      const exists = accumulator.some((item) => curr[key] === item[key]);
+      if (!exists) {
+        accumulator.push(curr);
+      } else {
+        console.log(`${curr.name} is duplicated`);
+      }
+      return accumulator;
+    }, []);
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   const hasConnection = (connectionTypes: Connection[], name: ConnectionName) =>
     connectionTypes.some((c) => c.name === name);
 
   const packNodes = (songs: TrackFeature[]) => {
-    return songs.map((song, i) => ({ ...buildNode(i, song.id, song.name) } as Node));
+    const uniqueSongs = dedupSongs(songs, "id");
+    return uniqueSongs.map(
+      (song, i) => ({ ...buildNode(i, song.id, song.name) } as Node)
+    );
   };
 
   const packArtists = (songs: TrackFeature[]) => {
     const start = songs.length;
-    const artists = removeDuplicates(songs.map((s) => s.artists).flat(), "id");
+    const artists = dedupArtists(songs.map((s) => s.artists).flat(), "id");
     return artists.map(
       (artist, i) =>
         ({ ...buildNode(start + i, artist.id, artist.name, "artist") } as Node)
@@ -119,11 +134,21 @@ export default function useGraphPlaylist() {
         return;
       }
 
-      const requests = playlistIds.map((id) => getPlaylistSongs(id));
-      const songs = (await Promise.all(requests)).flat();
+      console.log(
+        `Sent: ${playlistIds.length} playlists, with ${playlistIds.flat()} songs`
+      );
+      const songs = [] as TrackFeature[];
+      for (const playlist of playlistIds) {
+        const response = await getPlaylistSongs(playlist);
+        console.log(
+          `Got back ${response.length} songs: ${printObj(response.map((r) => r.name))}`
+        );
+        songs.push(...response);
+      }
 
       const nodes = formatNodes(connectionTypes[0], songs);
       const edges = connectNodes(connectionTypes[0], songs, nodes);
+      console.log(`Made ${edges.length} connections between ${nodes.length} nodes`);
 
       setGraphPlaylist({
         nodes: nodes,

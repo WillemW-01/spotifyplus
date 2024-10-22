@@ -2,7 +2,14 @@ import React, { useState } from "react";
 import { LocalState } from "@/app/(tabs)/mood";
 import Card from "@/components/Card";
 import { Ionicons } from "@expo/vector-icons";
-import { ColorValue, TouchableOpacity, View, StyleSheet, ViewStyle } from "react-native";
+import {
+  ColorValue,
+  TouchableOpacity,
+  View,
+  StyleSheet,
+  ViewStyle,
+  Platform,
+} from "react-native";
 import { IoniconType } from "@/interfaces/ionicon";
 import OnlineChecker from "./OnlineChecker";
 import { SimplifiedPlayList } from "@/interfaces/playlists";
@@ -48,14 +55,14 @@ const iconStyles = {
   },
 } as { [key: string]: IconStyle };
 
-const getShadowStyle = (synced: LocalState): ViewStyle => {
-  return {
-    shadowColor: iconStyles[synced].color,
-    shadowOpacity: synced == "online" ? 0.0 : 0.9,
-    shadowOffset: { width: 0, height: 0 },
-    shadowRadius: 10,
-  };
-};
+const NUDGE = 10;
+
+const getShadowStyle = (synced: LocalState): ViewStyle => ({
+  shadowColor: iconStyles[synced].color,
+  shadowOpacity: synced == "online" ? 0.0 : 0.9,
+  shadowOffset: { width: 0, height: 0 },
+  shadowRadius: 10,
+});
 
 export default function SyncedCard({
   title,
@@ -90,8 +97,30 @@ export default function SyncedCard({
         console.log("Pressing button");
         askForDownload(synced);
       }}
-      style={getShadowStyle(synced)}
+      style={[
+        Platform.OS == "ios" && getShadowStyle(synced),
+        {
+          justifyContent: "center",
+          alignItems: "center",
+          height: "auto",
+          width: width + NUDGE,
+        },
+      ]}
     >
+      {Platform.OS == "android" && synced != "online" && (
+        <View
+          style={{
+            width: width + NUDGE,
+            height: width + NUDGE,
+            left: 0,
+            top: -NUDGE / 2,
+            borderRadius: 16,
+            opacity: 0.6,
+            backgroundColor: iconStyles[synced].color,
+            position: "absolute",
+          }}
+        />
+      )}
       <Card
         title={title}
         subtitle={subtitle}

@@ -489,18 +489,24 @@ export function useDb(): DatabaseOperations {
   }
 
   async function getPlaylistSongs(playlistId: string) {
+    console.log(`Fetching songs for ${playlistId}`);
     const ids = (await resultOf(statements.current.retrievePlaylistSongs, {
       $playlist_id: playlistId,
     })) as { id: string }[];
-    return getSongs(ids.map((i) => i.id));
+    console.log(`For playlist ${playlistId}, got back: ${ids.length} songs`);
+    return await getSongs(ids.map((i) => i.id));
   }
 
   async function getSongs(ids: string[]) {
-    const allSongs = [] as TrackFeature[];
-    for (const id of ids) {
+    // console.log(`Fetching songs for IDs: ${ids.join(", ")}`);
+    const songPromises = ids.map(async (id) => {
       const song = await getSong(id);
-      allSongs.push(song);
-    }
+      // console.log(`Fetched song: ${song.name} (id: ${id})`);
+      return song;
+    });
+
+    const allSongs = await Promise.all(songPromises);
+    // console.log(`Fetched all songs for playlist: ${allSongs.map((song) => song.name)}`);
     return allSongs;
   }
 
