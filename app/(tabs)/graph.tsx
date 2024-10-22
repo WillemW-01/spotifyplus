@@ -192,7 +192,7 @@ export default function Graph() {
     <BrandGradient>
       <VisNetwork
         key={key}
-        data={graphArtist}
+        data={graphPlaylist}
         options={{
           nodes: {
             borderWidthSelected: 4,

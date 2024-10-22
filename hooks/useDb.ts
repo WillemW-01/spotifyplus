@@ -13,8 +13,9 @@ import {
 } from "expo-sqlite";
 import { useEffect, useRef } from "react";
 import { useLogger } from "./useLogger";
-import { useArtist } from "./useArtist";
+import { Artist, useArtist } from "./useArtist";
 import { printObj } from "@/utils/miscUtils";
+import { TopArtist } from "@/interfaces/topItems";
 
 interface DatabaseOperations {
   name: string;
@@ -33,7 +34,7 @@ interface DatabaseOperations {
   // eslint-disable-next-line no-unused-vars
   insertNewSongs: (songs: TrackFeature[]) => Promise<SQLiteExecuteAsyncResult<unknown>[]>;
   // eslint-disable-next-line no-unused-vars
-  insertRelatedArtists: (artistId: string, relatedArtists: CustomArtist[]) => void;
+  insertRelatedArtists: (artist: TopArtist, relatedArtists: Artist[]) => void;
   statementsReady: () => boolean;
 }
 
@@ -70,6 +71,7 @@ const STATEMENT_TEMPLATES = {
   retrievePlaylists: "SELECT * FROM playlists",
   retrievePlaylistSongs:
     "SELECT playlist_tracks.track_id as id FROM playlist_tracks JOIN playlists ON playlist_tracks.playlist_id = playlists.id WHERE playlists.id = $playlist_id",
+  retrieveArtist: "SELECT * FROM artists WHERE id = $artist_id",
   retrieveRelatedArtists:
     "SELECT a.* FROM related_artists rel JOIN artists a ON rel.related_id = a.id WHERE rel.artist_id = $artist_id",
   clearArtists: "DELETE FROM artists",
@@ -165,6 +167,13 @@ export function useDb(): DatabaseOperations {
     }
   }
 
+  async function insertArtist(artist: CustomArtist) {
+    await statements.current.intoArtists.executeAsync({
+      $id: artist.id,
+      $name: artist.name,
+    });
+  }
+
   async function insertArtists(artists: CustomArtist[]) {
     for (const artist of artists) {
       const existingArtist = await db.getAllAsync(`SELECT * FROM artists WHERE id = ?`, [
@@ -179,8 +188,8 @@ export function useDb(): DatabaseOperations {
           });
 
           addLog(`Inserted ${artist.name} (${artist.id})`, "insertArtist", 1);
-          await insertGenres(artist.id);
-          addLog(`Inserted genres of ${artist.name} (${artist.id})`, "insertArtist", 1);
+          // await insertGenres(artist.id);
+          // addLog(`Inserted genres of ${artist.name} (${artist.id})`, "insertArtist", 1);
         } catch (error) {
           logError(
             `Error inserting ${artist.name} (${artist.id}):`,
@@ -323,17 +332,69 @@ export function useDb(): DatabaseOperations {
     });
   }
 
-  async function insertRelatedArtists(artistId: string, relatedArtists: CustomArtist[]) {
+  async function isArtistInDb(artistId: string) {
+    const result = await resultOf(statements.current.retrieveArtist, {
+      $artist_id: artistId,
+    });
+    return result.length > 0;
+  }
+
+  async function existsArtistRelation(fromId: string, toId: string) {
+    try {
+      const result = (await resultOf(statements.current.retrieveRelatedArtists, {
+        $artist_id: fromId,
+        $related_id: toId,
+      })) as DbArtist[];
+      // console.log(`Got result: ${printObj(result)}`);
+      return result.some((res) => res.id == toId);
+    } catch (error) {
+      logError(
+        "Error when trying to check if relation exists: ",
+        error,
+        "existsRelation"
+      );
+    }
+  }
+
+  async function insertRelatedArtists(artist: TopArtist, relatedArtists: Artist[]) {
+    let existsInDb = await isArtistInDb(artist.id);
+    if (!existsInDb) {
+      addLog(
+        `Artist ${artist.name} (${artist.id}) didn't exist in db, adding.`,
+        "relatedArtists"
+      );
+      await insertArtist(artist);
+    }
+
     for (const relatedArtist of relatedArtists) {
       try {
-        await statements.current.intoRelatedArtists.executeAsync({
-          $artist_id: artistId,
-          $related_id: relatedArtist.id,
-        });
-        addLog(
-          `Inserted related artist ${relatedArtist.name} (${relatedArtist.id})`,
-          "relatedArtist"
-        );
+        existsInDb = await isArtistInDb(relatedArtist.id);
+        if (!existsInDb) {
+          await insertArtist(relatedArtist);
+          addLog(
+            `Added ${relatedArtist.name} (${relatedArtist.id} into artists`,
+            "relatedArtists"
+          );
+        }
+
+        const alreadyRelated = await existsArtistRelation(artist.id, relatedArtist.id);
+        if (!alreadyRelated) {
+          await statements.current.intoRelatedArtists.executeAsync({
+            $artist_id: artist.id,
+            $related_id: relatedArtist.id,
+          });
+          addLog(
+            `Inserted related artist ${relatedArtist.name} (${relatedArtist.id})`,
+            "relatedArtist",
+            1
+          );
+        } else {
+          addLog(
+            `${relatedArtist.name} (${relatedArtist.id}) already related to ${artist.name} (${artist.id})`,
+            "relatedArtist",
+            1
+          );
+        }
       } catch (error) {
         logError(
           `Error inserting related artist ${relatedArtist.name} (${relatedArtist.id}):`,

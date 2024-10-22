@@ -142,6 +142,13 @@ export default function GraphBuilder({
     setArtists(response);
   };
 
+  const onTermClick = (clickedTime: TimeFrame) => {
+    if (timeFrame != clickedTime) {
+      setSelectedArtists([]);
+      loadArtists(clickedTime);
+    }
+  };
+
   const buildFunction = (foundation: Foundation) => {
     switch (foundation) {
       case "artist":
@@ -240,17 +247,17 @@ export default function GraphBuilder({
               <Button
                 title="recent"
                 selected={timeFrame == "short_term"}
-                onPress={() => timeFrame != "short_term" && loadArtists("short_term")}
+                onPress={() => onTermClick("short_term")}
               />
               <Button
                 title="medium"
                 selected={timeFrame == "medium_term"}
-                onPress={() => timeFrame != "medium_term" && loadArtists("medium_term")}
+                onPress={() => onTermClick("medium_term")}
               />
               <Button
                 title="all time"
                 selected={timeFrame == "long_term"}
-                onPress={() => timeFrame != "long_term" && loadArtists("long_term")}
+                onPress={() => onTermClick("long_term")}
               />
             </View>
           )}

@@ -24,7 +24,7 @@ export default function useGraphPlaylist() {
     directed = true
   ): boolean => {
     return edges.some(
-      (edge) => fromTo(edge, from, to) || (directed && toFrom(edge, from, to))
+      (edge) => fromTo(edge, from, to) || (!directed && toFrom(edge, from, to))
     );
   };
 
