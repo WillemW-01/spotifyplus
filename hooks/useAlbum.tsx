@@ -12,12 +12,9 @@ export function useAlbum() {
   };
 
   const getAlbums = async (albumIds: string[]) => {
-    // console.log("Looking for number of albums: ", albumIds.length);
-    console.log(albumIds);
     const url = `https://api.spotify.com/v1/albums?ids=${albumIds.join(",")}`;
     const response = await buildGet(url);
     const data = await response.json();
-    // console.log(Object.keys(data));
     return data.albums as Album[];
   };
 

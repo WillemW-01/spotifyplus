@@ -6,6 +6,7 @@
     "scripts/features.json"
   ],
   "scripts": {
+    "go": "expo start --go",
     "dev": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",

@@ -5,21 +5,22 @@ import VisNetwork, { VisNetworkRef } from "react-native-vis-network";
 import { PHYSICS, resolvers, SettingsObjectType } from "@/constants/resolverObjects";
 
 import BrandGradient from "@/components/BrandGradient";
-import GraphButtonPlay from "@/components/graph/GraphButtonPlay";
 import GraphBuilder, { TimeFrame } from "@/components/graph/GraphBuilder";
-import LoadingCircle from "@/components/LoadingCircle";
-import SettingsView from "@/components/graph/SettingsView";
+import GraphButtonPlay from "@/components/graph/GraphButtonPlay";
 import GraphControls from "@/components/graph/GraphControls";
+import SettingsView from "@/components/graph/SettingsView";
+import LoadingCircle from "@/components/LoadingCircle";
 
 import { useArtist } from "@/hooks/useArtist";
 import { BuildGraphArtistsProps, Edge, useGraphData } from "@/hooks/useGraphData";
 import { usePlayback } from "@/hooks/usePlayback";
 
+import { Colors } from "@/constants/Colors";
+import useGraphArtist from "@/hooks/useGraphArtist";
+import useGraphPlaylist from "@/hooks/useGraphPlaylist";
+import { BuildGraphPlaylistProps } from "@/interfaces/graphs";
 import { getNeighbours } from "@/utils/graphUtils";
 import { shuffleArray } from "@/utils/miscUtils";
-import useGraphPlaylist from "@/hooks/useGraphPlaylist";
-import { Colors } from "@/constants/Colors";
-import { BuildGraphPlaylistProps } from "@/interfaces/graphs";
 
 const getPhysicsOptions = (
   resolverType: keyof typeof PHYSICS,
@@ -44,23 +45,23 @@ export default function Graph() {
 
   const visNetworkRef = useRef<VisNetworkRef>(null);
 
-  const { graphData, loading, artists, buildGraphArtists, tracks } = useGraphData();
+  const { graphData, artists, tracks } = useGraphData();
   const { buildGraphPlaylist, graphPlaylist, setGraphPlaylist } = useGraphPlaylist();
+  const { buildGraphArtist, graphArtist, setGraphArtist, loading } = useGraphArtist();
 
   const { getTopTracks } = useArtist();
   const { playTracks } = usePlayback();
 
   const getNodeName = (nodeId: number): string => {
-    console.log("Artists: ", artists.length, "Tracks: ", tracks.length);
-    if (artists.length > 0) {
-      console.log("Checking for the artist, id: ", nodeId, " name: ", artists[nodeId]);
-      return artists[nodeId].title;
-    }
-    if (tracks.length > 0) {
-      console.log("Checking for the track ");
-
-      return tracks[nodeId].track.name;
-    }
+    // console.log("Artists: ", artists.length, "Tracks: ", tracks.length);
+    // if (artists.length > 0) {
+    //   console.log("Checking for the artist, id: ", nodeId, " name: ", artists[nodeId]);
+    //   return artists[nodeId].title;
+    // }
+    // if (tracks.length > 0) {
+    //   console.log("Checking for the track ");
+    //   return tracks[nodeId].track.name;
+    // }
     return "";
   };
 
@@ -97,6 +98,7 @@ export default function Graph() {
     setHasChosen(false);
     setGraphReady(false);
     setGraphPlaylist({ nodes: [], edges: [] });
+    setGraphArtist({ nodes: [], edges: [] });
     setKey((prev) => prev + 1);
   };
 
@@ -151,7 +153,6 @@ export default function Graph() {
   }, [force]);
 
   useEffect(() => {
-    // console.log("Calling this effect");
     if (!loading && graphReady && visNetworkRef.current && resolverObj) {
       // console.log("Updating settings with resolverObj: ", resolverObj);
       visNetworkRef.current.setOptions({
@@ -176,7 +177,7 @@ export default function Graph() {
         visible={modalVisible}
         setVisible={setModalVisible}
         onArtist={({ timeFrame, artists, connectionTypes }: BuildGraphArtistsProps) =>
-          buildGraphArtists({ timeFrame, artists, connectionTypes })
+          buildGraphArtist({ timeFrame, artists, connectionTypes })
         }
         onPlaylist={({ playlistIds, connectionTypes }: BuildGraphPlaylistProps) =>
           buildGraphPlaylist({ playlistIds, connectionTypes }).then(() => {
@@ -192,7 +193,7 @@ export default function Graph() {
     <BrandGradient>
       <VisNetwork
         key={key}
-        data={graphPlaylist}
+        data={graphArtist}
         options={{
           nodes: {
             borderWidthSelected: 4,
@@ -218,6 +219,7 @@ export default function Graph() {
           },
         }}
         onLoad={() => {
+          console.log(`Graph is ready. Setting up event listener`);
           setGraphReady(true);
           setupEventListener();
         }}

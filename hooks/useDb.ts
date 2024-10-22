@@ -1,9 +1,9 @@
-import { DbAlbum, DbPlaylist, DbTrack } from "@/constants/db/models";
+import { DbAlbum, DbArtist, DbPlaylist, DbTrack } from "@/constants/db/models";
 import {
-  TrackFeature,
-  CustomArtist,
   CustomAlbum,
+  CustomArtist,
   CustomPlaylist,
+  TrackFeature,
 } from "@/interfaces/tracks";
 import {
   SQLiteBindParams,
@@ -13,22 +13,34 @@ import {
 } from "expo-sqlite";
 import { useEffect, useRef } from "react";
 import { useLogger } from "./useLogger";
+import { useArtist } from "./useArtist";
 
 interface DatabaseOperations {
   name: string;
-  insertNewSong: (song: TrackFeature) => Promise<SQLiteExecuteAsyncResult<unknown>>;
-  statementsReady: () => boolean;
-  getSong(songId: string): Promise<TrackFeature>;
-  getAllSongs(): Promise<TrackFeature[]>;
-  getPlaylistSongs(playlistId: string): Promise<TrackFeature[]>;
-  insertNewSongs(songs: TrackFeature[]): Promise<SQLiteExecuteAsyncResult<unknown>[]>;
+  clearDb: () => Promise<void>;
   getPlaylists: () => Promise<CustomPlaylist[]>;
-  clearDb(): Promise<void>;
+  // eslint-disable-next-line no-unused-vars
+  getPlaylistSongs: (playlistId: string) => Promise<TrackFeature[]>;
+  // eslint-disable-next-line no-unused-vars
+  getRelatedArtists: (artistId: string) => Promise<CustomArtist[]>;
+  // eslint-disable-next-line no-unused-vars
+  getSong: (songId: string) => Promise<TrackFeature>;
+  // eslint-disable-next-line no-unused-vars
+  insertGenres: (artistId: string) => Promise<void>;
+  // eslint-disable-next-line no-unused-vars
+  insertNewSong: (song: TrackFeature) => Promise<SQLiteExecuteAsyncResult<unknown>>;
+  // eslint-disable-next-line no-unused-vars
+  insertNewSongs: (songs: TrackFeature[]) => Promise<SQLiteExecuteAsyncResult<unknown>[]>;
+  // eslint-disable-next-line no-unused-vars
+  insertRelatedArtists: (artistId: string, relatedArtists: CustomArtist[]) => void;
+  statementsReady: () => boolean;
 }
 
-// Define your original STATEMENT_TEMPLATES
 const STATEMENT_TEMPLATES = {
   intoArtists: "INSERT OR IGNORE INTO artists (id, name) VALUES ($id, $name)",
+  intoGenre: "INSERT OR IGNORE INTO genres (name) VALUES ($genre)",
+  intoArtistGenres:
+    "INSERT OR IGNORE INTO artist_genres (artist_id, genre_id) VALUES ($artist_id, $genre_id)",
   intoAlbums: "INSERT OR IGNORE  INTO albums (id, name) VALUES ($id, $name);",
   intoTracks:
     "INSERT  OR IGNORE INTO tracks (id, name, popularity, preview_url, danceability, energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo, type, uri, track_href, analysis_url, duration_ms, time_signature, album_id) VALUES ($id, $name, $popularity, $preview_url, $danceability, $energy, $key, $loudness, $mode, $speechiness, $acousticness, $instrumentalness, $liveness, $valence, $tempo, $type, $uri, $track_href, $analysis_url, $duration_ms, $time_signature, $album_id)",
@@ -36,6 +48,8 @@ const STATEMENT_TEMPLATES = {
     "INSERT  OR IGNORE INTO album_artists (album_id, artist_id) VALUES ($album_id, $artist_id)",
   intoTrackArtists:
     "INSERT  OR IGNORE INTO track_artists (track_id, artist_id) VALUES ($track_id, $artist_id)",
+  intoRelatedArtists:
+    "INSERT OR IGNORE INTO related_artists (artist_id, related_id) VALUES ($artist_id, $related_id)",
   intoPlaylists:
     "INSERT OR REPLACE INTO playlists (id, 'name', snapshot) VALUES ($id, $name, $snapshot)",
   intoPlaylistTracks:
@@ -49,9 +63,14 @@ const STATEMENT_TEMPLATES = {
   joinPlaylistTracks:
     "SELECT * FROM playlist_tracks JOIN playlists ON playlist_tracks.playlist_id = playlists.id WHERE playlist_tracks.track_id = $track_id",
   retrieveAllSongs: "SELECT id FROM tracks",
+  retrieveArtistGenres:
+    "SELECT artist_id FROM artist_genres WHERE artist_id = $artist_id",
+  retrieveGenresIds: "SELECT id FROM genres WHERE name = $genre",
   retrievePlaylists: "SELECT * FROM playlists",
   retrievePlaylistSongs:
     "SELECT playlist_tracks.track_id as id FROM playlist_tracks JOIN playlists ON playlist_tracks.playlist_id = playlists.id WHERE playlists.id = $playlist_id",
+  retrieveRelatedArtists:
+    "SELECT a.* FROM related_artists rel JOIN artists a ON rel.related_id = a.id WHERE rel.artist_id = $artist_id",
   clearArtists: "DELETE FROM artists",
   clearAlbums: "DELETE FROM albums",
   clearTracks: "DELETE FROM tracks",
@@ -64,6 +83,13 @@ const STATEMENT_TEMPLATES = {
 export function useDb(): DatabaseOperations {
   const db = useSQLiteContext();
   const { addLog } = useLogger();
+  const { getArtistGenres } = useArtist();
+
+  const name = db.databaseName;
+
+  /*****************************************************************************
+   *                          STATEMENT MANAGEMENT                             *
+   *****************************************************************************/
 
   const statements = useRef<{ [key: string]: SQLiteStatement }>({
     intoArtists: null,
@@ -74,6 +100,23 @@ export function useDb(): DatabaseOperations {
     intoPlaylists: null,
     intoPlaylistTracks: null,
   });
+
+  async function prepareStatements() {
+    let successFull = 0;
+    const statementKeys = Object.keys(STATEMENT_TEMPLATES);
+    for (const key of statementKeys) {
+      try {
+        statements.current[key] = await db.prepareAsync(STATEMENT_TEMPLATES[key]);
+        successFull += 1;
+      } catch (error) {
+        console.log(`Error while preparing ${key}: `, error);
+      }
+    }
+    addLog(
+      `Prepared ${successFull} / ${statementKeys.length} statements`,
+      "prepareStatement"
+    );
+  }
 
   function statementsReady() {
     const statementKeys = Object.keys(STATEMENT_TEMPLATES); // Get all keys of STATEMENT_TEMPLATES
@@ -86,7 +129,22 @@ export function useDb(): DatabaseOperations {
     return true;
   }
 
-  const name = db.databaseName;
+  async function resultOf(statement: SQLiteStatement, params?: SQLiteBindParams) {
+    try {
+      return (await statement.executeAsync(params)).getAllAsync();
+    } catch (error) {
+      console.error(
+        `Error getting result of ${JSON.stringify(
+          statement
+        )} with params ${JSON.stringify(params)}: `,
+        error
+      );
+    }
+  }
+
+  /*****************************************************************************
+   *                          INSERT OPERATIONS                                *
+   *****************************************************************************/
 
   async function insertNewSongs(songs: TrackFeature[]) {
     const allResults = [] as SQLiteExecuteAsyncResult<unknown>[];
@@ -97,16 +155,20 @@ export function useDb(): DatabaseOperations {
   }
 
   async function insertNewSong(song: TrackFeature) {
-    console.log(`[dbInsert] Inserting ${song.name} (${song.id})`);
-    await insertArtists(song.artists);
-    await insertAlbum(song.album);
-    await insertPlaylist(song.playlist);
-    await insertPlaylistTrack(song.playlist.id, song.id);
-    for (const artist of song.artists) {
-      await insertTrackArtist(song.id, artist.id);
+    if (statementsReady()) {
+      console.log(`[dbInsert] Inserting ${song.name} (${song.id})`);
+      await insertArtists(song.artists);
+      await insertAlbum(song.album);
+      await insertPlaylist(song.playlist);
+      await insertPlaylistTrack(song.playlist.id, song.id);
+      for (const artist of song.artists) {
+        await insertTrackArtist(song.id, artist.id);
+      }
+      const res = await insertTrackFeatures(song);
+      return res;
+    } else {
+      console.error(`Statements not ready yet`);
     }
-    const res = await insertTrackFeatures(song);
-    return res;
   }
 
   async function insertArtists(artists: CustomArtist[]) {
@@ -121,13 +183,45 @@ export function useDb(): DatabaseOperations {
             $id: artist.id,
             $name: artist.name,
           });
+
           console.log(`[dbInsert]\tInserted ${artist.name} (${artist.id})`);
+          await insertGenres(artist.id);
+          console.log(`[dbInsert]\tInserted genres of ${artist.name} (${artist.id})`);
         } catch (error) {
           console.error(`Error inserting ${artist.name} (${artist.id}):`, error);
         }
       } else {
-        console.log(`[dbInsert]\t${artist.name} (${artist.id}) already exists`);
+        console.warn(`[dbInsert]\t${artist.name} (${artist.id}) already exists`);
       }
+    }
+  }
+
+  async function insertGenres(artistId: string) {
+    try {
+      const doesExist =
+        (
+          await resultOf(statements.current.retrieveArtistGenres, {
+            $artist_id: artistId,
+          })
+        ).length > 0;
+      if (!doesExist) {
+        const genres = await getArtistGenres(artistId, 0);
+        console.log(`\tgenres: ${JSON.stringify(genres)}`);
+
+        for (const genre of genres) {
+          await statements.current.intoGenre.executeAsync({ $genre: genre });
+          // console.log(`[dbInsert]\tInserted ${genre} into genre table`);
+          const genreId = await getGenreId(genre);
+          await statements.current.intoArtistGenres.executeAsync({
+            $artist_id: artistId,
+            $genre_id: genreId.id,
+          });
+        }
+      } else {
+        console.warn(`[dbInsert]\tArtists already have genres assigned`);
+      }
+    } catch (error) {
+      console.error(`Error when trying to add genres:`, error);
     }
   }
 
@@ -147,7 +241,7 @@ export function useDb(): DatabaseOperations {
         console.error(`Error inserting album ${album.name} (${album.id}):`, error);
       }
     } else {
-      console.log(`[dbInsert]\t${album.name} (${album.id}) already exists`);
+      console.warn(`[dbInsert]\t${album.name} (${album.id}) already exists`);
     }
 
     await insertArtists(album.artists);
@@ -176,13 +270,14 @@ export function useDb(): DatabaseOperations {
         console.error(`Error inserting album ${albumId} <=> ${artistId}:`, error);
       }
     } else {
-      console.log(`[dbInsert]\t${albumId} <=> ${albumId} already exists`);
+      console.warn(`[dbInsert]\t${albumId} <=> ${albumId} already exists`);
     }
   }
 
   async function insertTrackArtist(songId: string, artistId: string) {
     await statements.current.intoTrackArtists.executeAsync(songId, artistId);
   }
+
   async function insertPlaylist(playlist: CustomPlaylist) {
     await statements.current.intoPlaylists.executeAsync(
       playlist.id,
@@ -190,6 +285,7 @@ export function useDb(): DatabaseOperations {
       playlist.snapshot
     );
   }
+
   async function insertPlaylistTrack(playlistId, trackId) {
     await statements.current.intoPlaylistTracks.executeAsync(playlistId, trackId);
   }
@@ -221,6 +317,29 @@ export function useDb(): DatabaseOperations {
     });
   }
 
+  async function insertRelatedArtists(artistId: string, relatedArtists: CustomArtist[]) {
+    for (const relatedArtist of relatedArtists) {
+      try {
+        await statements.current.intoRelatedArtists.executeAsync({
+          $artist_id: artistId,
+          $related_id: relatedArtist.id,
+        });
+        console.log(
+          `[dbInsert]\tInserted related ${relatedArtist.name} (${relatedArtist.id})`
+        );
+      } catch (error) {
+        console.error(
+          `Error inserting related ${relatedArtist.name} (${relatedArtist.id}):`,
+          error
+        );
+      }
+    }
+  }
+
+  /*****************************************************************************
+   *                            GET STATEMENTS                                 *
+   *****************************************************************************/
+
   async function getSong(songId: string) {
     try {
       if (!songId) {
@@ -240,11 +359,11 @@ export function useDb(): DatabaseOperations {
 
       const albumArtists = (await resultOf(statements.current.joinAlbumArtists, {
         $album_id: album.id,
-      })) as CustomArtist[];
+      })) as DbArtist[];
 
       const trackArtists = (await resultOf(statements.current.joinArtistsTracks, {
         $track_id: track.id,
-      })) as CustomArtist[];
+      })) as DbArtist[];
 
       const playlists = (await resultOf(statements.current.joinPlaylistTracks, {
         $track_id: track.id,
@@ -259,11 +378,13 @@ export function useDb(): DatabaseOperations {
           artists: albumArtists.map((artist) => ({
             id: artist.id,
             name: artist.name,
+            genres: artist.genres,
           })),
         },
         artists: trackArtists.map((artist) => ({
           id: artist.id,
           name: artist.name,
+          genres: artist.genres,
         })),
         popularity: track.popularity,
         preview_url: track.preview_url,
@@ -321,6 +442,25 @@ export function useDb(): DatabaseOperations {
     return playlists;
   }
 
+  async function getRelatedArtists(artistId: string) {
+    const relatedArtists = (await resultOf(statements.current.retrieveRelatedArtists, {
+      $artist_id: artistId,
+    })) as CustomArtist[];
+    return relatedArtists;
+  }
+
+  async function getGenreId(genre: string) {
+    return (
+      await resultOf(statements.current.retrieveGenresIds, {
+        $genre: genre,
+      })
+    )[0] as { id: string };
+  }
+
+  /*****************************************************************************
+   *                          DELETE STATEMENTS                                *
+   *****************************************************************************/
+
   async function clearDb() {
     const tables = (await db.getAllAsync(
       "SELECT name FROM sqlite_master WHERE type='table';"
@@ -331,48 +471,25 @@ export function useDb(): DatabaseOperations {
     }
   }
 
-  async function resultOf(statement: SQLiteStatement, params?: SQLiteBindParams) {
-    try {
-      return (await statement.executeAsync(params)).getAllAsync();
-    } catch (error) {
-      console.error(
-        `Error getting result of ${JSON.stringify(
-          statement
-        )} with params ${JSON.stringify(params)}: `,
-        error
-      );
-    }
-  }
-
-  async function prepareStatements() {
-    let successFull = 0;
-    const statementKeys = Object.keys(STATEMENT_TEMPLATES);
-    for (const key of statementKeys) {
-      try {
-        statements.current[key] = await db.prepareAsync(STATEMENT_TEMPLATES[key]);
-        successFull += 1;
-      } catch (error) {
-        console.log(`Error while preparing ${key}: `, error);
-      }
-    }
-    addLog(
-      `Prepared ${successFull} / ${statementKeys.length} statements`,
-      "prepareStatement"
-    );
-  }
-
   useEffect(() => {
     prepareStatements();
   }, []);
 
+  /*****************************************************************************
+   *                      RETURN OPERATION FUNCTIONS                           *
+   *****************************************************************************/
+
   return {
-    name,
-    insertNewSongs,
-    insertNewSong,
-    statementsReady,
-    getSong,
-    getPlaylistSongs,
-    getPlaylists,
     clearDb,
+    getPlaylists,
+    getPlaylistSongs,
+    getRelatedArtists,
+    getSong,
+    insertGenres,
+    insertNewSong,
+    insertNewSongs,
+    insertRelatedArtists,
+    name,
+    statementsReady,
   };
 }

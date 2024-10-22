@@ -7,7 +7,13 @@ import {
 
 import { useRequestBuilder } from "./useRequestBuilder";
 import { useTracks } from "./useTracks";
-import { TrackFeature } from "@/interfaces/tracks";
+import {
+  Artist,
+  CustomArtist,
+  Track,
+  TrackFeature,
+  TrackFeatureResponse,
+} from "@/interfaces/tracks";
 
 export function usePlayLists() {
   const { buildGet } = useRequestBuilder();
@@ -62,6 +68,45 @@ export function usePlayLists() {
     }
   };
 
+  const buildCustomArtist = (artists: Artist[]) => {
+    return artists.map((a) => ({
+      // genres: a.genres,
+      id: a.id,
+      name: a.name,
+      // images: a.images.map((i) => i.url),
+    })) as CustomArtist[];
+  };
+
+  const buildTrackFeature = (
+    index: number,
+    track: Track,
+    features: TrackFeatureResponse,
+    playlist: SimplifiedPlayList
+  ) => {
+    const { album, name, popularity, preview_url } = track;
+
+    const newObj = {
+      index: index,
+      name,
+      id: track.id,
+      album: {
+        name: album.name,
+        id: album.id,
+        artists: buildCustomArtist(album.artists),
+      },
+      artists: buildCustomArtist(track.artists),
+      popularity,
+      preview_url,
+      ...features,
+      playlist: {
+        name: playlist.name,
+        id: playlist.id,
+        snapshot: playlist.snapshot_id,
+      },
+    };
+    return newObj as TrackFeature;
+  };
+
   const fetchPlaylistFeatures = async (
     playlist: SimplifiedPlayList,
     progressCallback?: React.Dispatch<React.SetStateAction<number>>
@@ -74,7 +119,7 @@ export function usePlayLists() {
       const ids = allIds.slice(i, localMax);
       console.log(`Getting ${i} - ${localMax} / ${allIds.length}`);
       const features = await getSeveralTrackFeatures(ids);
-      console.log(`Got a response of ${features.length} features}`);
+      console.log(`Got a response of ${features.length} features`);
       const tracksResponse = await getSeveralTracks(ids);
       console.log(`Got a response of ${tracksResponse.length} track info`);
       const newTracks = tracksResponse.map((t, j) => {
@@ -87,45 +132,34 @@ export function usePlayLists() {
           console.log(`${t.name} at ${j} doesn't have features attached to it`);
         }
 
-        console.log(`Currently pointing at ${i + j}`);
+        // console.log(`Currently pointing at ${i + j}`);
 
-        const { album, name, popularity, preview_url } = t;
-        const customArtists = t.artists.map((a) => ({
-          genres: a.genres,
-          id: a.id,
-          name: a.name,
-          images: a.images,
-        }));
-        const newObj = {
-          index: i + j,
-          name,
-          id: t.id,
-          album: {
-            name: album.name,
-            id: album.id,
-            artists: album.artists.map((a) => ({
-              genres: a.genres,
-              id: a.id,
-              name: a.name,
-              images: a.images,
-            })),
-          },
-          artists: customArtists,
-          popularity,
-          preview_url,
-          ...features[j],
-          playlist: {
-            name: playlist.name,
-            id: playlist.id,
-            snapshot: playlist.snapshot_id,
-          },
-        };
-        console.log(`Allids.length = ${allIds.length}`);
+        const newObj = buildTrackFeature(i + j, t, features[j], playlist);
+        // const { album, name, popularity, preview_url } = t;
+        // const newObj = {
+        //   index: i + j,
+        //   name,
+        //   id: t.id,
+        //   album: {
+        //     name: album.name,
+        //     id: album.id,
+        //     artists: buildCustomArtist(album.artists),
+        //   },
+        //   artists: buildCustomArtist(t.artists),
+        //   popularity,
+        //   preview_url,
+        //   ...features[j],
+        //   playlist: {
+        //     name: playlist.name,
+        //     id: playlist.id,
+        //     snapshot: playlist.snapshot_id,
+        //   },
+        // };
         if ((i + j) % 5 == 0 && progressCallback)
           progressCallback((i + j) / allIds.length);
         return newObj;
       });
-      console.log(newTracks[0]);
+      // console.log(newTracks[0]);
       localFeatures.push(...newTracks);
     }
     progressCallback && progressCallback(1);

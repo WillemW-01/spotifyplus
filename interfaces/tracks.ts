@@ -52,8 +52,8 @@ export interface Artist {
   name: string;
   type: string;
   uri: string;
-  genres: string[];
-  images: Image[];
+  // genres: string[];
+  // images: Image[];
 }
 
 export interface Track {

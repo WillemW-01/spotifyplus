@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useAuth } from "./AuthContext";
+import { Alert } from "react-native";
 
 interface Error {
   error: {
@@ -26,6 +27,21 @@ export function useRequestBuilder(usingSpotify = true) {
     if (response.status == 401) {
       console.log(
         `Token: ${token.slice(0, 20)}, RefreshToken: ${refreshToken.slice(0, 20)}`
+      );
+      Alert.alert(
+        "Access token expire",
+        "Press the button below to refresh the access token",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Refresh",
+            style: "default",
+            onPress: () => refreshAccessToken(token),
+          },
+        ]
       );
     }
   };

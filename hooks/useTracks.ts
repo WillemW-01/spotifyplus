@@ -102,7 +102,7 @@ export function useTracks() {
   };
 
   const isInRange = (value: number, target: number, stdDev: number) => {
-    const bounds = getBounds(target, stdDev);
+    const bounds = getBounds(target, stdDev, false);
     const isIn = value >= bounds.lower && value <= bounds.upper;
 
     console.log(`${bounds.lower} <= ${value} <= ${bounds.upper} = ${isIn}`);

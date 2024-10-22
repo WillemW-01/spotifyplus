@@ -93,7 +93,7 @@ export default function OnlineChecker({
                   onPress={onClose}
                   paddingHorizontal={40}
                   height={40}
-                  disabled={progress < 1}
+                  // disabled={progress < 1}
                 />
               </View>
             )}

@@ -3,7 +3,8 @@ import { SplashScreen, Stack } from "expo-router";
 import React, { useEffect } from "react";
 import { Alert, StatusBar, useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { SQLiteProvider, useSQLiteContext, type SQLiteDatabase } from "expo-sqlite";
+import { SQLiteProvider } from "expo-sqlite";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const dbId = require("@/assets/db/library.sqlite");
 
 import { Colors } from "@/constants/Colors";
@@ -41,7 +42,7 @@ export default function RootLayout() {
       databaseName="library.sqlite"
       assetSource={{
         assetId: dbId,
-        // forceOverwrite: true,
+        forceOverwrite: true,
       }}
       options={{
         useNewConnection: true,

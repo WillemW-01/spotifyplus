@@ -49,8 +49,6 @@ export function useGraphData() {
 
   const { getTopArtistsAll } = useUser();
   const { getArtistGenres, getRelatedArtists } = useArtist();
-  const { getPlayListItemsAll } = usePlayLists();
-
   const { getPlaylistSongs } = useDb();
 
   const packArtistItem = useCallback(

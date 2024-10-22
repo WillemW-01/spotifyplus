@@ -26,6 +26,7 @@ export interface DbTrack {
 export interface DbArtist {
   id: string;
   name: string;
+  genres: string[];
 }
 
 export interface DbAlbum {
