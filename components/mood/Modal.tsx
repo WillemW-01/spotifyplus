@@ -30,6 +30,7 @@ const styles = StyleSheet.create({
   },
   modalView: {
     gap: 20,
+    maxHeight: "80%",
     width: "100%",
     margin: 20,
     marginHorizontal: 15,
