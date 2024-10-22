@@ -17,8 +17,9 @@ import { usePlayback } from "@/hooks/usePlayback";
 
 import { getNeighbours } from "@/utils/graphUtils";
 import { shuffleArray } from "@/utils/miscUtils";
-import useGraphPlaylist, { BuildGraphPlaylistProps } from "@/hooks/useGraphPlaylist";
+import useGraphPlaylist from "@/hooks/useGraphPlaylist";
 import { Colors } from "@/constants/Colors";
+import { BuildGraphPlaylistProps } from "@/interfaces/graphs";
 
 const getPhysicsOptions = (
   resolverType: keyof typeof PHYSICS,
@@ -44,7 +45,7 @@ export default function Graph() {
   const visNetworkRef = useRef<VisNetworkRef>(null);
 
   const { graphData, loading, artists, buildGraphArtists, tracks } = useGraphData();
-  const { buildGraphPlaylist, graphPlaylist } = useGraphPlaylist();
+  const { buildGraphPlaylist, graphPlaylist, setGraphPlaylist } = useGraphPlaylist();
 
   const { getTopTracks } = useArtist();
   const { playTracks } = usePlayback();
@@ -95,6 +96,7 @@ export default function Graph() {
     setSelectedNode(-1);
     setHasChosen(false);
     setGraphReady(false);
+    setGraphPlaylist({ nodes: [], edges: [] });
     setKey((prev) => prev + 1);
   };
 

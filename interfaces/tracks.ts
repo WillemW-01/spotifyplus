@@ -108,6 +108,17 @@ export interface TrackFeatureResponse {
   uri: string;
   valence: number;
 }
+
+type TrackFeatureResponseExclude =
+  | "analysis_url"
+  | "duration_ms"
+  | "time_signature"
+  | "track_href"
+  | "uri";
+
+export interface Feature
+  extends Omit<TrackFeatureResponse, TrackFeatureResponseExclude> {}
+
 export interface TrackFeature extends TrackFeatureResponse {
   index: number;
   album: CustomAlbum;

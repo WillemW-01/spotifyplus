@@ -1,6 +1,7 @@
-import { Edge, Feature, ResultObj } from "./features/interfaces";
-import { TrackFeature } from "@/interfaces/tracks";
+import { ResultObj } from "./features/interfaces";
+import { TrackFeature, Feature } from "@/interfaces/tracks";
 import { normalise } from "./normalise";
+import { Edge } from "@/interfaces/graphs";
 
 const MAX_NEIGHBOURS = 3;
 const CUTT_OFF = 0.344;
@@ -17,17 +18,20 @@ function getDistance(f1: TrackFeature, f2: TrackFeature, props: (keyof Feature)[
 
 function isConnected(edges: Edge[], from: number, to: number) {
   for (let i = 0; i < edges.length; i++) {
-    if (
-      (edges[i].from === from && edges[i].to === to) ||
-      (edges[i].from === to && edges[i].to === from)
-    ) {
+    const fromTo = edges[i].from === from && edges[i].to === to;
+    const toFrom = edges[i].from === to && edges[i].to === from;
+    if (fromTo || toFrom) {
       return i;
     }
   }
   return -1;
 }
 
-export function connect(features: TrackFeature[], edges: Edge[]) {
+export function connect(
+  features: TrackFeature[],
+  edges: Edge[],
+  pushEdge?: (tempEdges, from, to, weight?) => void
+) {
   const filterArray = [
     "acousticness",
     "danceability",
@@ -39,30 +43,36 @@ export function connect(features: TrackFeature[], edges: Edge[]) {
     "tempo",
     "valence",
   ] as (keyof Feature)[];
+  console.log(`Features: ${features.length}`);
   for (let i = 0; i < features.length; i++) {
     const from = features[i];
     const distances = [] as ResultObj[];
-    // console.log(`Base: ${from.name}`);
+    console.log(`Base: ${from.name}`);
     for (let j = 0; j < features.length; j++) {
       if (i != j) {
         const to = features[j];
         const d = getDistance(from, to, filterArray);
         if (d == 0) {
           console.log(`Found 0 d: ${from.name} <=> ${to.name}`);
-          distances.push({ index: to.index, distance: 0.001 });
+          distances.push({ index: j, distance: 0.001 });
         } else if (d < CUTT_OFF) {
-          distances.push({ index: to.index, distance: d });
+          console.log(
+            `Found ${d.toFixed(4)} distance for ${from.name} (${i}) <=> ${to.name} (${j})`
+          );
+          distances.push({ index: j, distance: d });
         }
       }
     }
     distances.sort((a, b) => a.distance - b.distance);
     const closest = distances.slice(0, MAX_NEIGHBOURS);
     for (const to of closest) {
-      const already = isConnected(edges, from.index, to.index);
+      const already = isConnected(edges, i, to.index);
+      console.log(`Already: ${i} -> ${to.index} = ${already}`);
       if (already == -1) {
-        edges.push({ from: from.index, to: to.index, weight: to.distance });
+        console.log(`Pushing new edge: ${from.name} -> ${to.index}`);
+        pushEdge(edges, i, to.index, to.distance);
       } else {
-        edges[already].weight += to.distance;
+        edges[already].value += to.distance;
       }
     }
   }

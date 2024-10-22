@@ -1,6 +1,6 @@
 import fs from "fs";
-import { Edge } from "./features/interfaces";
 import { TrackFeature } from "@/interfaces/tracks";
+import { Edge } from "@/interfaces/graphs";
 
 function writeToFile(fileName: string, toWrite: string, append = false) {
   if (append) {
@@ -86,7 +86,7 @@ export function write(features: TrackFeature[], edges: Edge[], outputName = "nod
 
   let edgeString = "edgedef>source INTEGER,target INTEGER,weight DOUBLE\n";
   for (const edge of edges) {
-    edgeString += `${edge.from},${edge.to},${edge.weight.toFixed(5)}\n`;
+    edgeString += `${edge.from},${edge.to},${edge.value.toFixed(5)}\n`;
   }
   writeToFile(`scripts/${outputName}.gdf`, edgeString, true);
   console.log("edges written to file");

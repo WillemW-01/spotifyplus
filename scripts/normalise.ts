@@ -1,4 +1,5 @@
-import { Edge, Feature } from "./features/interfaces";
+import { Feature } from "@/interfaces/tracks";
+import { Edge } from "@/interfaces/graphs";
 
 const DECAY = 2;
 
@@ -54,21 +55,21 @@ export function normalise(feature: number, key: keyof Feature) {
 }
 
 export function normaliseEdges(edges: Edge[]) {
-  const edgeWeights = edges.map((e) => e.weight);
+  const edgeWeights = edges.map((e) => e.value);
   const maxWeight = Math.max(...edgeWeights);
   const minWeight = Math.min(...edgeWeights);
-  console.log(`Max weight: ${maxWeight}, min: ${minWeight}`);
+  console.log(`Max weight: ${maxWeight.toFixed(4)}, min: ${minWeight.toFixed(4)}`);
   for (let i = 0; i < edges.length; i++) {
-    edges[i].weight = normaliseExp(edges[i]);
+    edges[i].value = normaliseExp(edges[i]);
   }
 }
 
 export function normaliseInverse(edge: Edge, min: number, max: number) {
-  const normDistance = (edge.weight - min) / (max - min);
+  const normDistance = (edge.value - min) / (max - min);
   const inverseDistance = 1 / (normDistance + 0.01);
   return Math.pow(inverseDistance, 2);
 }
 
 export function normaliseExp(edge: Edge) {
-  return Math.exp(-DECAY * edge.weight);
+  return Math.exp(-DECAY * edge.value);
 }

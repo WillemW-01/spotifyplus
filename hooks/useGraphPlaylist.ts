@@ -1,36 +1,12 @@
-import { TopArtist } from "@/interfaces/topItems";
 import { useState } from "react";
 import { Data } from "react-native-vis-network";
-import { getNeighbours, PackedArtist } from "@/utils/graphUtils";
 import { CustomArtist, TrackFeature } from "@/interfaces/tracks";
-import { TimeFrame } from "@/components/graph/GraphBuilder";
 import { Connection, ConnectionName } from "@/constants/graphConnections";
 import { useDb } from "./useDb";
-
-export interface Edge {
-  from: number;
-  to: number;
-  value: number;
-}
-
-export interface Node {
-  id: number;
-  guid: string;
-  label: string;
-  shape?: string;
-  group?: string;
-}
-
-export interface BuildGraphArtistsProps {
-  timeFrame?: TimeFrame;
-  artists?: TopArtist[];
-  connectionTypes?: Connection[];
-}
-
-export interface BuildGraphPlaylistProps {
-  playlistIds: string[];
-  connectionTypes?: Connection[];
-}
+import { BuildGraphPlaylistProps, Edge, Node } from "@/interfaces/graphs";
+import { connect } from "@/scripts/connect";
+import { normaliseEdges } from "@/scripts/normalise";
+import { Alert } from "react-native";
 
 export default function useGraphPlaylist() {
   const [graphPlaylist, setGraphPlaylist] = useState<Data>({ nodes: [], edges: [] });
@@ -45,33 +21,33 @@ export default function useGraphPlaylist() {
     from: number,
     to: number,
     edges: Edge[],
-    directed?: boolean
+    directed = true
   ): boolean => {
     return edges.some(
       (edge) => fromTo(edge, from, to) || (directed && toFrom(edge, from, to))
     );
   };
 
-  const connectMutalGenres = (
-    artistFrom: PackedArtist,
-    artistTo: PackedArtist,
-    cumulatedEdges: Edge[]
-  ) => {
-    for (const genre of artistFrom.genres) {
-      if (artistTo.genres.includes(genre)) {
-        const connected = alreadyConnected(artistFrom, artistTo, cumulatedEdges);
-        if (connected >= 0) {
-          cumulatedEdges[connected].value += 1;
-        } else {
-          cumulatedEdges.push({
-            from: artistFrom.id,
-            to: artistTo.id,
-            value: 1,
-          });
-        }
-      }
-    }
-  };
+  // const connectMutalGenres = (
+  //   artistFrom: PackedArtist,
+  //   artistTo: PackedArtist,
+  //   cumulatedEdges: Edge[]
+  // ) => {
+  //   for (const genre of artistFrom.genres) {
+  //     if (artistTo.genres.includes(genre)) {
+  //       const connected = alreadyConnected(artistFrom, artistTo, cumulatedEdges);
+  //       if (connected >= 0) {
+  //         cumulatedEdges[connected].value += 1;
+  //       } else {
+  //         cumulatedEdges.push({
+  //           from: artistFrom.id,
+  //           to: artistTo.id,
+  //           value: 1,
+  //         });
+  //       }
+  //     }
+  //   }
+  // };
 
   const removeDuplicates = (list: CustomArtist[], key: keyof CustomArtist) => {
     return list.reduce((accumulator: CustomArtist[], curr: CustomArtist) => {
@@ -129,7 +105,12 @@ export default function useGraphPlaylist() {
     tempEdges.push({ from, to, value: weight ?? 1 });
   };
 
-  const connectByDistance = (songs: TrackFeature[], nodes: Node[]) => [{} as Edge];
+  const connectByDistance = (songs: TrackFeature[]) => {
+    const edges = [] as Edge[];
+    connect(songs, edges, pushEdge);
+    normaliseEdges(edges);
+    return edges;
+  };
 
   const connectTracksToArtists = (songs: TrackFeature[], nodes: Node[]) => {
     const tempEdges = [] as Edge[];
@@ -156,7 +137,7 @@ export default function useGraphPlaylist() {
   ) => {
     switch (connectionType.name) {
       case "Song Features":
-        return connectByDistance(songs, nodes);
+        return connectByDistance(songs);
       case "Shared Artists":
         return connectTracksToArtists(songs, nodes);
       case "Album Genres":
@@ -171,6 +152,20 @@ export default function useGraphPlaylist() {
     setLoading(true);
     try {
       console.log(`Connection type: ${connectionTypes[0].name}`);
+      if (connectionTypes[0].name === "Album Genres") {
+        Alert.alert(
+          "Not implemented yet!",
+          "This type of graph is not implemented yet. Coming soon.",
+          [
+            {
+              text: "Ok",
+              style: "default",
+            },
+          ]
+        );
+        setLoading(false);
+        return;
+      }
 
       const requests = playlistIds.map((id) => getPlaylistSongs(id));
       const songs = (await Promise.all(requests)).flat();
@@ -193,6 +188,7 @@ export default function useGraphPlaylist() {
 
   return {
     graphPlaylist,
+    setGraphPlaylist,
     loading,
     buildGraphPlaylist,
   };

@@ -1,5 +1,5 @@
 import data from "./features/features_all.json";
-import { Edge } from "./features/interfaces";
+import { Edge } from "@/interfaces/graphs";
 import { TrackFeature } from "@/interfaces/tracks";
 import { connect } from "./connect";
 import { normaliseEdges } from "./normalise";

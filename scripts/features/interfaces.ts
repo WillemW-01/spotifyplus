@@ -1,20 +1,20 @@
 export interface Feature {
-  index: number;
+  acousticness: number;
   artist: string;
-  name: string;
-  id: string;
   danceability: number;
   energy: number;
+  id: string;
+  index: number;
+  instrumentalness: number;
   key: number;
+  liveness: number;
   loudness: number;
   mode: number;
+  name: string;
   speechiness: number;
-  acousticness: number;
-  instrumentalness: number;
-  liveness: number;
-  valence: number;
   tempo: number;
   type: string;
+  valence: number;
 }
 export interface Image {
   url: string;
