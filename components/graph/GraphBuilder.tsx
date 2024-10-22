@@ -29,6 +29,28 @@ import { TopArtist } from "@/interfaces/topItems";
 import Section from "./sections/Section";
 import { useLogger } from "@/hooks/useLogger";
 
+interface FoundationButtonProps {
+  toggleFoundation: () => void;
+  foundationState: Foundation;
+  assigned: Foundation;
+}
+
+function FoundationButton({
+  toggleFoundation,
+  foundationState,
+  assigned,
+}: FoundationButtonProps) {
+  return (
+    <Button
+      title={assigned == "playlist" ? "Playlist" : "Top Artists"}
+      onPress={toggleFoundation}
+      style={styles.foundationButton}
+      selected={foundationState == assigned}
+      textStyle={{ fontSize: 25 }}
+    />
+  );
+}
+
 interface ModalProps extends ModalBaseProps {
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
@@ -203,19 +225,15 @@ export default function GraphBuilder({
       >
         <Section title="Foundation:">
           <View style={styles.foundationButtonContainer}>
-            <Button
-              title="Playlist"
-              onPress={toggleFoundation}
-              style={styles.foundationButton}
-              selected={foundation == "playlist"}
-              textStyle={{ fontSize: 25 }}
+            <FoundationButton
+              assigned="playlist"
+              toggleFoundation={toggleFoundation}
+              foundationState={foundation}
             />
-            <Button
-              title="Top Artists"
-              onPress={toggleFoundation}
-              style={styles.foundationButton}
-              selected={foundation == "artist"}
-              textStyle={{ fontSize: 25 }}
+            <FoundationButton
+              assigned="artist"
+              toggleFoundation={toggleFoundation}
+              foundationState={foundation}
             />
           </View>
         </Section>
@@ -331,16 +349,6 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    width: "100%",
-  },
-  selectButtonContainer: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    width: "100%",
-    gap: 20,
-  },
-  cardContainer: {
     justifyContent: "space-around",
     width: "100%",
   },

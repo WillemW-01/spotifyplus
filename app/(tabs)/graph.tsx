@@ -2,23 +2,24 @@ import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import VisNetwork, { VisNetworkRef } from "react-native-vis-network";
 
-import { PHYSICS, resolvers, SettingsObjectType } from "@/constants/resolverObjects";
-
 import BrandGradient from "@/components/BrandGradient";
-import GraphBuilder, { Foundation, TimeFrame } from "@/components/graph/GraphBuilder";
+import GraphBuilder, { Foundation } from "@/components/graph/GraphBuilder";
 import GraphButtonPlay from "@/components/graph/GraphButtonPlay";
 import GraphControls from "@/components/graph/GraphControls";
 import SettingsView from "@/components/graph/SettingsView";
 import LoadingCircle from "@/components/LoadingCircle";
 
+import { Colors } from "@/constants/Colors";
+import { PHYSICS, resolvers, SettingsObjectType } from "@/constants/resolverObjects";
+
 import { useArtist } from "@/hooks/useArtist";
-import { BuildGraphArtistsProps, Edge, useGraphData } from "@/hooks/useGraphData";
+import useGraphArtist from "@/hooks/useGraphArtist";
+import { BuildGraphArtistsProps } from "@/hooks/useGraphData";
+import useGraphPlaylist from "@/hooks/useGraphPlaylist";
 import { usePlayback } from "@/hooks/usePlayback";
 
-import { Colors } from "@/constants/Colors";
-import useGraphArtist from "@/hooks/useGraphArtist";
-import useGraphPlaylist from "@/hooks/useGraphPlaylist";
 import { BuildGraphPlaylistProps } from "@/interfaces/graphs";
+
 import { getNeighbours } from "@/utils/graphUtils";
 import { shuffleArray } from "@/utils/miscUtils";
 
