@@ -11,6 +11,7 @@ import { DESCRIPTIONS, PARAMETERS, TrackFeatures } from "@/constants/sliderPrese
 interface Props {
   label: keyof TrackFeatures;
   value: number;
+  // eslint-disable-next-line no-unused-vars
   setValue: (featureName: keyof TrackFeatures, value: number) => void;
   min?: number;
   max?: number;

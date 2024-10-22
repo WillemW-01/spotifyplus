@@ -48,12 +48,14 @@ const iconStyles = {
   },
 } as { [key: string]: IconStyle };
 
-const getShadowStyle = (synced: LocalState): ViewStyle => ({
-  shadowColor: iconStyles[synced].color,
-  shadowOpacity: synced == "online" ? 0.0 : 0.9,
-  shadowOffset: { width: 0, height: 0 },
-  shadowRadius: 10,
-});
+const getShadowStyle = (synced: LocalState): ViewStyle => {
+  return {
+    shadowColor: iconStyles[synced].color,
+    shadowOpacity: synced == "online" ? 0.0 : 0.9,
+    shadowOffset: { width: 0, height: 0 },
+    shadowRadius: 10,
+  };
+};
 
 export default function SyncedCard({
   title,

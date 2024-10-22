@@ -102,7 +102,7 @@ export default function MoodCustomizer({
                 })}
               </GridBox>
             </View>
-            {Object.entries(sliderValues).map(([k, v], i) => {
+            {Object.entries(sliderValues).map(([k, v]) => {
               return (
                 <MoodSlider
                   key={k}

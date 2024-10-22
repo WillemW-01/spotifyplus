@@ -276,7 +276,8 @@ export default function Mood() {
         style={{ height: "100%", width: "100%" }}
         refreshControl={<RefreshControl refreshing={false} onRefresh={refresh} />}
       >
-        {playlists &&
+        {playlists.length > 0 &&
+          outOfDate.length > 0 &&
           playlists.map((item, index) => {
             return (
               <SyncedCard
