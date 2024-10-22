@@ -257,11 +257,11 @@ export default function Mood() {
     }
   }, []);
 
-  useEffect(() => {
-    if (sliderValues) {
-      console.log("Value: ", sliderValues);
-    }
-  }, [sliderValues]);
+  // useEffect(() => {
+  //   if (sliderValues) {
+  //     console.log("Value: ", sliderValues);
+  //   }
+  // }, [sliderValues]);
 
   const refresh = async () => {
     setIsRefreshing(true);

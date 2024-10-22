@@ -14,6 +14,7 @@ import {
 import { useEffect, useRef } from "react";
 import { useLogger } from "./useLogger";
 import { useArtist } from "./useArtist";
+import { printObj } from "@/utils/miscUtils";
 
 interface DatabaseOperations {
   name: string;
@@ -82,7 +83,7 @@ const STATEMENT_TEMPLATES = {
 
 export function useDb(): DatabaseOperations {
   const db = useSQLiteContext();
-  const { addLog } = useLogger();
+  const { addLog, logError, logWarn } = useLogger();
   const { getArtistGenres } = useArtist();
 
   const name = db.databaseName;
@@ -91,15 +92,7 @@ export function useDb(): DatabaseOperations {
    *                          STATEMENT MANAGEMENT                             *
    *****************************************************************************/
 
-  const statements = useRef<{ [key: string]: SQLiteStatement }>({
-    intoArtists: null,
-    intoAlbums: null,
-    intoTracks: null,
-    intoAlbumArtists: null,
-    intoTrackArtists: null,
-    intoPlaylists: null,
-    intoPlaylistTracks: null,
-  });
+  const statements = useRef<{ [key: string]: SQLiteStatement }>({});
 
   async function prepareStatements() {
     let successFull = 0;
@@ -109,7 +102,7 @@ export function useDb(): DatabaseOperations {
         statements.current[key] = await db.prepareAsync(STATEMENT_TEMPLATES[key]);
         successFull += 1;
       } catch (error) {
-        console.log(`Error while preparing ${key}: `, error);
+        logError(`Error while preparing ${key}: `, error, `prepareStatement`);
       }
     }
     addLog(
@@ -122,7 +115,7 @@ export function useDb(): DatabaseOperations {
     const statementKeys = Object.keys(STATEMENT_TEMPLATES); // Get all keys of STATEMENT_TEMPLATES
     for (const key of statementKeys) {
       if (!statements.current[key]) {
-        console.log(`Statement not ready: ${key}`);
+        logError(`Statement not ready: ${key}`, null, "prepareStatement");
         return false;
       }
     }
@@ -133,11 +126,12 @@ export function useDb(): DatabaseOperations {
     try {
       return (await statement.executeAsync(params)).getAllAsync();
     } catch (error) {
-      console.error(
-        `Error getting result of ${JSON.stringify(
-          statement
-        )} with params ${JSON.stringify(params)}: `,
-        error
+      logError(
+        `Error getting result of ${printObj(statement)} with params ${printObj(
+          params
+        )}: `,
+        error,
+        "resultOf"
       );
     }
   }
@@ -156,7 +150,7 @@ export function useDb(): DatabaseOperations {
 
   async function insertNewSong(song: TrackFeature) {
     if (statementsReady()) {
-      console.log(`[dbInsert] Inserting ${song.name} (${song.id})`);
+      addLog(`Inserting ${song.name} (${song.id})`, "insertSong");
       await insertArtists(song.artists);
       await insertAlbum(song.album);
       await insertPlaylist(song.playlist);
@@ -167,7 +161,7 @@ export function useDb(): DatabaseOperations {
       const res = await insertTrackFeatures(song);
       return res;
     } else {
-      console.error(`Statements not ready yet`);
+      logError(`Statements not ready yet`, null, "insertSong");
     }
   }
 
@@ -184,14 +178,18 @@ export function useDb(): DatabaseOperations {
             $name: artist.name,
           });
 
-          console.log(`[dbInsert]\tInserted ${artist.name} (${artist.id})`);
+          addLog(`Inserted ${artist.name} (${artist.id})`, "insertArtist", 1);
           await insertGenres(artist.id);
-          console.log(`[dbInsert]\tInserted genres of ${artist.name} (${artist.id})`);
+          addLog(`Inserted genres of ${artist.name} (${artist.id})`, "insertArtist", 1);
         } catch (error) {
-          console.error(`Error inserting ${artist.name} (${artist.id}):`, error);
+          logError(
+            `Error inserting ${artist.name} (${artist.id}):`,
+            error,
+            "insertArtist"
+          );
         }
       } else {
-        console.warn(`[dbInsert]\t${artist.name} (${artist.id}) already exists`);
+        logWarn(`${artist.name} (${artist.id}) already exists`, "insertArtist", 1);
       }
     }
   }
@@ -206,7 +204,7 @@ export function useDb(): DatabaseOperations {
         ).length > 0;
       if (!doesExist) {
         const genres = await getArtistGenres(artistId, 0);
-        console.log(`\tgenres: ${JSON.stringify(genres)}`);
+        addLog(`genres: ${printObj(genres)}`, "insertGenres", 1);
 
         for (const genre of genres) {
           await statements.current.intoGenre.executeAsync({ $genre: genre });
@@ -218,10 +216,10 @@ export function useDb(): DatabaseOperations {
           });
         }
       } else {
-        console.warn(`[dbInsert]\tArtists already have genres assigned`);
+        logWarn(`Artists already have genres assigned`, "insertGenres");
       }
     } catch (error) {
-      console.error(`Error when trying to add genres:`, error);
+      logError(`Error when trying to add genres:`, error, "insertGenres");
     }
   }
 
@@ -236,12 +234,16 @@ export function useDb(): DatabaseOperations {
           $id: album.id,
           $name: album.name,
         });
-        console.log(`[dbInsert]\tInserted album ${album.name} (${album.id})`);
+        addLog(`Inserted album ${album.name} (${album.id})`, "insertAlbum", 1);
       } catch (error) {
-        console.error(`Error inserting album ${album.name} (${album.id}):`, error);
+        logError(
+          `Error inserting album ${album.name} (${album.id}):`,
+          error,
+          "insertAlbum"
+        );
       }
     } else {
-      console.warn(`[dbInsert]\t${album.name} (${album.id}) already exists`);
+      logWarn(`Album ${album.name} (${album.id}) already exists`, "insertAlbum");
     }
 
     await insertArtists(album.artists);
@@ -265,12 +267,16 @@ export function useDb(): DatabaseOperations {
           $album_id: albumId,
           $artist_id: artistId,
         });
-        console.log(`[dbInsert]\tInserted album ${albumId} <=> ${artistId}`);
+        addLog(`Inserted album ${albumId} <=> artist ${artistId}`, "albumArtist", 1);
       } catch (error) {
-        console.error(`Error inserting album ${albumId} <=> ${artistId}:`, error);
+        logError(
+          `Error inserting album ${albumId} <=> artist ${artistId}:`,
+          error,
+          "albumArtist"
+        );
       }
     } else {
-      console.warn(`[dbInsert]\t${albumId} <=> ${albumId} already exists`);
+      logWarn(`album ${albumId} <=> artist ${albumId} already exists`, "albumArtist");
     }
   }
 
@@ -286,7 +292,7 @@ export function useDb(): DatabaseOperations {
     );
   }
 
-  async function insertPlaylistTrack(playlistId, trackId) {
+  async function insertPlaylistTrack(playlistId: string, trackId: string) {
     await statements.current.intoPlaylistTracks.executeAsync(playlistId, trackId);
   }
 
@@ -324,13 +330,15 @@ export function useDb(): DatabaseOperations {
           $artist_id: artistId,
           $related_id: relatedArtist.id,
         });
-        console.log(
-          `[dbInsert]\tInserted related ${relatedArtist.name} (${relatedArtist.id})`
+        addLog(
+          `Inserted related artist ${relatedArtist.name} (${relatedArtist.id})`,
+          "relatedArtist"
         );
       } catch (error) {
-        console.error(
-          `Error inserting related ${relatedArtist.name} (${relatedArtist.id}):`,
-          error
+        logError(
+          `Error inserting related artist ${relatedArtist.name} (${relatedArtist.id}):`,
+          error,
+          "relatedArtist"
         );
       }
     }
@@ -343,10 +351,10 @@ export function useDb(): DatabaseOperations {
   async function getSong(songId: string) {
     try {
       if (!songId) {
-        addLog(`Requested song with no id (id = null)`, `getSong`);
+        logError(`Requested song with no id: `, { message: "id = null" }, `getSong`);
         return;
       }
-      console.log(`Fetching song with id ${songId}`);
+      // addLog(`Fetching song with id ${songId}`);
       const tracks = (await resultOf(statements.current.retrieveSongFeatures, {
         $id: songId,
       })) as DbTrack[];
@@ -415,7 +423,7 @@ export function useDb(): DatabaseOperations {
 
       return result;
     } catch (error) {
-      console.log(`Error at getSong: ${error}`);
+      logError(`Error at getSong:`, error, "getSong");
     }
   }
 
