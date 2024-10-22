@@ -7,6 +7,7 @@ import { BuildGraphArtistsProps, Edge, Node } from "@/interfaces/graphs";
 import { TopArtist } from "@/interfaces/topItems";
 import { useUser } from "./useUser";
 import { Artist, useArtist } from "./useArtist";
+import { DbArtist } from "@/constants/db/models";
 
 export default function useGraphPlaylist() {
   const [graphArtist, setGraphArtist] = useState<Data>({ nodes: [], edges: [] });
@@ -72,7 +73,7 @@ export default function useGraphPlaylist() {
   const connectRelatedArtists = (
     from: TopArtist,
     to: TopArtist,
-    relatedArtists: Artist[],
+    relatedArtists: CustomArtist[],
     edge: Edge[]
   ) => {
     return [{} as Edge];
@@ -85,16 +86,16 @@ export default function useGraphPlaylist() {
     toIndex: number,
     edges: Edge[]
   ) => {
-    for (const genre of from.genres) {
-      if (to.genres.includes(genre)) {
-        const connected = findEdgeIndex(fromIndex, toIndex, edges, false);
-        if (connected >= 0) {
-          edges[connected].value += 1;
-        } else {
-          pushEdge(edges, fromIndex, toIndex, 1);
-        }
-      }
-    }
+    // for (const genre of from.genres) {
+    //   if (to.genres.includes(genre)) {
+    //     const connected = findEdgeIndex(fromIndex, toIndex, edges, false);
+    //     if (connected >= 0) {
+    //       edges[connected].value += 1;
+    //     } else {
+    //       pushEdge(edges, fromIndex, toIndex, 1);
+    //     }
+    //   }
+    // }
   };
 
   const downloadRelatedArtists = async (artistId: string) => {
@@ -122,7 +123,8 @@ export default function useGraphPlaylist() {
       doRelated && console.log("\tConnecting by related artists");
       for (let j = 0; j < artists.length; j++) {
         if (i !== j) {
-          doAlbumGenres && connectByGenres(artists[i], i, artists[j], j, tempEdges);
+          // doAlbumGenres && connectByGenres(artists[i], i, artists[j], j, tempEdges);
+          // TODO: fix this
           doRelated &&
             connectRelatedArtists(artists[i], artists[j], relatedArtists, tempEdges);
         }
