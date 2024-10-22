@@ -5,11 +5,14 @@ import {
   DimensionValue,
   StyleSheet,
   Text,
+  TextStyle,
   TouchableOpacity,
   useColorScheme,
+  ViewStyle,
 } from "react-native";
 import React = require("react");
 import { Colors } from "@/constants/Colors";
+import { Ionicons } from "@expo/vector-icons";
 
 type PossibleColors = "dark" | "brand" | "grey";
 
@@ -31,6 +34,8 @@ interface Props {
     size: number;
     color: ColorValue;
   };
+  style?: ViewStyle;
+  textStyle?: TextStyle;
 }
 
 const getFillColor = (color: PossibleColors, scheme: ColorSchemeName) => {
@@ -59,6 +64,8 @@ export default function Button({
   textLight = true,
   disabled = false,
   icon,
+  style,
+  textStyle,
 }: Props) {
   const scheme = useColorScheme() ?? "dark";
   const fillColor = getFillColor(color, scheme);
@@ -68,17 +75,21 @@ export default function Button({
       onPress={onPress}
       activeOpacity={opacity}
       disabled={disabled}
-      style={{
-        ...styles.container,
-        width: width,
-        height: height,
-        flex: flex,
-        backgroundColor: disabled ? getFillColor("grey", scheme) : fillColor,
-        padding: padding,
-        paddingHorizontal: paddingHorizontal,
-      }}
+      style={[
+        {
+          width: width,
+          height: height,
+          flex: flex,
+          backgroundColor: disabled ? getFillColor("grey", scheme) : fillColor,
+          padding: padding,
+          paddingHorizontal: paddingHorizontal,
+        },
+        styles.container,
+        style,
+      ]}
     >
-      <Text style={{ color: textLight ? "white" : "black" }}>{title}</Text>
+      <Text style={[{ color: textLight ? "white" : "black" }, textStyle]}>{title}</Text>
+      {icon && <Ionicons name={icon.name} size={icon.size} color={icon.color} />}
     </TouchableOpacity>
   );
 }

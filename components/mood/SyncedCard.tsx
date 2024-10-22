@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { LocalState } from "@/app/(tabs)/mood";
 import Card from "@/components/Card";
 import { Ionicons } from "@expo/vector-icons";
-import { ColorValue, TouchableOpacity, View } from "react-native";
+import { ColorValue, TouchableOpacity, View, StyleSheet, ViewStyle } from "react-native";
 import { IoniconType } from "@/interfaces/ionicon";
 import OnlineChecker from "./OnlineChecker";
 import { SimplifiedPlayList } from "@/interfaces/playlists";
@@ -48,6 +48,13 @@ const iconStyles = {
   },
 } as { [key: string]: IconStyle };
 
+const getShadowStyle = (synced: LocalState): ViewStyle => ({
+  shadowColor: iconStyles[synced].color,
+  shadowOpacity: synced == "online" ? 0.0 : 0.9,
+  shadowOffset: { width: 0, height: 0 },
+  shadowRadius: 10,
+});
+
 export default function SyncedCard({
   title,
   subtitle,
@@ -81,12 +88,7 @@ export default function SyncedCard({
         console.log("Pressing button");
         askForDownload(synced);
       }}
-      style={{
-        shadowColor: style.color,
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: synced == "online" ? 0.0 : 0.9,
-        shadowRadius: 10,
-      }}
+      style={getShadowStyle(synced)}
     >
       <Card
         title={title}
@@ -95,27 +97,7 @@ export default function SyncedCard({
         width={width ?? 90}
         onPress={() => askForDownload(synced)}
       />
-      <View
-        style={{
-          position: "absolute",
-          top: 0,
-          right: 0,
-          width: width,
-          height: width,
-          borderRadius: 12,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      ></View>
-      <View
-        style={{
-          position: "absolute",
-          top: 2,
-          right: 2,
-          backgroundColor: style.color,
-          borderRadius: 12,
-        }}
-      >
+      <View style={[styles.iconContainer, { backgroundColor: style.color }]}>
         <Ionicons name={style.name} color="white" size={25} />
       </View>
       <OnlineChecker
@@ -127,3 +109,12 @@ export default function SyncedCard({
     </TouchableOpacity>
   );
 }
+
+const styles = StyleSheet.create({
+  iconContainer: {
+    position: "absolute",
+    top: 2,
+    right: 2,
+    borderRadius: 12,
+  },
+});

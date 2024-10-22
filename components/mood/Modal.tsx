@@ -1,14 +1,14 @@
-import { Colors } from "@/constants/Colors";
 import React, { ReactNode } from "react";
-import { View, Modal, StyleSheet, TouchableOpacity, Text } from "react-native";
+import { Modal, StyleSheet, View } from "react-native";
+
+import { Colors } from "@/constants/Colors";
 
 interface Props {
   visible: boolean;
-  setVisible: React.Dispatch<React.SetStateAction<boolean>>;
   children?: ReactNode;
 }
 
-export default function MoodModal({ visible, setVisible, children }: Props) {
+export default function MoodModal({ visible, children }: Props) {
   return (
     <View style={styles.centeredView}>
       <Modal animationType="slide" transparent={true} visible={visible}>
@@ -46,25 +46,5 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-  },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-  },
-  buttonOpen: {
-    backgroundColor: "#F194FF",
-  },
-  buttonClose: {
-    backgroundColor: "#2196F3",
-  },
-  textStyle: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: "center",
   },
 });

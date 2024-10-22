@@ -1,40 +1,26 @@
 import { Ionicons } from "@expo/vector-icons";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-import React, { useRef, useState } from "react";
-import {
-  Modal,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import React, { useState } from "react";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-import { Colors } from "@/constants/Colors";
-import {
-  PREDICATES,
-  PRESETS,
-  TrackFeatures,
-  PresetItem,
-  Preset,
-} from "@/constants/sliderPresets";
-
+import Button from "@/components/Button";
+import GridBox from "@/components/GridBox";
+import MoodModal from "@/components/mood/Modal";
 import MoodButton from "@/components/mood/MoodButton";
 import MoodSlider from "@/components/mood/MoodSlider";
-import Button from "../Button";
-import GridBox from "../GridBox";
-import Animated from "react-native-reanimated";
-import MoodModal from "./Modal";
+
+import { Colors } from "@/constants/Colors";
+import { Preset, PRESETS, TrackFeatures } from "@/constants/sliderPresets";
 
 interface Props {
-  // bottomSheetRef: React.RefObject<BottomSheet>;
-  // modalRef: React.MutableRefObject<IHandles>;
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  // eslint-disable-next-line no-unused-vars
   onPlay: (mood?: keyof typeof PRESETS) => void;
   resetSliders: () => void;
+  // eslint-disable-next-line no-unused-vars
   setSlidersTo: (mood: keyof typeof PRESETS) => void;
   sliderValues: Preset;
+  // eslint-disable-next-line no-unused-vars
   updateValue: (featureName: keyof TrackFeatures, value: number) => void;
 }
 
@@ -50,26 +36,11 @@ export default function MoodCustomizer({
   const [showMore, setShowMore] = useState(false);
 
   function toggleAdvanced() {
-    if (showMore) {
-      setShowMore(false);
-    } else {
-      setShowMore(true);
-    }
+    setShowMore((prev) => !prev);
   }
 
   return (
-    // <View style={styles.sheetContainer}>
-    //   <Modal visible={visible} transparent animationType="slide">
-    //     <View
-    //       style={{
-    //         padding: 20,
-    //         justifyContent: "center",
-    //         alignItems: "center",
-    //         maxHeight: "80%",
-    //       }}
-    //     >
-    //       <View style={{ ...styles.modalView, backgroundColor: Colors.dark.light }}>
-    <MoodModal visible={visible} setVisible={setVisible}>
+    <MoodModal visible={visible}>
       <View style={styles.contentContainer}>
         <View style={styles.header}>
           <Text style={styles.title}>Pick a mood</Text>
@@ -93,10 +64,15 @@ export default function MoodCustomizer({
             );
           })}
         </View>
-        <View style={{ flexDirection: "row" }}>
-          <TouchableOpacity onPress={toggleAdvanced} style={styles.playButton}>
-            <Text style={{ fontSize: 16 }}>{showMore ? "Hide" : "Advanced"}</Text>
-          </TouchableOpacity>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Button
+            onPress={toggleAdvanced}
+            title={showMore ? "Hide" : "Advanced"}
+            textLight={false}
+            textStyle={{ fontSize: 16 }}
+            padding={15}
+            style={{ minWidth: 80 }}
+          />
           {showMore && (
             <View style={styles.playButtonContainer}>
               <TouchableOpacity onPress={resetSliders} style={{ marginRight: 15 }}>
@@ -141,11 +117,6 @@ export default function MoodCustomizer({
         )}
       </ScrollView>
     </MoodModal>
-    //       </View>
-
-    //     </View>
-    //   </Modal>
-    // </View>
   );
 }
 
@@ -154,7 +125,7 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     flexWrap: "wrap",
-    // justifyContent: "space-evenly",
+    alignItems: "center",
     rowGap: 10,
     gap: 10,
     flex: 1,
@@ -169,8 +140,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   playButton: {
-    // width: 80,
-    // height: 40,
     padding: 10,
     justifyContent: "center",
     alignItems: "center",
