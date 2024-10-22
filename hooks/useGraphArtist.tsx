@@ -1,63 +1,27 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Data } from "react-native-vis-network";
-import { CustomArtist } from "@/interfaces/tracks";
+
 import { Connection } from "@/constants/graphConnections";
-import { useDb } from "./useDb";
+
+import { useArtist } from "@/hooks/useArtist";
+import { useDb } from "@/hooks/useDb";
+import { useLogger } from "@/hooks/useLogger";
+import { useUser } from "@/hooks/useUser";
+
 import { BuildGraphArtistsProps, Edge, Node } from "@/interfaces/graphs";
 import { TopArtist } from "@/interfaces/topItems";
-import { useUser } from "./useUser";
-import { Artist, useArtist } from "./useArtist";
-import { DbArtist } from "@/constants/db/models";
-import { Alert } from "react-native";
+import { CustomArtist } from "@/interfaces/tracks";
+
+import { buildNode, findEdgeIndex, pushEdge } from "@/utils/graphUtils";
 
 export default function useGraphPlaylist() {
   const [graphArtist, setGraphArtist] = useState<Data>({ nodes: [], edges: [] });
   const [loading, setLoading] = useState(false);
 
   const { getTopArtistsAll } = useUser();
-  const { getArtistGenres, getRelatedArtists } = useArtist();
+  const { getRelatedArtists } = useArtist();
   const { getRelatedArtists: getLocalRelatedArtists, insertRelatedArtists } = useDb();
-
-  const fromTo = (edge: Edge, from: number, to: number) =>
-    edge.from === from && edge.to === to;
-  const toFrom = (edge: Edge, from: number, to: number) =>
-    edge.from === to && edge.to === from;
-
-  const isConnected = (
-    from: number,
-    to: number,
-    edges: Edge[],
-    directed = true
-  ): boolean => {
-    return edges.some(
-      (edge) => fromTo(edge, from, to) || (!directed && toFrom(edge, from, to))
-    );
-  };
-
-  const findEdgeIndex = (
-    from: number,
-    to: number,
-    edges: Edge[],
-    directed = true
-  ): number => {
-    return edges.findIndex(
-      (edge) => fromTo(edge, from, to) || (!directed && toFrom(edge, from, to))
-    );
-  };
-
-  const buildNode = (
-    id: number,
-    guid: string,
-    name: string,
-    group: "artist" | "song" = "song"
-  ) =>
-    ({
-      id: id,
-      guid: guid,
-      label: name,
-      shape: "dot",
-      group: group,
-    } as Node);
+  const { addLog, logError } = useLogger();
 
   const packNodes = (artists: TopArtist[]) => {
     return artists.map(
@@ -69,12 +33,7 @@ export default function useGraphPlaylist() {
     return packNodes(artists);
   };
 
-  const pushEdge = (tempEdges: Edge[], from: number, to: number, weight?: number) => {
-    tempEdges.push({ from, to, value: weight ?? 1 });
-  };
-
   const connectRelatedArtists = (
-    from: TopArtist,
     fromIndex: number,
     to: TopArtist,
     toIndex: number,
@@ -113,7 +72,6 @@ export default function useGraphPlaylist() {
   const downloadRelatedArtists = async (artist: TopArtist) => {
     const localRelated = await getLocalRelatedArtists(artist.id);
     const inDb = localRelated.length != 0;
-    console.log(`LocalRelated has ${localRelated.length} items, inDb: ${inDb}`);
     if (!inDb) {
       const onlineRelated = await getRelatedArtists(artist.id);
       await insertRelatedArtists(artist, onlineRelated);
@@ -133,22 +91,14 @@ export default function useGraphPlaylist() {
 
     const tempEdges = [] as Edge[];
     for (let i = 0; i < artists.length; i++) {
-      console.log(`> Working with ${artists[i].name} (${artists[i].id})`);
+      addLog(`> Working with ${artists[i].name} (${artists[i].id})`, "connectNodes");
       const relatedArtists = doRelated ? await downloadRelatedArtists(artists[i]) : [];
-      doAlbumGenres && console.log("\tConnecting by album genres");
-      doRelated && console.log("\tConnecting by related artists");
+      doAlbumGenres && addLog("Connecting by album genres", "connectNodes", 1);
+      doRelated && addLog("Connecting by related artists", "connectNodes");
       for (let j = 0; j < artists.length; j++) {
         if (i !== j) {
           doAlbumGenres && connectByGenres(artists[i], i, artists[j], j, tempEdges);
-          doRelated &&
-            connectRelatedArtists(
-              artists[i],
-              i,
-              artists[j],
-              j,
-              relatedArtists,
-              tempEdges
-            );
+          doRelated && connectRelatedArtists(i, artists[j], j, relatedArtists, tempEdges);
         }
       }
     }
@@ -162,21 +112,7 @@ export default function useGraphPlaylist() {
   }: BuildGraphArtistsProps) => {
     setLoading(true);
     try {
-      console.log(`Connection type: ${connectionTypes[0].name}`);
-      // if (connectionTypes[0].name === "Album Genres") {
-      //   Alert.alert(
-      //     "Not implemented yet!",
-      //     "This type of graph is not implemented yet. Coming soon.",
-      //     [
-      //       {
-      //         text: "Ok",
-      //         style: "default",
-      //       },
-      //     ]
-      //   );
-      //   setLoading(false);
-      //   return;
-      // }
+      addLog(`Connection types: ${connectionTypes.map((c) => c.name)}`, "buildArtist");
 
       const localArtists = !artists ? await getTopArtistsAll(timeFrame) : artists;
 
@@ -188,12 +124,11 @@ export default function useGraphPlaylist() {
         nodes: nodes,
         edges: edges,
       });
-      console.log("Done connecting!");
-      setLoading(false);
+      addLog("Done connecting!", "buildArtist");
     } catch (error) {
-      console.log("Failed to fetch playlists: ", error);
+      logError("Failed to fetch playlists: ", error, "buildArtist");
     } finally {
-      console.log("Setting loading to false");
+      addLog("Setting loading to false", "buildArtist");
       setLoading(false);
     }
   };

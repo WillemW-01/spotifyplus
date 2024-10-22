@@ -27,16 +27,21 @@ import { useUser } from "@/hooks/useUser";
 import { SimplifiedPlayList } from "@/interfaces/playlists";
 import { TopArtist } from "@/interfaces/topItems";
 import Section from "./sections/Section";
+import { useLogger } from "@/hooks/useLogger";
 
 interface ModalProps extends ModalBaseProps {
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  // eslint-disable-next-line no-unused-vars
   onArtist?: ({ timeFrame, artists }: BuildGraphArtistsProps) => Promise<void>;
   onPlaylist?: ({
+    // eslint-disable-next-line no-unused-vars
     playlistIds,
+    // eslint-disable-next-line no-unused-vars
     connectionTypes,
   }: BuildGraphPlaylistProps) => Promise<void>;
   setHasChosen: React.Dispatch<React.SetStateAction<boolean>>;
+  setGraphType: React.Dispatch<React.SetStateAction<Foundation>>;
 }
 
 export type TimeFrame = "short_term" | "medium_term" | "long_term";
@@ -47,6 +52,7 @@ export default function GraphBuilder({
   onArtist,
   onPlaylist,
   setHasChosen,
+  setGraphType,
 }: ModalProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [playlists, setPlayLists] = useState<SimplifiedPlayList[]>([]);
@@ -61,6 +67,7 @@ export default function GraphBuilder({
 
   const { listPlayLists } = usePlayLists();
   const { getTopArtistsAll } = useUser();
+  const { addLog } = useLogger();
 
   const updateConnections = (newConnection: Connection) => {
     setConnections((prev) => {
@@ -78,10 +85,10 @@ export default function GraphBuilder({
 
   const handleNewArtistConnection = (newConnection: Connection, temp: Connection[]) => {
     if (!temp.includes(newConnection)) {
-      console.log(`Adding ${newConnection.name}`);
+      addLog(`Adding ${newConnection.name}`, "newArtistConnection");
       temp.push(newConnection);
     } else {
-      console.log(`Removing ${newConnection.name}`);
+      addLog(`Removing ${newConnection.name}`, "newArtistConnection");
       temp.splice(temp.indexOf(newConnection), 1);
     }
     return temp;
@@ -89,8 +96,10 @@ export default function GraphBuilder({
 
   const handleNewPlaylistConnection = (newConnection: Connection, temp: Connection[]) => {
     if (temp.length > 0) {
+      addLog("Resetting playlist connection list", "newPlaylistConnection");
       temp.splice(0);
     }
+    addLog(`Adding ${newConnection.name}`, "newPlaylistConnection");
     temp.push(newConnection);
     return temp;
   };
@@ -170,6 +179,7 @@ export default function GraphBuilder({
   const buildGraph = () => {
     setVisible(false);
     setHasChosen(true);
+    setGraphType(foundation);
     onArtist && onPlaylist && buildFunction(foundation);
   };
 

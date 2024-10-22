@@ -1,41 +1,49 @@
-// import { PackedArtist } from "@/app/(tabs)/graph";
-import { TopArtist } from "@/interfaces/topItems";
+import { Edge, Node } from "@/interfaces/graphs";
 
-interface Edge {
-  from: number;
-  to: number;
-  value: number;
-}
+export const fromTo = (edge: Edge, from: number, to: number) =>
+  edge.from === from && edge.to === to;
+export const toFrom = (edge: Edge, from: number, to: number) =>
+  edge.from === to && edge.to === from;
 
-// interface Node {
-//   id: number;
-//   label: string;
-//   shape: string;
-// }
-
-export interface PackedArtist {
-  title: string;
-  id: number;
-  guid: string;
-  popularity: number;
-  imageUri: string;
-  genres: string[];
-}
-
-const packArtistItem = (artistItem: TopArtist, index: number) => {
-  return {
-    title: artistItem.name,
-    id: index,
-    guid: artistItem.id,
-    popularity: artistItem.popularity,
-    genres: artistItem.genres,
-    imageUri: artistItem.images[0].url,
-    width: 90,
-  };
+export const isConnected = (
+  from: number,
+  to: number,
+  edges: Edge[],
+  directed = true
+): boolean => {
+  return edges.some(
+    (edge) => fromTo(edge, from, to) || (!directed && toFrom(edge, from, to))
+  );
 };
 
-export const packArtists = (artists: TopArtist[]): PackedArtist[] =>
-  artists.map(packArtistItem);
+export const findEdgeIndex = (
+  from: number,
+  to: number,
+  edges: Edge[],
+  directed = true
+): number => {
+  return edges.findIndex(
+    (edge) => fromTo(edge, from, to) || (!directed && toFrom(edge, from, to))
+  );
+};
+
+export const pushEdge = (edges: Edge[], from: number, to: number, weight?: number) => {
+  edges.push({ from, to, value: weight ?? 1 });
+};
+
+export const buildNode = (
+  id: number,
+  guid: string,
+  name: string,
+  group: "artist" | "song" = "song"
+) =>
+  ({
+    id: id,
+    guid: guid,
+    label: name,
+    shape: "dot",
+    group: group,
+  } as Node);
 
 export const getImmediateNeighbours = (node: number, edges: Edge[] | undefined) => {
   if (!edges) return [];
@@ -69,55 +77,3 @@ export const getNeighbours = (
   neighbours = degree == 2 ? tempNeighbours : neighbours;
   return [...new Set(neighbours)];
 };
-
-const alreadyConnected = (
-  artistFrom: PackedArtist,
-  artistTo: PackedArtist,
-  edges: Edge[]
-): number => {
-  for (let i = 0; i < edges.length; i++) {
-    const fromToExists = edges[i].from === artistFrom.id && edges[i].to === artistTo.id;
-    const toFromExists = edges[i].to === artistFrom.id && edges[i].from === artistTo.id;
-    console.log(
-      `FromTo: ${fromToExists}, ToFrom: ${toFromExists}, edgesLength: ${edges.length}`
-    );
-    if (fromToExists || toFromExists) {
-      return i;
-    }
-  }
-  return -1;
-};
-
-const connectMutalGenres = (artistFrom: PackedArtist, artistTo: PackedArtist): Edge[] => {
-  const edges = [] as Edge[];
-
-  artistFrom.genres.forEach((genre) => {
-    if (artistTo.genres.includes(genre)) {
-      const connected = alreadyConnected(artistFrom, artistTo, edges);
-      if (connected >= 0) {
-        console.log("Already connected!, new value: ", edges[connected].value + 1);
-        edges[connected].value += 1;
-      } else {
-        console.log("New edge: ", artistFrom.id, artistTo.id, "edgesLen: ", edges.length);
-        edges.push({ from: artistFrom.id, to: artistTo.id, value: 1 });
-      }
-    }
-  });
-  return edges;
-};
-
-export function connectArtists(artists: PackedArtist[]): Edge[] {
-  const tempEdges = [] as Edge[];
-  for (let i = 0; i < artists.length; i++) {
-    for (let j = 0; j < artists.length; j++) {
-      if (i !== j) {
-        const edges = connectMutalGenres(artists[i], artists[j]);
-        if (edges.length > 0) {
-          tempEdges.push(...edges);
-        }
-      }
-    }
-  }
-
-  return tempEdges;
-}

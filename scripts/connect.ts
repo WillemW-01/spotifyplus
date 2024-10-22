@@ -30,6 +30,7 @@ function isConnected(edges: Edge[], from: number, to: number) {
 export function connect(
   features: TrackFeature[],
   edges: Edge[],
+  // eslint-disable-next-line no-unused-vars
   pushEdge?: (tempEdges, from, to, weight?) => void
 ) {
   const filterArray = [
@@ -43,22 +44,22 @@ export function connect(
     "tempo",
     "valence",
   ] as (keyof Feature)[];
-  console.log(`Features: ${features.length}`);
+  // console.log(`Features: ${features.length}`);
   for (let i = 0; i < features.length; i++) {
     const from = features[i];
     const distances = [] as ResultObj[];
-    console.log(`Base: ${from.name}`);
+    // console.log(`Base: ${from.name}`);
     for (let j = 0; j < features.length; j++) {
       if (i != j) {
         const to = features[j];
         const d = getDistance(from, to, filterArray);
         if (d == 0) {
-          console.log(`Found 0 d: ${from.name} <=> ${to.name}`);
+          // console.log(`Found 0 d: ${from.name} <=> ${to.name}`);
           distances.push({ index: j, distance: 0.001 });
         } else if (d < CUTT_OFF) {
-          console.log(
-            `Found ${d.toFixed(4)} distance for ${from.name} (${i}) <=> ${to.name} (${j})`
-          );
+          // console.log(
+          // `Found ${d.toFixed(4)} distance for ${from.name} (${i}) <=> ${to.name} (${j})`
+          // );
           distances.push({ index: j, distance: d });
         }
       }
@@ -67,9 +68,9 @@ export function connect(
     const closest = distances.slice(0, MAX_NEIGHBOURS);
     for (const to of closest) {
       const already = isConnected(edges, i, to.index);
-      console.log(`Already: ${i} -> ${to.index} = ${already}`);
+      // console.log(`Already: ${i} -> ${to.index} = ${already}`);
       if (already == -1) {
-        console.log(`Pushing new edge: ${from.name} -> ${to.index}`);
+        // console.log(`Pushing new edge: ${from.name} -> ${to.index}`);
         pushEdge(edges, i, to.index, to.distance);
       } else {
         edges[already].value += to.distance;

@@ -5,7 +5,7 @@ import VisNetwork, { VisNetworkRef } from "react-native-vis-network";
 import { PHYSICS, resolvers, SettingsObjectType } from "@/constants/resolverObjects";
 
 import BrandGradient from "@/components/BrandGradient";
-import GraphBuilder, { TimeFrame } from "@/components/graph/GraphBuilder";
+import GraphBuilder, { Foundation, TimeFrame } from "@/components/graph/GraphBuilder";
 import GraphButtonPlay from "@/components/graph/GraphButtonPlay";
 import GraphControls from "@/components/graph/GraphControls";
 import SettingsView from "@/components/graph/SettingsView";
@@ -39,18 +39,28 @@ export default function Graph() {
   const [modalVisible, setModalVisible] = useState(false);
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [graphType, setGraphType] = useState<Foundation>("playlist");
 
   const [force, setForce] = useState<keyof typeof PHYSICS>("barnesHut");
   const [resolverObj, setResolverObj] = useState<SettingsObjectType>(resolvers.barnesHut);
 
   const visNetworkRef = useRef<VisNetworkRef>(null);
 
-  const { graphData, artists, tracks } = useGraphData();
+  // const { graphData, artists, tracks } = useGraphData();
   const { buildGraphPlaylist, graphPlaylist, setGraphPlaylist } = useGraphPlaylist();
   const { buildGraphArtist, graphArtist, setGraphArtist, loading } = useGraphArtist();
 
   const { getTopTracks } = useArtist();
   const { playTracks } = usePlayback();
+
+  const getGraphData = (foundation: Foundation) => {
+    switch (foundation) {
+      case "artist":
+        return graphArtist;
+      case "playlist":
+        return graphPlaylist;
+    }
+  };
 
   const getNodeName = (nodeId: number): string => {
     // console.log("Artists: ", artists.length, "Tracks: ", tracks.length);
@@ -152,6 +162,10 @@ export default function Graph() {
   }, [force]);
 
   useEffect(() => {
+    console.log("Graph type: ", graphType);
+  }, [graphType]);
+
+  useEffect(() => {
     if (!loading && graphReady && visNetworkRef.current && resolverObj) {
       // console.log("Updating settings with resolverObj: ", resolverObj);
       visNetworkRef.current.setOptions({
@@ -184,6 +198,7 @@ export default function Graph() {
           })
         }
         setHasChosen={setHasChosen}
+        setGraphType={setGraphType}
       />
     );
   }
@@ -192,7 +207,7 @@ export default function Graph() {
     <BrandGradient>
       <VisNetwork
         key={key}
-        data={graphPlaylist}
+        data={getGraphData(graphType)}
         options={{
           nodes: {
             borderWidthSelected: 4,
