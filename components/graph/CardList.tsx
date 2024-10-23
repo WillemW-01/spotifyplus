@@ -4,6 +4,7 @@ import SelectableCard from "@/components/graph/SelectableCard";
 import GridBox from "@/components/GridBox";
 import { TopArtist } from "@/interfaces/topItems";
 import { ConnectionCategory } from "@/constants/graphConnections";
+import { LocalState } from "@/app/(tabs)/mood";
 
 interface Props {
   foundation: ConnectionCategory;
@@ -16,6 +17,7 @@ interface Props {
   addArtist: (a: TopArtist) => void;
   // eslint-disable-next-line no-unused-vars
   addPlaylist: (p: SimplifiedPlayList) => void;
+  isSynced?: LocalState[];
   searchTerm?: string;
 }
 
@@ -25,7 +27,9 @@ const isInText = (text: string, query: string) =>
 const renderList = (
   list: TopArtist[] | SimplifiedPlayList[],
   selectedListIds: string[],
+  // eslint-disable-next-line no-unused-vars
   onPress: (arg: TopArtist | SimplifiedPlayList) => void,
+  isSynced?: LocalState[],
   searchTerm?: string
 ) => {
   const toUse =
@@ -38,6 +42,7 @@ const renderList = (
         title={item.name}
         imageUri={item.images[0].url}
         onPress={() => onPress(item)}
+        synced={isSynced[i]}
       />
     );
   });
@@ -51,6 +56,7 @@ export default function CardGrid({
   selectedArtists,
   addArtist,
   addPlaylist,
+  isSynced,
   searchTerm,
 }: Props) {
   const renderFoundation = () => {
@@ -60,6 +66,7 @@ export default function CardGrid({
           playlists,
           selectedPlaylists.map((p) => p.id),
           addPlaylist,
+          isSynced,
           searchTerm
         );
       case "artist":
@@ -67,6 +74,7 @@ export default function CardGrid({
           artists,
           selectedArtists.map((a) => a.id),
           addArtist,
+          isSynced,
           searchTerm
         );
     }

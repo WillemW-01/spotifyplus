@@ -26,6 +26,7 @@ import { useTracks } from "@/hooks/useTracks";
 import { SimplifiedPlayList } from "@/interfaces/playlists";
 import { CustomPlaylist } from "@/interfaces/tracks";
 import { useLogger } from "@/hooks/useLogger";
+import useGraphUtils from "@/hooks/useGraphUtils";
 
 export type LocalState = "online" | "unsynced" | "synced";
 export type SortCritera = "alpha" | "size";
@@ -59,6 +60,7 @@ export default function Mood() {
   const { fitsInPreset } = useTracks();
   const { getPlaylists, insertNewSongs, getPlaylistSongs } = useDb();
   const { addLog, logWarn, logError } = useLogger();
+  const { checkStatus } = useGraphUtils();
 
   const updateValue = (featureName: keyof TrackFeatures, value: number) => {
     setSliderValues((prev) => {
@@ -94,45 +96,6 @@ export default function Mood() {
         `Cant set updated status because playlists and outofdate are not loaded`,
         "checkStatusOutside"
       );
-    }
-  };
-
-  const formatSnapshot = (snap: string) => snap.slice(0, 6) + "..." + snap.slice(-6);
-
-  const checkStatus = async (
-    playlist: SimplifiedPlayList,
-    dbResponse?: CustomPlaylist[]
-  ) => {
-    if (!dbResponse) {
-      addLog(`Checking status of ${playlist.name}`, "checkStatus");
-      dbResponse = await getPlaylists();
-    }
-    const online: CustomPlaylist = {
-      name: playlist.name,
-      id: playlist.id,
-      snapshot: playlist.snapshot_id,
-    };
-
-    const index = dbResponse.findIndex((local) => local.id === online.id);
-    if (index >= 0) {
-      const local = dbResponse[index];
-      if (local.snapshot != online.snapshot) {
-        logWarn(
-          `${online.name} is out of date! ${local.snapshot} vs ${online.snapshot}`,
-          "checkStatus"
-        );
-        return "unsynced";
-      } else {
-        const onlineSnapshot = formatSnapshot(online.snapshot);
-        const localSnapshot = formatSnapshot(local.snapshot);
-        addLog(
-          `${online.name} is synced (${onlineSnapshot} == ${localSnapshot})`,
-          "checkStatus"
-        );
-        return "synced";
-      }
-    } else {
-      return "online";
     }
   };
 

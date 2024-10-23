@@ -31,13 +31,13 @@ interface Props {
   ) => Promise<void>;
 }
 
-interface IconStyle {
+export interface IconStyle {
   color: ColorValue;
   name: IoniconType;
   opacity: number;
 }
 
-const iconStyles = {
+export const iconStyles = {
   synced: {
     color: "green",
     name: "checkmark-circle",
@@ -57,7 +57,7 @@ const iconStyles = {
 
 const NUDGE = 10;
 
-const getShadowStyle = (synced: LocalState): ViewStyle => ({
+export const getShadowStyle = (synced: LocalState): ViewStyle => ({
   shadowColor: iconStyles[synced].color,
   shadowOpacity: synced == "online" ? 0.0 : 0.9,
   shadowOffset: { width: 0, height: 0 },

@@ -70,10 +70,8 @@ export function usePlayLists() {
 
   const buildCustomArtist = (artists: TrackArtist[]) => {
     return artists.map((a) => ({
-      // genres: a.genres,
       id: a.id,
       name: a.name,
-      // images: a.images.map((i) => i.url),
     })) as CustomArtist[];
   };
 
@@ -132,34 +130,12 @@ export function usePlayLists() {
           console.log(`${t.name} at ${j} doesn't have features attached to it`);
         }
 
-        // console.log(`Currently pointing at ${i + j}`);
-
         const newObj = buildTrackFeature(i + j, t, features[j], playlist);
-        // const { album, name, popularity, preview_url } = t;
-        // const newObj = {
-        //   index: i + j,
-        //   name,
-        //   id: t.id,
-        //   album: {
-        //     name: album.name,
-        //     id: album.id,
-        //     artists: buildCustomArtist(album.artists),
-        //   },
-        //   artists: buildCustomArtist(t.artists),
-        //   popularity,
-        //   preview_url,
-        //   ...features[j],
-        //   playlist: {
-        //     name: playlist.name,
-        //     id: playlist.id,
-        //     snapshot: playlist.snapshot_id,
-        //   },
-        // };
+
         if ((i + j) % 5 == 0 && progressCallback)
           progressCallback((i + j) / allIds.length);
         return newObj;
       });
-      // console.log(newTracks[0]);
       localFeatures.push(...newTracks);
     }
     progressCallback && progressCallback(1);

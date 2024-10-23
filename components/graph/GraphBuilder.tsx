@@ -28,6 +28,9 @@ import { SimplifiedPlayList } from "@/interfaces/playlists";
 import { TopArtist } from "@/interfaces/topItems";
 import Section from "./sections/Section";
 import { useLogger } from "@/hooks/useLogger";
+import { useDb } from "@/hooks/useDb";
+import { LocalState } from "@/app/(tabs)/mood";
+import useGraphUtils from "@/hooks/useGraphUtils";
 
 interface FoundationButtonProps {
   toggleFoundation: () => void;
@@ -78,6 +81,7 @@ export default function GraphBuilder({
 }: ModalProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [playlists, setPlayLists] = useState<SimplifiedPlayList[]>([]);
+  const [isSynced, setIsSynced] = useState<LocalState[]>([]);
   const [artists, setArtists] = useState<TopArtist[]>([]);
   const [foundation, setFoundation] = useState<Foundation>("playlist");
   const [connections, setConnections] = useState<Connection[]>([
@@ -90,6 +94,8 @@ export default function GraphBuilder({
   const { listPlayLists } = usePlayLists();
   const { getTopArtistsAll } = useUser();
   const { addLog } = useLogger();
+  const { getPlaylists } = useDb();
+  const { checkStatus } = useGraphUtils();
 
   const updateConnections = (newConnection: Connection) => {
     setConnections((prev) => {
@@ -158,10 +164,16 @@ export default function GraphBuilder({
     }
   };
 
-  const loadPlaylists = async () => {
+  const fetchPlaylists = async () => {
     console.log("Loading playlists");
     const response = await listPlayLists();
+    const dbResponse = await getPlaylists();
+    const states: LocalState[] = await Promise.all(
+      response.map((r) => checkStatus(r, dbResponse))
+    );
     response.sort((a, b) => (b.name > a.name ? -1 : 1));
+
+    setIsSynced(states);
     setPlayLists(response);
   };
 
@@ -176,6 +188,7 @@ export default function GraphBuilder({
   const onTermClick = (clickedTime: TimeFrame) => {
     if (timeFrame != clickedTime) {
       setSelectedArtists([]);
+      setArtists([]);
       loadArtists(clickedTime);
     }
   };
@@ -206,12 +219,9 @@ export default function GraphBuilder({
   };
 
   useEffect(() => {
-    if (
-      foundation == "playlist" &&
-      (!playlists || (playlists && playlists.length == 0))
-    ) {
-      loadPlaylists();
-    } else if (foundation == "artist" && (!artists || (artists && artists.length == 0))) {
+    if (foundation == "playlist" && (!playlists || playlists?.length == 0)) {
+      fetchPlaylists();
+    } else if (foundation == "artist" && (!artists || artists?.length == 0)) {
       loadArtists("short_term");
     }
   }, [foundation]);
@@ -293,17 +303,19 @@ export default function GraphBuilder({
               />
             </View>
           )}
-
-          <CardGrid
-            foundation={foundation}
-            playlists={playlists}
-            artists={artists}
-            selectedPlaylists={selectedPlaylists}
-            selectedArtists={selectedArtists}
-            addArtist={addArtist}
-            addPlaylist={addPlaylist}
-            searchTerm={searchTerm}
-          />
+          {playlists.length > 0 && isSynced.length > 0 && (
+            <CardGrid
+              foundation={foundation}
+              playlists={playlists}
+              artists={artists}
+              selectedPlaylists={selectedPlaylists}
+              selectedArtists={selectedArtists}
+              addArtist={addArtist}
+              addPlaylist={addPlaylist}
+              searchTerm={searchTerm}
+              isSynced={isSynced}
+            />
+          )}
         </View>
       </ScrollView>
       {(selectedArtists.length > 0 || selectedPlaylists.length > 0) && (

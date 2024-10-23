@@ -85,10 +85,6 @@ export function useRequestBuilder(usingSpotify = true) {
   const checkForRefresh = async () => {
     const mustRefresh = await shouldRefresh();
     if (token && refreshToken && mustRefresh) {
-      console.log(
-        `[checkRefresh] ${Boolean(token)} && ${Boolean(refreshToken)} && ${mustRefresh}`
-      );
-      console.log("Should be updating access token");
       const newToken = await refreshAccessToken(refreshToken);
       console.log(`Got new token just before sending requests: ${newToken.slice(0, 20)}`);
     } else return token;
