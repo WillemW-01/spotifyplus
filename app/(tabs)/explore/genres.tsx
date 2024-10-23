@@ -1,18 +1,13 @@
-import ThemedText from "@/components/ThemedText";
-import React, { useEffect, useRef, useState } from "react";
-import {
-  Button,
-  Dimensions,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import CirclePackingChart, { DataNode } from "@/components/bubbles/CircularPacking";
+import React, { useEffect, useState } from "react";
+import { Dimensions, Text, TouchableOpacity, View } from "react-native";
+import CirclePackingChart, { DataNode } from "@/components/bubbles/SvgCirclePacking";
 
 import BrandGradient from "@/components/BrandGradient";
 import { useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+
+import { allGenres as soundsOfSpotify } from "@/constants/soundsOfSpotify";
+import { usePlayback } from "@/hooks/usePlayback";
 
 interface SentGenre {
   title: string;
@@ -29,23 +24,9 @@ export default function Genres() {
     depth: 0,
     children: [],
   });
-  const selectedNode = useRef<DataNode | null>(null);
+  const [selectedNode, setSelectedNode] = useState("");
 
-  const dataOld: DataNode = {
-    name: "root",
-    title: "",
-    depth: 0,
-    children: [
-      { name: "A", title: "A", value: 10, depth: 1 },
-      { name: "B", title: "A", value: 20, depth: 1 },
-      { name: "C", title: "A", value: 50, depth: 1 },
-      { name: "D", title: "A", value: 20, depth: 1 },
-      { name: "E", title: "A", value: 20, depth: 1 },
-      { name: "F", title: "A", value: 10, depth: 1 },
-      { name: "G", title: "A", value: 20, depth: 1 },
-      { name: "H", title: "A", value: 200, depth: 1 },
-    ],
-  };
+  const { playPlayList } = usePlayback();
 
   const addNodes = (nodes: DataNode[]) => {
     setData((prev) => {
@@ -72,9 +53,31 @@ export default function Genres() {
     }
   };
 
+  const fetchRecommendationsGenre = async (genre: string) => {
+    try {
+      const obj = soundsOfSpotify[genre];
+      if (obj && obj.href) {
+        console.log(obj);
+        const regex = /(?<=playlists\/)[^/]+/;
+        const match = obj.href.match(regex);
+        console.log(match);
+        match && playPlayList(match[0]);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const onPlay = async () => {
+    if (selectedNode && selectedNode != "root") {
+      console.log("Should play!");
+      await fetchRecommendationsGenre(selectedNode);
+    }
+  };
+
   useEffect(() => {
     console.log(parsedGenres);
-    if (parsedGenres) {
+    if (parsedGenres && data.children.length == 0) {
       const packed = packGenres(parsedGenres);
       console.log(packed);
       addNodes(packed);
@@ -84,10 +87,8 @@ export default function Genres() {
   }, []);
 
   useEffect(() => {
-    if (selectedNode && selectedNode.current) {
-      console.log(`Selected changed: ${JSON.stringify(selectedNode.current)}`);
-    }
-  }, [selectedNode.current]);
+    console.log(`Selected changed: ${selectedNode}`);
+  }, [selectedNode]);
 
   return (
     <BrandGradient>
@@ -95,7 +96,7 @@ export default function Genres() {
         data={data}
         width={width}
         height={height}
-        selectedRef={selectedNode}
+        setSelectedNode={setSelectedNode}
       />
       <View
         style={{
@@ -106,9 +107,12 @@ export default function Genres() {
           flexDirection: "row",
           alignItems: "center",
           paddingHorizontal: 20,
+          paddingVertical: 8,
+          backgroundColor: "orange",
+          opacity: 1,
         }}
       >
-        <Text style={{ flex: 1 }}>Selected: </Text>
+        <Text style={{ flex: 1, fontSize: 22 }}>Selected: {selectedNode}</Text>
         <TouchableOpacity
           style={{
             height: 40,
@@ -118,6 +122,7 @@ export default function Genres() {
             alignItems: "center",
             borderRadius: 8,
           }}
+          onPress={onPlay}
         >
           <Ionicons name="play" size={30} />
         </TouchableOpacity>
