@@ -1,4 +1,7 @@
+import { LocalState } from "@/app/(tabs)/mood";
 import { Edge, Node } from "@/interfaces/graphs";
+import { IoniconType } from "@/interfaces/ionicon";
+import { ColorValue, ViewStyle } from "react-native";
 
 export const fromTo = (edge: Edge, from: number, to: number) =>
   edge.from === from && edge.to === to;
@@ -77,3 +80,36 @@ export const getNeighbours = (
   neighbours = degree == 2 ? tempNeighbours : neighbours;
   return [...new Set(neighbours)];
 };
+
+export const getShadowStyle = (synced: LocalState): ViewStyle => ({
+  shadowColor: iconStyles[synced].color,
+  shadowOpacity: synced == "online" ? 0.0 : 0.9,
+  shadowOffset: { width: 0, height: 0 },
+  shadowRadius: 10,
+});
+
+export interface IconStyle {
+  color: ColorValue;
+  name: IoniconType;
+  opacity: number;
+}
+
+export const iconStyles = {
+  synced: {
+    color: "green",
+    name: "checkmark-circle",
+    opacity: 0.0,
+  },
+  unsynced: {
+    color: "orange",
+    name: "alert-circle",
+    opacity: 0.5,
+  },
+  online: {
+    color: "black",
+    name: "globe",
+    opacity: 0.0,
+  },
+} as { [key: string]: IconStyle };
+
+export const NUDGE = 10;

@@ -24,6 +24,10 @@ interface Props {
 const isInText = (text: string, query: string) =>
   text.toLowerCase().includes(query.toLowerCase());
 
+const isArtist = (item: TopArtist | SimplifiedPlayList): item is TopArtist => {
+  return (item as TopArtist).followers !== undefined;
+};
+
 const renderList = (
   list: TopArtist[] | SimplifiedPlayList[],
   selectedListIds: string[],
@@ -43,6 +47,7 @@ const renderList = (
         imageUri={item.images[0].url}
         onPress={() => onPress(item)}
         synced={isSynced[i]}
+        type={isArtist(list[0]) ? "artist" : "playlist"}
       />
     );
   });

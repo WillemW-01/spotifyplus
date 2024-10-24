@@ -224,7 +224,8 @@ export default function GraphBuilder({
     setPlayLists([]);
     setIsSynced([]);
     setArtists([]);
-    foundation == "playlist" ? await fetchPlaylists() : await fetchArtists(timeFrame);
+    await fetchPlaylists();
+    await fetchArtists(timeFrame);
 
     setRefreshing(false);
   };

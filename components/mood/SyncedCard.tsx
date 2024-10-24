@@ -2,17 +2,10 @@ import React, { useState } from "react";
 import { LocalState } from "@/app/(tabs)/mood";
 import Card from "@/components/Card";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  ColorValue,
-  TouchableOpacity,
-  View,
-  StyleSheet,
-  ViewStyle,
-  Platform,
-} from "react-native";
-import { IoniconType } from "@/interfaces/ionicon";
+import { TouchableOpacity, View, StyleSheet, Platform } from "react-native";
 import OnlineChecker from "./OnlineChecker";
 import { SimplifiedPlayList } from "@/interfaces/playlists";
+import { iconStyles, NUDGE, getShadowStyle } from "@/utils/graphUtils";
 
 interface Props {
   title: string;
@@ -29,39 +22,6 @@ interface Props {
     // eslint-disable-next-line no-unused-vars
   ) => Promise<void>;
 }
-
-export interface IconStyle {
-  color: ColorValue;
-  name: IoniconType;
-  opacity: number;
-}
-
-export const iconStyles = {
-  synced: {
-    color: "green",
-    name: "checkmark-circle",
-    opacity: 0.0,
-  },
-  unsynced: {
-    color: "orange",
-    name: "alert-circle",
-    opacity: 0.5,
-  },
-  online: {
-    color: "black",
-    name: "globe",
-    opacity: 0.0,
-  },
-} as { [key: string]: IconStyle };
-
-const NUDGE = 10;
-
-export const getShadowStyle = (synced: LocalState): ViewStyle => ({
-  shadowColor: iconStyles[synced].color,
-  shadowOpacity: synced == "online" ? 0.0 : 0.9,
-  shadowOffset: { width: 0, height: 0 },
-  shadowRadius: 10,
-});
 
 export default function SyncedCard({
   title,
