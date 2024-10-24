@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useAuth } from "./AuthContext";
 import { Alert } from "react-native";
+import { router } from "expo-router";
 
 interface Error {
   error: {
@@ -30,16 +31,16 @@ export function useRequestBuilder(usingSpotify = true) {
       );
       Alert.alert(
         "Access token expire",
-        "Press the button below to refresh the access token",
+        "The current token used to connect to the Spotify API expired. Please go back to the login screen, press the login button, and retry your request.",
         [
           {
             text: "Cancel",
             style: "cancel",
           },
           {
-            text: "Refresh",
+            text: "To login",
             style: "default",
-            onPress: () => refreshAccessToken(token),
+            onPress: () => router.navigate("/"),
           },
         ]
       );
@@ -50,8 +51,16 @@ export function useRequestBuilder(usingSpotify = true) {
     if (response.status === 429) {
       console.log(response);
       console.log(JSON.stringify(response.headers.has("Retry-After")));
-      // console.log(`According to response, can retry after: ${retryAfter}`);
-      // console.log(`Error: ${error.error.message}`);
+
+      Alert.alert(
+        "Rate Limit",
+        "The amount of requests to the Spotify API has been high recently. Try to take a break for ~10min. If you still get this after that time, take a break for the day.",
+        [
+          {
+            text: "aww, okay.",
+          },
+        ]
+      );
     }
   };
 

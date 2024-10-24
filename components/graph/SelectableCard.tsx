@@ -36,7 +36,7 @@ export default function SelectableCard({
           ? onPress()
           : Alert.alert(
               "Download the playlist",
-              "In order to use this playlist in the graph, you must first download it from the `Mood` page",
+              "In order to use this playlist in the graph, you must first download it from the Mood page. Then come back and refresh this page.",
               [{ text: "Ok" }]
             );
       }}

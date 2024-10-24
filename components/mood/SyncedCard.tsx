@@ -23,11 +23,10 @@ interface Props {
   synced: LocalState;
   playlist: SimplifiedPlayList;
   // eslint-disable-next-line no-unused-vars
-  downloadPlaylist: (
+  finishDownloadingPlaylist: (
     // eslint-disable-next-line no-unused-vars
-    playlist: SimplifiedPlayList,
+    playlist: SimplifiedPlayList
     // eslint-disable-next-line no-unused-vars
-    progressCallback?: React.Dispatch<React.SetStateAction<number>>
   ) => Promise<void>;
 }
 
@@ -72,7 +71,7 @@ export default function SyncedCard({
   width,
   synced,
   playlist,
-  downloadPlaylist,
+  finishDownloadingPlaylist,
 }: Props) {
   const style = iconStyles[synced] ?? {
     color: "orange",
@@ -135,7 +134,7 @@ export default function SyncedCard({
         show={show}
         setShow={setShow}
         playlist={playlist}
-        downloadPlaylist={downloadPlaylist}
+        finishDownloadingPlaylist={finishDownloadingPlaylist}
       />
     </TouchableOpacity>
   );

@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
   ModalBaseProps,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -90,6 +91,7 @@ export default function GraphBuilder({
   const [selectedPlaylists, setSelectedPlaylists] = useState<SimplifiedPlayList[]>([]);
   const [selectedArtists, setSelectedArtists] = useState<TopArtist[]>([]);
   const [timeFrame, setTimeFrame] = useState<TimeFrame>("short_term");
+  const [refreshing, setRefreshing] = useState(false);
 
   const { listPlayLists } = usePlayLists();
   const { getTopArtistsAll } = useUser();
@@ -99,9 +101,7 @@ export default function GraphBuilder({
 
   const updateConnections = (newConnection: Connection) => {
     setConnections((prev) => {
-      console.log(prev);
       const temp = [...prev];
-      console.log(`type: ${newConnection.type}`);
       switch (newConnection.type) {
         case "artist":
           return handleNewArtistConnection(newConnection, temp);
@@ -144,10 +144,10 @@ export default function GraphBuilder({
 
   const addPlaylist = (p: SimplifiedPlayList) => {
     if (!selectedPlaylists.includes(p)) {
-      console.log(`Adding ${p.name}`);
+      addLog(`Adding ${p.name}`, "addPlaylist");
       setSelectedPlaylists([...selectedPlaylists, p]);
     } else {
-      console.log(`Removing ${p.name}`);
+      addLog(`Removing ${p.name}`, "addPlaylist");
       const updated = selectedPlaylists.filter((p1) => p1 !== p);
       setSelectedPlaylists(updated);
     }
@@ -155,31 +155,31 @@ export default function GraphBuilder({
 
   const addArtist = (a: TopArtist) => {
     if (!selectedArtists.includes(a)) {
-      console.log(`Adding ${a.name}`);
+      addLog(`Adding ${a.name}`, "addArtist");
       setSelectedArtists([...selectedArtists, a]);
     } else {
-      console.log(`Removing ${a.name}`);
+      addLog(`Removing ${a.name}`, "addArtist");
       const updated = selectedArtists.filter((a1) => a1 !== a);
       setSelectedArtists(updated);
     }
   };
 
   const fetchPlaylists = async () => {
-    console.log("Loading playlists");
+    addLog("Loading playlists", "graphBuilder");
     const response = await listPlayLists();
     const dbResponse = await getPlaylists();
     const states: LocalState[] = await Promise.all(
       response.map((r) => checkStatus(r, dbResponse))
     );
-    response.sort((a, b) => (b.name > a.name ? -1 : 1));
+    // response.sort((a, b) => (b.name > a.name ? -1 : 1));
 
     setIsSynced(states);
     setPlayLists(response);
   };
 
-  const loadArtists = async (timeFrame: "short_term" | "medium_term" | "long_term") => {
+  const fetchArtists = async (timeFrame: "short_term" | "medium_term" | "long_term") => {
     setTimeFrame(timeFrame);
-    console.log("Loading artists with timeframe ", timeFrame);
+    addLog(`Loading artists with timeframe ${timeFrame}`, "graphBuilder");
     const response = await getTopArtistsAll(timeFrame);
     response.sort((a, b) => (a.popularity > b.popularity ? -1 : 1));
     setArtists(response);
@@ -189,7 +189,7 @@ export default function GraphBuilder({
     if (timeFrame != clickedTime) {
       setSelectedArtists([]);
       setArtists([]);
-      loadArtists(clickedTime);
+      fetchArtists(clickedTime);
     }
   };
 
@@ -218,11 +218,22 @@ export default function GraphBuilder({
     onArtist && onPlaylist && buildFunction(foundation);
   };
 
+  const refresh = async () => {
+    setRefreshing(true);
+    setArtists([]);
+    setPlayLists([]);
+    setIsSynced([]);
+    setArtists([]);
+    foundation == "playlist" ? await fetchPlaylists() : await fetchArtists(timeFrame);
+
+    setRefreshing(false);
+  };
+
   useEffect(() => {
     if (foundation == "playlist" && (!playlists || playlists?.length == 0)) {
       fetchPlaylists();
     } else if (foundation == "artist" && (!artists || artists?.length == 0)) {
-      loadArtists("short_term");
+      fetchArtists("short_term");
     }
   }, [foundation]);
 
@@ -232,6 +243,7 @@ export default function GraphBuilder({
       <ScrollView
         style={styles.centeredView}
         contentContainerStyle={styles.scrollContent}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
       >
         <Section title="Foundation:">
           <View style={styles.foundationButtonContainer}>

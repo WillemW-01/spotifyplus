@@ -5,16 +5,19 @@ import { SimplifiedPlayList } from "@/interfaces/playlists";
 import ThemedProgressBar from "../ThemedProgressBar";
 import Button from "@/components/Button";
 import { CustomPlaylist } from "@/interfaces/tracks";
+import { usePlayLists } from "@/hooks/usePlayList";
+import { useDb } from "@/hooks/useDb";
+import { useLogger } from "@/hooks/useLogger";
+
+export type DownloadStatus = "" | "downloading" | "inserting" | "done";
 
 interface Props {
   show: boolean;
   setShow: React.Dispatch<React.SetStateAction<boolean>>;
   playlist: SimplifiedPlayList;
-  downloadPlaylist: (
+  finishDownloadingPlaylist: (
     // eslint-disable-next-line no-unused-vars
-    playlist: SimplifiedPlayList,
-    // eslint-disable-next-line no-unused-vars
-    progressCallback?: React.Dispatch<React.SetStateAction<number>>
+    playlist: SimplifiedPlayList
   ) => Promise<void>;
 }
 
@@ -22,10 +25,14 @@ export default function OnlineChecker({
   show,
   setShow,
   playlist,
-  downloadPlaylist,
+  finishDownloadingPlaylist,
 }: Props) {
   const [progress, setProgress] = useState<number | null>(null);
-  const step = 0.1;
+  const [status, setStatus] = useState<DownloadStatus>("");
+
+  const { fetchPlaylistFeatures } = usePlayLists();
+  const { insertNewSongs } = useDb();
+  const { logError, addLog } = useLogger();
 
   const onClose = () => {
     console.log("Closing online checker");
@@ -34,9 +41,38 @@ export default function OnlineChecker({
   };
 
   const onDownload = async () => {
-    console.log("Fetching features of playlist: ", playlist.name);
-    setProgress(0);
-    await downloadPlaylist(playlist, setProgress);
+    try {
+      console.log("Fetching features of playlist: ", playlist.name);
+      setProgress(0);
+      setStatus("downloading");
+      const trackFeatures = await fetchPlaylistFeatures(playlist, setProgress);
+      setStatus("inserting");
+      setProgress(0);
+      const response = await insertNewSongs(trackFeatures, setProgress);
+      if (!response) {
+        logError(
+          `Something went wrong with inserting new songs:`,
+          response,
+          "fetchPlaylist"
+        );
+      }
+
+      await finishDownloadingPlaylist(playlist);
+      setStatus("done");
+    } catch (error) {
+      logError(`An error occured with inserting new songs:`, error, "fetchPlaylist");
+    }
+  };
+
+  const getStatusText = () => {
+    switch (status) {
+      case "downloading":
+        return "Downloading from Spotify";
+      case "inserting":
+        return "Loading onto phone storage";
+      case "done":
+        return "Done";
+    }
   };
 
   useEffect(() => {
@@ -66,7 +102,7 @@ export default function OnlineChecker({
             }}
           >
             <View style={{ flex: 1, justifyContent: "center" }}>
-              {progress == null ? (
+              {status == "" ? (
                 <>
                   <Text style={styles.paragraph}>
                     The current playlist is either not downloaded yet, or is out of sync
@@ -74,10 +110,8 @@ export default function OnlineChecker({
                   </Text>
                   <Text style={styles.paragraph}>Do you wish to download it?</Text>
                 </>
-              ) : progress >= 1 ? (
-                <Text style={styles.paragraph}>Finished</Text>
               ) : (
-                <Text style={styles.paragraph}>Downloading...</Text>
+                <Text style={styles.paragraph}>{getStatusText()}</Text>
               )}
             </View>
             {progress == null ? (

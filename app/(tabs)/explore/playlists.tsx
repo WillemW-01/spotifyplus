@@ -7,6 +7,11 @@ export default function Playlists() {
   return (
     <BrandGradient>
       <ThemedText type="title" text="PlayLists" />
+      <ThemedText
+        type="body"
+        text="Coming soon."
+        style={{ textAlign: "center", marginTop: 40 }}
+      />
     </BrandGradient>
   );
 }

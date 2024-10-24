@@ -22,6 +22,7 @@ import { BuildGraphPlaylistProps } from "@/interfaces/graphs";
 
 import { getNeighbours } from "@/utils/graphUtils";
 import { shuffleArray } from "@/utils/miscUtils";
+import { useLogger } from "@/hooks/useLogger";
 
 const getPhysicsOptions = (
   resolverType: keyof typeof PHYSICS,
@@ -50,7 +51,7 @@ export default function Graph() {
   // const { graphData, artists, tracks } = useGraphData();
   const { buildGraphPlaylist, graphPlaylist, setGraphPlaylist } = useGraphPlaylist();
   const { buildGraphArtist, graphArtist, setGraphArtist, loading } = useGraphArtist();
-
+  const { addLog } = useLogger();
   const { getTopTracks } = useArtist();
   const { playTracks } = usePlayback();
 
@@ -123,7 +124,7 @@ export default function Graph() {
           if (event.nodes.length > 0) {
             const currNode = event.nodes[0];
             setSelectedNode(currNode);
-            console.log("Selected node: ", currNode);
+            addLog(`Selected node: ${currNode}`, "graphEvent");
           } else if (event.nodes.length == 0) {
             setSelectedNode(-1);
           }
@@ -156,14 +157,14 @@ export default function Graph() {
   };
 
   useEffect(() => {
-    console.log("Force: ", force);
+    addLog(`Force: ${force}`, "graph");
     if (!loading && graphReady && visNetworkRef.current) {
       setResolverObj(resolvers[`${force}`]);
     }
   }, [force]);
 
   useEffect(() => {
-    console.log("Graph type: ", graphType);
+    addLog(`Graph type: ${graphType}`, "graph");
   }, [graphType]);
 
   useEffect(() => {
@@ -234,7 +235,7 @@ export default function Graph() {
           },
         }}
         onLoad={() => {
-          console.log(`Graph is ready. Setting up event listener`);
+          addLog(`Graph is ready. Setting up event listener`, "graph");
           setGraphReady(true);
           setupEventListener();
         }}

@@ -134,31 +134,33 @@ export default function useGraphPlaylist() {
         return;
       }
 
-      console.log(
-        `Sent: ${playlistIds.length} playlists, with ${playlistIds.flat()} songs`
+      addLog(
+        `Sent: ${playlistIds.length} playlists, with ${playlistIds.flat()} songs`,
+        "buildPlaylist"
       );
       const songs = [] as TrackFeature[];
       for (const playlist of playlistIds) {
         const response = await getPlaylistSongs(playlist);
-        console.log(
-          `Got back ${response.length} songs: ${printObj(response.map((r) => r.name))}`
-        );
+        addLog(`Got back ${response.length} songs)}`, "buildPlaylist");
         songs.push(...response);
       }
 
       const nodes = formatNodes(connectionTypes[0], songs);
       const edges = connectNodes(connectionTypes[0], songs, nodes);
-      console.log(`Made ${edges.length} connections between ${nodes.length} nodes`);
+      addLog(
+        `Made ${edges.length} connections between ${nodes.length} nodes`,
+        "buildPlaylist"
+      );
 
       setGraphPlaylist({
         nodes: nodes,
         edges: edges,
       });
-      addLog("Done connecting!", "buildArtist");
+      addLog("Done connecting!", "buildPlaylist");
     } catch (error) {
-      logError("Failed to fetch playlists: ", error, "buildArtist");
+      logError("Failed to fetch playlists: ", error, "buildPlaylist");
     } finally {
-      addLog("Setting loading to false", "buildArtist");
+      addLog("Setting loading to false", "buildPlaylist");
       setLoading(false);
     }
   };

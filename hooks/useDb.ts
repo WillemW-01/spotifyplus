@@ -31,8 +31,12 @@ interface DatabaseOperations {
   insertGenres: (artistId: string) => Promise<void>;
   // eslint-disable-next-line no-unused-vars
   insertNewSong: (song: TrackFeature) => Promise<SQLiteExecuteAsyncResult<unknown>>;
-  // eslint-disable-next-line no-unused-vars
-  insertNewSongs: (songs: TrackFeature[]) => Promise<SQLiteExecuteAsyncResult<unknown>[]>;
+  insertNewSongs: (
+    // eslint-disable-next-line no-unused-vars
+    songs: TrackFeature[],
+    // eslint-disable-next-line no-unused-vars
+    progressCallback?: React.Dispatch<React.SetStateAction<number>>
+  ) => Promise<SQLiteExecuteAsyncResult<unknown>[]>;
   // eslint-disable-next-line no-unused-vars
   insertRelatedArtists: (artist: TopArtist, relatedArtists: Artist[]) => void;
   statementsReady: () => boolean;
@@ -142,11 +146,16 @@ export function useDb(): DatabaseOperations {
    *                          INSERT OPERATIONS                                *
    *****************************************************************************/
 
-  async function insertNewSongs(songs: TrackFeature[]) {
+  async function insertNewSongs(
+    songs: TrackFeature[],
+    progressCallback?: React.Dispatch<React.SetStateAction<number>>
+  ) {
     const allResults = [] as SQLiteExecuteAsyncResult<unknown>[];
-    for (const song of songs) {
-      allResults.push(await insertNewSong(song));
+    for (let i = 0; i < songs.length; i++) {
+      allResults.push(await insertNewSong(songs[i]));
+      progressCallback && i % 10 == 0 && progressCallback(i / songs.length);
     }
+    progressCallback(1);
     return allResults;
   }
 
@@ -489,25 +498,24 @@ export function useDb(): DatabaseOperations {
   }
 
   async function getPlaylistSongs(playlistId: string) {
-    console.log(`Fetching songs for ${playlistId}`);
+    addLog(`Fetching songs for ${playlistId}`, "getPlaylistSongs");
     const ids = (await resultOf(statements.current.retrievePlaylistSongs, {
       $playlist_id: playlistId,
     })) as { id: string }[];
-    console.log(`For playlist ${playlistId}, got back: ${ids.length} songs`);
+    addLog(
+      `For playlist ${playlistId}, got back: ${ids.length} songs`,
+      "getPlaylistSongs"
+    );
     return await getSongs(ids.map((i) => i.id));
   }
 
   async function getSongs(ids: string[]) {
-    // console.log(`Fetching songs for IDs: ${ids.join(", ")}`);
-    const songPromises = ids.map(async (id) => {
-      const song = await getSong(id);
-      // console.log(`Fetched song: ${song.name} (id: ${id})`);
-      return song;
-    });
-
-    const allSongs = await Promise.all(songPromises);
-    // console.log(`Fetched all songs for playlist: ${allSongs.map((song) => song.name)}`);
-    return allSongs;
+    const songs = [] as TrackFeature[];
+    for (const id of ids) {
+      const result = await getSong(id);
+      songs.push(result);
+    }
+    return songs;
   }
 
   async function getPlaylists() {

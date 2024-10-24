@@ -30,6 +30,7 @@ import useGraphUtils from "@/hooks/useGraphUtils";
 
 export type LocalState = "online" | "unsynced" | "synced";
 export type SortCritera = "alpha" | "size";
+export type UpdateStatus = "" | "downloading" | "inserting" | "done";
 
 const SORT_PREDICATES: {
   // eslint-disable-next-line no-unused-vars
@@ -50,6 +51,7 @@ export default function Mood() {
   const [sliderValues, setSliderValues] = useState<Preset>(PRESETS.default);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [customerizerVisible, setCustomizerVisible] = useState(false);
+  const [updateStatus, setUpdateStatus] = useState<UpdateStatus>("");
 
   const currPlayList = useRef<SimplifiedPlayList | null>(null);
 
@@ -99,25 +101,8 @@ export default function Mood() {
     }
   };
 
-  const fetchSinglePlaylist = async (
-    playlist: SimplifiedPlayList,
-    progressCallback?: React.Dispatch<React.SetStateAction<number>>
-  ) => {
-    try {
-      const trackFeatures = await fetchPlaylistFeatures(playlist, progressCallback);
-      const response = await insertNewSongs(trackFeatures);
-      if (!response) {
-        logError(
-          `Something went wrong with inserting new songs:`,
-          response,
-          "fetchPlaylist"
-        );
-      }
-
-      await checkStatusOutside(playlist);
-    } catch (error) {
-      logError(`An error occured with inserting new songs:`, error, "fetchPlaylist");
-    }
+  const finishDownloadingPlaylist = async (playlist: SimplifiedPlayList) => {
+    await checkStatusOutside(playlist);
   };
 
   const fetchPlaylists = async () => {
@@ -255,7 +240,7 @@ export default function Mood() {
                 width={90}
                 synced={outOfDate[index]}
                 playlist={item}
-                downloadPlaylist={fetchSinglePlaylist}
+                finishDownloadingPlaylist={finishDownloadingPlaylist}
               />
             );
           })}
